@@ -1,0 +1,64 @@
+{% extends 'base_tasker.html' %}
+{% load task_extras %}
+
+{% block title %}Mes Missions — SideQuest{% endblock %}
+
+{% block dashboard_content %}
+
+<div class="page-header">
+    <a href="{% url 'tasks:tasker_dashboard' %}" class="btn-back" title="Retour">&#8592;</a>
+    <h1>Mes Missions</h1>
+</div>
+
+<div class="missions-count">{{ total_count }} mission{{ total_count|pluralize }} au total</div>
+
+{% with base_url=request.path %}
+<div class="filter-tabs">
+    <a href="{{ base_url }}" class="filter-tab {% if not status_filter %}active{% endif %}">Toutes <span>({{ total_count }})</span></a>
+    <a href="{{ base_url }}?status=in_progress" class="filter-tab {% if status_filter == 'in_progress' %}active{% endif %}">Active <span>({{ active_count }})</span></a>
+    <a href="{{ base_url }}?status=completed" class="filter-tab {% if status_filter == 'completed' %}active{% endif %}">Terminée <span>({{ completed_count }})</span></a>
+    <a href="{{ base_url }}?status=pending" class="filter-tab {% if status_filter == 'pending' %}active{% endif %}">En attente <span>({{ pending_count }})</span></a>
+</div>
+{% endwith %}
+
+{% if missions %}
+<div class="missions-list">
+    {% for task in missions %}
+    {% with s=task.status %}
+    <div class="mission-card" data-status="{{ s }}">
+        <span class="mission-dot {% if s == 'accepted' or s == 'in_progress' or s == 'awaiting_confirmation' or s == 'completed' %}active{% elif s == 'published' or s == 'draft' %}pending{% elif s == 'validated' or s == 'evaluated' or s == 'closed' or s == 'resolved' %}completed{% else %}cancelled{% endif %}"></span>
+        <div class="mission-body">
+            <div class="mission-title">{{ task.title }}</div>
+            <div class="mission-meta">
+                <span class="mission-meta-item">{{ task.client.full_name|default:"Client" }}</span>
+                <span class="mission-meta-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> {{ task.updated_at|date:"d/m/Y" }}</span>
+            </div>
+            <div class="mission-tags">
+                <span class="mission-tag">{{ task.category.name }}</span>
+            </div>
+        </div>
+        <div class="mission-right">
+            <span class="mission-price">{{ task.reward }} DH</span>
+            <span class="mission-badge {% if s == 'accepted' or s == 'in_progress' or s == 'awaiting_confirmation' %}active{% elif s == 'published' or s == 'draft' %}pending{% elif s == 'validated' or s == 'evaluated' or s == 'closed' or s == 'resolved' %}completed{% else %}cancelled{% endif %}">{% if task.proof and task.proof.client_review == 'revision' %}À réviser{% else %}{{ task.get_status_display }}{% endif %}</span>
+            {% with rating_list=task.tasker_rating_received %}
+            {% if rating_list %}
+            {% with r=rating_list.0 %}
+            <span class="mission-rating">{% for i in "12345"|make_list %}{% if forloop.counter <= r.rating %}<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>{% else %}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>{% endif %}{% endfor %}</span>
+            {% endwith %}
+            {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+    {% endwith %}
+    {% endfor %}
+</div>
+{% else %}
+<div class="mission-card-empty">
+    Pas de missions pour le moment
+    <strong>Commence à accepter des quêtes</strong>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block dashboard_right %}{% endblock %}

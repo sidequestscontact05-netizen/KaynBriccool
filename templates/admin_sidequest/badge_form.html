@@ -1,0 +1,80 @@
+{% extends 'base_admin.html' %}
+
+{% block title %}Admin — {% if form_action == 'edit' %}Modifier{% else %}Créer{% endif %} Badge{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-header">
+    <a href="{% url 'admin_sidequest:badges' %}" class="btn-back" title="Retour">&#8592;</a>
+    <h1>{% if form_action == 'edit' %}Modifier{% else %}Créer{% endif %} un badge</h1>
+</div>
+
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<form method="post" class="form form-wide">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="name">Nom</label>
+        <input type="text" id="name" name="name" value="{{ badge.name|default:'' }}" class="form-input" required>
+    </div>
+    <div class="form-group">
+        <label for="slug">Slug</label>
+        <input type="text" id="slug" name="slug" value="{{ badge.slug|default:'' }}" class="form-input">
+    </div>
+    <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" name="description" class="form-input" rows="3">{{ badge.description|default:'' }}</textarea>
+    </div>
+    <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="form-group">
+            <label for="icon">Icône</label>
+            <input type="text" id="icon" name="icon" value="{{ badge.icon|default:'badge' }}" class="form-input" placeholder="star, shield, zap...">
+        </div>
+        <div class="form-group">
+            <label for="color">Couleur</label>
+            <input type="color" id="color" name="color" value="{{ badge.color|default:'#4F46E5' }}" class="form-input" style="height:40px;padding:4px;">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="condition_type">Condition</label>
+        <select id="condition_type" name="condition_type" class="form-input">
+            <option value="tasks_completed" {% if badge.condition_type == 'tasks_completed' %}selected{% endif %}>Tâches réalisées</option>
+            <option value="avg_rating" {% if badge.condition_type == 'avg_rating' %}selected{% endif %}>Note moyenne</option>
+            <option value="speed" {% if badge.condition_type == 'speed' %}selected{% endif %}>Rapidité</option>
+            <option value="no_cancel" {% if badge.condition_type == 'no_cancel' %}selected{% endif %}>Aucune annulation</option>
+            <option value="custom" {% if badge.condition_type == 'custom' %}selected{% endif %}>Personnalisé</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="condition_value">Valeur de condition (JSON)</label>
+        <input type="text" id="condition_value" name="condition_value" value="{{ badge.condition_value|default:'{}'|safe }}" class="form-input" placeholder='{"min_tasks": 10}'>
+        <small class="form-hint">Format JSON. Ex: {"min_tasks": 10}</small>
+    </div>
+    <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="form-group">
+            <label for="target_role">Cible</label>
+            <select id="target_role" name="target_role" class="form-input">
+                <option value="tasker" {% if badge.target_role == 'tasker' %}selected{% endif %}>Tasker</option>
+                <option value="client" {% if badge.target_role == 'client' %}selected{% endif %}>Client</option>
+                <option value="both" {% if badge.target_role == 'both' %}selected{% endif %}>Les deux</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="is_active">Actif</label>
+            <div style="display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem;">
+                <input type="checkbox" id="is_active" name="is_active" {% if not badge or badge.is_active %}checked{% endif %} style="width:20px;height:20px;">
+                <span>Badge actif</span>
+            </div>
+        </div>
+    </div>
+    <div class="form-actions">
+        <button type="submit" class="btn btn-admin">Sauvegarder</button>
+        <a href="{% url 'admin_sidequest:badges' %}" class="btn btn-admin-outline">Annuler</a>
+    </div>
+</form>
+{% endblock %}

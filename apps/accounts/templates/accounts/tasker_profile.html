@@ -1,0 +1,284 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ tasker.full_name }} — SideQuest{% endblock %}
+
+{% block content %}
+<div class="tasker-profile">
+    <div class="profile-header">
+        <a href="javascript:history.back()" class="btn-back" title="Retour">&#8592;</a>
+        <div class="profile-avatar-section">
+            {% if tasker.avatar %}
+                <img src="{{ tasker.avatar.url }}" alt="{{ tasker.full_name }}" class="profile-avatar">
+            {% else %}
+                <div class="profile-avatar-default">{{ tasker.full_name|make_list|first|upper }}</div>
+            {% endif %}
+            <div class="profile-info">
+                <h1>{{ tasker.full_name }}</h1>
+                <div class="profile-meta">
+                    <span class="level-badge">Niveau {{ profile.level }}</span>
+                    <span class="xp-text">{{ profile.xp }} XP</span>
+                    {% if profile.is_verified %}
+                        <span class="verified-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Vérifié</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-stats">
+        <div class="stat-card">
+            <span class="stat-value">{{ profile.tasks_completed }}</span>
+            <span class="stat-label">Missions terminées</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value">{% if profile.tasker_rating_avg %}{{ profile.tasker_rating_avg }}{% else %}—{% endif %}</span>
+            <span class="stat-label">Note moyenne</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value">{{ total_reviews }}</span>
+            <span class="stat-label">Avis reçus</span>
+        </div>
+    </div>
+
+    {% if badges %}
+    <div class="profile-section">
+        <h2>Badges</h2>
+        <div class="badges-grid">
+            {% for ub in badges %}
+                <div class="badge-item {% if ub.badge.tier == 'gold' %}badge-gold{% elif ub.badge.tier == 'silver' %}badge-silver{% else %}badge-bronze{% endif %}">
+                    <span class="badge-icon">{{ ub.badge.icon }}</span>
+                    <div>
+                        <strong>{{ ub.badge.name }}</strong>
+                        <p class="badge-desc">{{ ub.badge.description }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if reviews %}
+    <div class="profile-section">
+        <h2>Avis clients</h2>
+        <div class="reviews-list">
+            {% for review in reviews %}
+                <div class="review-card">
+                    <div class="review-header">
+                        <div class="review-stars">
+                            {% for i in "12345" %}
+                                <span class="star {% if i|add:0 <= review.rating %}star-filled{% endif %}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+                            {% endfor %}
+                        </div>
+                        <span class="review-date">{{ review.created_at|date:"d/m/Y" }}</span>
+                    </div>
+                    {% if review.comment %}
+                        <p class="review-comment">{{ review.comment }}</p>
+                    {% endif %}
+                    <span class="review-task">Mission : {{ review.task.title }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="profile-section">
+        <p class="text-muted">Aucun avis pour le moment.</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.tasker-profile {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.profile-header {
+    margin-bottom: 2rem;
+}
+
+.profile-avatar-section {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    padding: 1.5rem;
+    background: var(--sq-surface, #fff);
+    border-radius: 16px;
+    border: 1px solid var(--sq-border, #e2e8f0);
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--sq-primary);
+}
+
+.profile-avatar-default {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--sq-primary);
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-info h1 {
+    font-size: 1.5rem;
+    margin: 0 0 0.25rem;
+}
+
+.profile-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.level-badge {
+    background: var(--sq-primary);
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.xp-text {
+    font-size: 0.85rem;
+    color: var(--sq-text-muted, #64748b);
+}
+
+.verified-badge {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    text-align: center;
+    padding: 1.25rem;
+    background: var(--sq-surface, #fff);
+    border-radius: 12px;
+    border: 1px solid var(--sq-border, #e2e8f0);
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--sq-text, #1e293b);
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--sq-text-muted, #64748b);
+}
+
+.profile-section {
+    margin-bottom: 2rem;
+}
+
+.profile-section h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--sq-border, #e2e8f0);
+}
+
+.badges-grid {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.badge-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--sq-surface, #fff);
+    border-radius: 12px;
+    border-left: 4px solid;
+}
+
+.badge-gold { border-left-color: #f59e0b; }
+.badge-silver { border-left-color: #94a3b8; }
+.badge-bronze { border-left-color: #b45309; }
+
+.badge-icon {
+    font-size: 2rem;
+}
+
+.badge-desc {
+    font-size: 0.8rem;
+    color: var(--sq-text-muted, #64748b);
+    margin: 0;
+}
+
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.review-card {
+    padding: 1rem;
+    background: var(--sq-surface, #fff);
+    border-radius: 12px;
+    border: 1px solid var(--sq-border, #e2e8f0);
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.review-stars {
+    display: flex;
+    gap: 0.15rem;
+}
+
+.star {
+    color: #e2e8f0;
+    font-size: 1.1rem;
+}
+
+.star-filled {
+    color: #f59e0b;
+}
+
+.review-date {
+    font-size: 0.8rem;
+    color: var(--sq-text-muted, #64748b);
+}
+
+.review-comment {
+    margin: 0 0 0.5rem;
+    font-size: 0.95rem;
+    color: var(--sq-text, #1e293b);
+}
+
+.review-task {
+    font-size: 0.75rem;
+    color: var(--sq-text-muted, #64748b);
+    font-style: italic;
+}
+</style>
+{% endblock %}

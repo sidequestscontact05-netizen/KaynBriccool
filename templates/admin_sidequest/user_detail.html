@@ -1,0 +1,30 @@
+{% extends 'base_admin.html' %}
+
+{% block title %}Admin — {{ profile_user.full_name }}{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-header">
+    <a href="{% url 'admin_sidequest:users' %}" class="btn-back" title="Retour">&#8592;</a>
+    <h1>{{ profile_user.full_name }}</h1>
+</div>
+
+<div class="admin-user-detail">
+    <div class="admin-user-info">
+        <p><strong>Email :</strong> {{ profile_user.email }}</p>
+        <p><strong>Téléphone :</strong> {{ profile_user.phone_number|default:"Non renseigné" }}</p>
+        <p><strong>Rôle :</strong> {{ profile_user.get_role_display }}</p>
+        <p><strong>Vérifié :</strong> {% if profile_user.is_verified %} Oui {% else %} Non {% endif %}</p>
+        <p><strong>Statut :</strong> {% if profile_user.is_active %} Actif {% else %} Banni {% endif %}</p>
+        <p><strong>Inscrit le :</strong> {{ profile_user.date_joined|date:"d/m/Y H:i" }}</p>
+    </div>
+
+    <div class="admin-user-actions">
+        {% if profile_user.is_active %}
+            <a href="{% url 'admin_sidequest:ban_user' profile_user.id %}" class="btn btn-admin-warning">Bannir</a>
+        {% else %}
+            <a href="{% url 'admin_sidequest:ban_user' profile_user.id %}" class="btn btn-admin">Réactiver</a>
+        {% endif %}
+        <a href="{% url 'admin_sidequest:delete_user' profile_user.id %}" class="btn btn-admin-danger">Supprimer</a>
+    </div>
+</div>
+{% endblock %}

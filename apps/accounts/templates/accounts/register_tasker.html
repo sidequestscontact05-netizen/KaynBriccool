@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+{% load socialaccount %}
+
+{% block title %}Inscription Tasker — SideQuest{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card auth-card-wide">
+        <div class="page-header">
+            <a href="javascript:history.back()" class="btn-back" title="Retour">&#8592;</a>
+        </div>
+        <h1>Devenir Tasker</h1>
+        <p class="auth-subtitle">Acceptez des missions et gagnez de l'argent</p>
+
+        <a href="{% provider_login_url 'google' %}" class="btn-google">
+            <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59A14.5 14.5 0 0 1 9.5 24c0-1.59.28-3.14.76-4.59l-7.98-6.19A23.99 23.99 0 0 0 0 24c0 3.77.87 7.35 2.56 10.56l7.97-5.97z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 5.97C6.51 42.62 14.62 48 24 48z"/></svg>
+            Continuer avec Google
+        </a>
+
+        <div class="auth-divider"><span>ou</span></div>
+
+        <form method="post" enctype="multipart/form-data" class="auth-form tasker-registration-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="form-group">
+                {{ form.full_name.label_tag }}
+                {{ form.full_name }}
+                {{ form.full_name.errors }}
+            </div>
+            <div class="form-group">
+                {{ form.email.label_tag }}
+                {{ form.email }}
+                {{ form.email.errors }}
+            </div>
+            <div class="form-group">
+                {{ form.phone_number.label_tag }}
+                {{ form.phone_number }}
+                {{ form.phone_number.errors }}
+            </div>
+            <div class="form-group">
+                {{ form.avatar.label_tag }}
+                {{ form.avatar }}
+                {{ form.avatar.errors }}
+                <small class="form-hint">Photo de profil obligatoire</small>
+            </div>
+            <div class="form-group">
+                {{ form.password1.label_tag }}
+                {{ form.password1 }}
+                {{ form.password1.errors }}
+            </div>
+            <div class="form-group">
+                {{ form.password2.label_tag }}
+                {{ form.password2 }}
+                {{ form.password2.errors }}
+            </div>
+
+            <hr style="width:100%; border: 1px solid var(--sq-border); margin: 1rem 0;">
+
+            <h2>V&eacute;rification d'identit&eacute;</h2>
+            <p class="auth-subtitle">Regardez la cam&eacute;ra &mdash; 2 secondes suffisent</p>
+
+            <div id="face-capture-container"></div>
+
+            <button type="submit" class="btn btn-primary btn-full face-capture-submit" style="display:none;">S'inscrire</button>
+        </form>
+        <div class="auth-links">
+            <span>D&eacute;j&agrave; inscrit ?</span>
+            <a href="{% url 'accounts:login' %}">Se connecter</a>
+            <span>ou</span>
+            <a href="{% url 'accounts:register_client' %}">Cr&eacute;er un compte client</a>
+        </div>
+    </div>
+</div>
+
+<style>
+.cap-wrap {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    background: #000;
+}
+.cap-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.55);
+    z-index: 10;
+    pointer-events: none;
+    text-align: center;
+    padding: 1rem;
+}
+.cap-icon { font-size: 4rem; margin-bottom: 0.3rem; }
+.cap-title { color: #fff; font-size: 1.5rem; font-weight: 800; margin-bottom: 0.2rem; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
+.cap-hint { color: #fbbf24; font-size: 1rem; font-weight: 600; text-shadow: 0 1px 4px rgba(0,0,0,0.5); }
+.cap-badge { margin-top: 0.4rem; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; color: #fff; }
+.cap-countdown {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px; height: 100px;
+    background: rgba(0,0,0,0.7);
+    border: 4px solid var(--sq-primary, #2D6A4F);
+    border-radius: 50%;
+    z-index: 11;
+    pointer-events: none;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+.cap-countdown.show { display: flex; }
+.cap-countdown-num { color: #fff; font-size: 3rem; font-weight: 800; }
+.cap-face-oval {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 55%; aspect-ratio: 3/4;
+    border: 3px solid var(--sq-primary);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 5;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var container = document.getElementById('face-capture-container');
+    if (!container) return;
+
+    var form = document.querySelector('.tasker-registration-form');
+    var FIELDS = ['face_photo_initial_data', 'face_photo_left_data', 'face_photo_right_data', 'face_photo_blink_data'];
+    FIELDS.forEach(function(name) {
+        var inp = document.createElement('input');
+        inp.type = 'hidden'; inp.name = name; inp.id = 'hdn_' + name; inp.value = '';
+        form.appendChild(inp);
+    });
+
+    container.innerHTML =
+        '<div class="cap-wrap">' +
+            '<video id="fv" autoplay playsinline muted style="width:100%;display:block;"></video>' +
+            '<div class="cap-face-oval" id="face-oval"></div>' +
+            '<div class="cap-overlay" id="cap-overlay">' +
+                '<div class="cap-icon" id="cap-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>' +
+                '<div class="cap-title" id="cap-title">V\u00E9rification faciale</div>' +
+                '<div class="cap-hint" id="cap-hint">Placez votre visage dans le cercle</div>' +
+                '<div class="cap-badge" id="cap-badge" style="display:none;"></div>' +
+            '</div>' +
+            '<div class="cap-countdown" id="cap-countdown"><div class="cap-countdown-num" id="cap-countdown-num">2</div></div>' +
+        '</div>' +
+        '<button type="button" id="start-btn" class="btn btn-primary btn-full" style="margin-top:1rem;">\u25B6 Commencer</button>';
+
+    var video = document.getElementById('fv');
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } } })
+        .then(function(s) { video.srcObject = s; })
+        .catch(function(e) { document.getElementById('cap-title').textContent = 'Cam\u00E9ra non disponible'; });
+    }
+
+    var canvas = document.createElement('canvas');
+    canvas.style.display = 'none';
+    document.body.appendChild(canvas);
+
+    var analyzing = false;
+
+    document.getElementById('start-btn').addEventListener('click', function(e) {
+        e.preventDefault();
+        this.style.display = 'none';
+        analyzing = true;
+        startCapture();
+    });
+
+    function getSkinRatio() {
+        if (!video || !video.videoWidth) return 0;
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        var ctx = canvas.getContext('2d', { willReadFrequently: true });
+        ctx.drawImage(video, 0, 0);
+        var d = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        var w = canvas.width, h = canvas.height;
+        var cx = Math.floor(w/2), cy = Math.floor(h/2);
+        var r = Math.floor(w * 0.22);
+        var skin = 0, total = 0;
+        for (var y = cy-r; y < cy+r; y += 3) {
+            for (var x = cx-r; x < cx+r; x += 3) {
+                var dx = x-cx, dy = y-cy;
+                if (dx*dx + dy*dy > r*r) continue;
+                var i = (y*w + x)*4;
+                var R = d[i], G = d[i+1], B = d[i+2];
+                if (R > 80 && G > 40 && B > 20 && R > G && R > B && (R-G) > 15 && (R-B) > 15) skin++;
+                total++;
+            }
+        }
+        return total > 0 ? skin/total : 0;
+    }
+
+    function setOval(color, shadowText) {
+        var ov = document.getElementById('face-oval');
+        ov.style.borderColor = color;
+        ov.style.boxShadow = shadowText ? '0 0 20px ' + color + '33, ' + shadowText : '0 0 0 9999px rgba(0,0,0,0.5)';
+    }
+
+    function showBadge(text, color) {
+        var b = document.getElementById('cap-badge');
+        b.textContent = text; b.style.display = 'block'; b.style.background = color || '#2D6A4F';
+    }
+
+    function startCapture() {
+        var faceOk = false;
+        var tick = setInterval(function() {
+            if (!analyzing || !video || !video.videoWidth) return;
+            var ratio = getSkinRatio();
+            if (ratio > 0.20) {
+                setOval('#10b981', '0 0 0 9999px rgba(0,0,0,0.35)');
+                showBadge('\u2713 Visage d\u00E9tect\u00E9', '#10b981');
+                if (!faceOk) {
+                    faceOk = true;
+                    clearInterval(tick);
+                    doCountdown();
+                }
+            } else if (ratio > 0.08) {
+                setOval('#f59e0b');
+                showBadge('\u26A0 Approchez', '#f59e0b');
+            } else {
+                setOval('#ef4444');
+                showBadge('\u2717 Aucun visage', '#ef4444');
+            }
+        }, 200);
+    }
+
+    function doCountdown() {
+        var left = 2;
+        var cd = document.getElementById('cap-countdown');
+        var cdNum = document.getElementById('cap-countdown-num');
+        cd.classList.add('show');
+        cdNum.textContent = left;
+        document.getElementById('cap-title').textContent = 'Pr\u00eat...';
+
+        var t = setInterval(function() {
+            left--;
+            if (left > 0) { cdNum.textContent = left; }
+            else {
+                clearInterval(t);
+                cd.classList.remove('show');
+                capturePhoto();
+            }
+        }, 1000);
+    }
+
+    function capturePhoto() {
+        analyzing = false;
+        canvas.width = video.videoWidth || 640;
+        canvas.height = video.videoHeight || 480;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        var base64 = canvas.toDataURL('image/jpeg', 0.92);
+
+        FIELDS.forEach(function(name) {
+            var hi = document.getElementById('hdn_' + name);
+            if (hi) hi.value = base64;
+        });
+
+        setOval('#10b981', '0 0 20px ' + '#10b981' + '66, 0 0 0 9999px rgba(0,0,0,0.25)');
+        var ov = document.getElementById('cap-overlay');
+        document.getElementById('cap-icon').textContent = '\u2705';
+        document.getElementById('cap-title').textContent = 'Photo prise !';
+        document.getElementById('cap-hint').textContent = '';
+        document.getElementById('cap-badge').style.display = 'none';
+
+        var btn = document.querySelector('.face-capture-submit');
+        if (btn) btn.style.display = 'block';
+    }
+});
+</script>
+{% endblock %}

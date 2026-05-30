@@ -1,0 +1,674 @@
+{% extends 'base_client.html' %}
+{% load static %}
+
+{% block title %}Créer une quête — SideQuest{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+.dashboard-layout { max-width: 100% !important; width: 100% !important; }
+
+/* ── Page header ── */
+.create-header {
+  max-width: 820px;
+  margin: 0 auto 40px;
+  padding: 0 24px;
+}
+.create-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--sq-text);
+  margin: 0;
+}
+.create-header p {
+  color: var(--sq-text-muted);
+  font-size: 0.95rem;
+  margin: 8px 0 0;
+}
+
+/* ── Card grid ── */
+.card-form {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 0 24px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-card {
+  background: var(--sq-surface);
+  border: 1px solid var(--sq-border-light);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.form-card:hover {
+  border-color: var(--sq-border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.form-card:focus-within {
+  border-color: var(--sq-primary);
+  box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.08), 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.form-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.form-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.25rem;
+}
+
+.form-card-icon.green { background: rgba(45, 106, 79, 0.1); color: var(--sq-primary); }
+.form-card-icon.amber { background: rgba(245, 158, 11, 0.1); color: #B45309; }
+.form-card-icon.blue  { background: rgba(59, 130, 246, 0.1); color: #1D4ED8; }
+.form-card-icon.purple { background: rgba(139, 92, 246, 0.1); color: #6D28D9; }
+.form-card-icon.teal  { background: rgba(20, 184, 166, 0.1); color: #0F766E; }
+.form-card-icon.rose  { background: rgba(244, 63, 94, 0.1); color: #BE123C; }
+.form-card-icon.indigo { background: rgba(99, 102, 241, 0.1); color: #4338CA; }
+
+.form-card-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--sq-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+.form-card-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--sq-text);
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* ── Card body ── */
+.form-card-body {
+  padding-left: 52px;
+}
+
+.form-card-body select,
+.form-card-body input,
+.form-card-body textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--sq-border);
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-family: var(--font-sans);
+  background: var(--sq-bg);
+  color: var(--sq-text);
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.form-card-body select:focus,
+.form-card-body input:focus,
+.form-card-body textarea:focus {
+  border-color: var(--sq-primary);
+  background: var(--sq-surface);
+  box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.08);
+}
+
+.form-card-body select:hover,
+.form-card-body input:hover,
+.form-card-body textarea:hover {
+  border-color: var(--sq-primary-light);
+}
+
+.form-card-body textarea {
+  min-height: 140px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.form-card-body .form-input::placeholder {
+  color: var(--sq-text-light);
+}
+
+.form-card-body select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 40px;
+}
+
+.form-card-body select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Split row cards ── */
+.form-card-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.form-card-row .form-card {
+  margin: 0;
+}
+
+/* ── Reward with currency prefix ── */
+.reward-wrap {
+  position: relative;
+}
+
+.reward-wrap input {
+  padding-left: 36px;
+}
+
+.reward-prefix {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--sq-text-muted);
+  font-weight: 500;
+  font-size: 0.95rem;
+  pointer-events: none;
+}
+
+/* ── Checkbox / toggle row ── */
+.toggle-card {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toggle-card .form-card-header {
+  margin-bottom: 0;
+}
+
+.toggle-track {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: var(--sq-border);
+  position: relative;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+
+.toggle-track::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  transition: transform 0.2s ease;
+}
+
+.toggle-card input:checked + .toggle-track {
+  background: var(--sq-primary);
+}
+
+.toggle-card input:checked + .toggle-track::after {
+  transform: translateX(20px);
+}
+
+.toggle-card input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* ── Location map card ── */
+.location-card .form-card-body {
+  padding-left: 0;
+}
+
+.location-picker {
+  height: 280px;
+  border-radius: 12px;
+  border: 1px solid var(--sq-border);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.location-hint {
+  font-size: 0.85rem;
+  color: var(--sq-text-muted);
+  margin: 0 0 12px;
+}
+
+.location-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.address-display {
+  font-size: 0.85rem;
+  color: var(--sq-primary);
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: rgba(45, 106, 79, 0.05);
+  border-radius: 8px;
+}
+
+#departure-section { display: none; }
+
+/* ── Deadline card ── */
+.deadline-card input[type="datetime-local"] {
+  min-height: 48px;
+}
+
+/* ── Actions ── */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 8px;
+}
+
+.form-actions .btn {
+  padding: 12px 28px;
+  font-size: 0.95rem;
+}
+
+/* ── Error states ── */
+.form-card.error {
+  border-color: var(--sq-danger);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+}
+
+.errorlist {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  font-size: 0.8rem;
+  color: var(--sq-danger);
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .form-card-row {
+    grid-template-columns: 1fr;
+  }
+  .create-header h1 { font-size: 1.5rem; }
+  .form-card { padding: 18px; }
+  .form-card-body { padding-left: 0; }
+  .location-picker { height: 200px; }
+}
+</style>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="create-header">
+  <a href="javascript:history.back()" class="btn-back" title="Retour">&#8592;</a>
+  <h1>Publier une quête</h1>
+  <p>Décrivez votre mission en détail pour trouver le bon tasker.</p>
+</div>
+
+<form method="post" class="card-form" id="task-form">
+  {% csrf_token %}
+
+  <!-- ── Catégorie + Sous-catégorie ── -->
+  <div class="form-card-row">
+    <div class="form-card">
+      <div class="form-card-header">
+        <div class="form-card-icon green"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <div>
+          <p class="form-card-label">Catégorie</p>
+          <h3 class="form-card-title">Quel type de mission ?</h3>
+        </div>
+      </div>
+      <div class="form-card-body">
+        {{ form.category }}
+        {{ form.category.errors }}
+      </div>
+    </div>
+    <div class="form-card">
+      <div class="form-card-header">
+        <div class="form-card-icon blue"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg></div>
+        <div>
+          <p class="form-card-label">Sous-catégorie</p>
+          <h3 class="form-card-title">Précisez le type de tâche</h3>
+        </div>
+      </div>
+      <div class="form-card-body">
+        <select name="subcategory" id="id_subcategory" class="form-input" required disabled>
+          <option value="">— Choisir une catégorie d'abord —</option>
+        </select>
+        {{ form.subcategory.errors }}
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Titre + Description ── -->
+  <div class="form-card-row">
+    <div class="form-card">
+      <div class="form-card-header">
+        <div class="form-card-icon purple"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></div>
+        <div>
+          <p class="form-card-label">Titre</p>
+          <h3 class="form-card-title">Donnez un titre clair à votre mission</h3>
+        </div>
+      </div>
+      <div class="form-card-body">
+        {{ form.title }}
+        {{ form.title.errors }}
+      </div>
+    </div>
+    <div class="form-card">
+      <div class="form-card-header">
+        <div class="form-card-icon amber"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M16 2v4a2 2 0 0 0 2 2h4"/><rect x="2" y="2" width="18" height="18" rx="2"/><path d="M12 11v6"/><path d="M9 14h6"/></svg></div>
+        <div>
+          <p class="form-card-label">Description</p>
+          <h3 class="form-card-title">Expliquez la mission en détail</h3>
+        </div>
+      </div>
+      <div class="form-card-body">
+        {{ form.description }}
+        {{ form.description.errors }}
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Reward + Deadline (side by side) ── -->
+  <div class="form-card-row">
+    <div class="form-card">
+      <div class="form-card-header">
+        <div class="form-card-icon teal"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="12" cy="12" r="10"/><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path d="M12 9v6"/><path d="M9 12h6"/></svg></div>
+        <div>
+          <p class="form-card-label">Rémunération</p>
+          <h3 class="form-card-title">Combien proposez-vous ?</h3>
+        </div>
+      </div>
+      <div class="form-card-body">
+        <div class="reward-wrap">
+          <span class="reward-prefix">Dh</span>
+          {{ form.reward }}
+        </div>
+        {{ form.reward.errors }}
+      </div>
+    </div>
+
+    <div class="form-card deadline-card">
+      <div class="form-card-header">
+        <div class="form-card-icon rose"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div>
+          <p class="form-card-label">Date limite</p>
+          <h3 class="form-card-title">Jusqu'à quand ?</h3>
+        </div>
+      </div>
+      <div class="form-card-body">
+        {{ form.deadline }}
+        {{ form.deadline.errors }}
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Arrival address (map) ── -->
+  <div class="form-card location-card">
+    <div class="form-card-header">
+      <div class="form-card-icon indigo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>
+      <div>
+        <p class="form-card-label">Adresse d'arrivée</p>
+        <h3 class="form-card-title">Où doit se rendre le tasker ?</h3>
+      </div>
+    </div>
+    <div class="form-card-body">
+      <p class="location-hint">Choisissez un point sur la carte, utilisez votre position, ou écrivez l'adresse</p>
+      <div class="location-actions">
+        <button type="button" class="btn btn-sm btn-secondary" onclick="useCurrentLocation('arrival', this)">Ma position actuelle</button>
+      </div>
+      <div id="arrival-picker" class="location-picker"></div>
+      <p id="arrival-address-display" class="address-display"></p>
+      <input type="hidden" name="arrival_lat" id="id_arrival_lat" value="">
+      <input type="hidden" name="arrival_lng" id="id_arrival_lng" value="">
+      <div style="margin-top: 12px;">
+        {{ form.arrival_address }}
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Has route toggle ── -->
+  <label class="form-card toggle-card">
+    <div class="form-card-header">
+      <div class="form-card-icon amber"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm-3 9.5L9.5 8.5l-3 2"/><path d="M9.5 11 12 14h5"/></svg></div>
+      <div>
+        <p class="form-card-label">Trajet</p>
+        <h3 class="form-card-title">Mission avec trajet</h3>
+      </div>
+    </div>
+    {{ form.has_route }}
+    <div class="toggle-track"></div>
+  </label>
+
+  <!-- ── Proof toggle ── -->
+  <label class="form-card toggle-card">
+    <div class="form-card-header">
+      <div class="form-card-icon green"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2Z"/><circle cx="12" cy="13" r="4"/></svg></div>
+      <div>
+        <p class="form-card-label">Preuve</p>
+        <h3 class="form-card-title">Preuve photo requise</h3>
+      </div>
+    </div>
+    {{ form.proof_required }}
+    <div class="toggle-track"></div>
+  </label>
+
+  <!-- ── Departure address (map) ── -->
+  <div id="departure-section">
+    <div class="form-card location-card">
+      <div class="form-card-header">
+        <div class="form-card-icon blue"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1Z"/><line x1="4" y1="22" x2="4" y2="15"/></svg></div>
+        <div>
+          <p class="form-card-label">Adresse de départ</p>
+          <h3 class="form-card-title">D'où doit-il partir ?</h3>
+        </div>
+      </div>
+      <div class="form-card-body">
+        <p class="location-hint">Choisissez un point sur la carte, utilisez votre position, ou écrivez l'adresse</p>
+        <div class="location-actions">
+          <button type="button" class="btn btn-sm btn-secondary" onclick="useCurrentLocation('departure', this)">Ma position actuelle</button>
+        </div>
+        <div id="departure-picker" class="location-picker"></div>
+        <p id="departure-address-display" class="address-display"></p>
+        <input type="hidden" name="departure_lat" id="id_departure_lat" value="">
+        <input type="hidden" name="departure_lng" id="id_departure_lng" value="">
+        <div style="margin-top: 12px;">
+          {{ form.departure_address }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Actions ── -->
+  <div class="form-actions">
+    <button type="submit" name="action" value="draft" class="btn btn-secondary">Sauvegarder brouillon</button>
+    <button type="submit" name="action" value="publish" class="btn btn-primary">Publier la quête</button>
+  </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var arrivalMap = L.map('arrival-picker').setView([31.6295, -7.9811], 12);
+    var departureMap = L.map('departure-picker').setView([31.6295, -7.9811], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(arrivalMap);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(departureMap);
+
+    var arrivalMarker = null;
+    var departureMarker = null;
+
+    function setAddressFields(lat, lng, address, type) {
+      if (type === 'departure') {
+        document.getElementById('id_departure_lat').value = lat;
+        document.getElementById('id_departure_lng').value = lng;
+        document.getElementById('id_departure_address').value = address || 'Départ sélectionné';
+        document.getElementById('departure-address-display').textContent = address || 'Adresse enregistrée';
+      } else {
+        document.getElementById('id_arrival_lat').value = lat;
+        document.getElementById('id_arrival_lng').value = lng;
+        document.getElementById('id_arrival_address').value = address || 'Arrivée sélectionnée';
+        document.getElementById('arrival-address-display').textContent = address || 'Adresse enregistrée';
+      }
+    }
+
+    function reverseGeocode(lat, lng, callback) {
+      fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lng)
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          callback(data.display_name || 'Position: ' + lat.toFixed(4) + ', ' + lng.toFixed(4));
+        })
+        .catch(function() {
+          callback('Position: ' + lat.toFixed(4) + ', ' + lng.toFixed(4));
+        });
+    }
+
+    arrivalMap.on('click', function(e) {
+      var lat = e.latlng.lat;
+      var lng = e.latlng.lng;
+      reverseGeocode(lat, lng, function(addr) {
+        if (arrivalMarker) arrivalMap.removeLayer(arrivalMarker);
+        arrivalMarker = L.marker([lat, lng]).addTo(arrivalMap).bindPopup('Arrivée: ' + addr).openPopup();
+        setAddressFields(lat, lng, addr, 'arrival');
+      });
+    });
+
+    departureMap.on('click', function(e) {
+      var lat = e.latlng.lat;
+      var lng = e.latlng.lng;
+      reverseGeocode(lat, lng, function(addr) {
+        if (departureMarker) departureMap.removeLayer(departureMarker);
+        departureMarker = L.marker([lat, lng]).addTo(departureMap).bindPopup('Départ: ' + addr).openPopup();
+        setAddressFields(lat, lng, addr, 'departure');
+      });
+    });
+
+    window.useCurrentLocation = function(type, btn) {
+      if (!btn) {
+        btn = event.currentTarget || event.target.closest('button');
+      }
+      if (!btn) {
+        console.error('Bouton non trouvé');
+        return;
+      }
+      var originalText = btn.textContent;
+      btn.textContent = 'Chargement...';
+      btn.disabled = true;
+
+      if (!navigator.geolocation) {
+        btn.textContent = originalText;
+        btn.disabled = false;
+        alert('La géolocalisation n\'est pas supportée par ce navigateur.');
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        function(pos) {
+          var lat = pos.coords.latitude;
+          var lng = pos.coords.longitude;
+          var targetMap = type === 'departure' ? departureMap : arrivalMap;
+          targetMap.setView([lat, lng], 15);
+          reverseGeocode(lat, lng, function(addr) {
+            if (type === 'departure') {
+              if (departureMarker) departureMap.removeLayer(departureMarker);
+              departureMarker = L.marker([lat, lng]).addTo(departureMap).bindPopup('Votre position').openPopup();
+            } else {
+              if (arrivalMarker) arrivalMap.removeLayer(arrivalMarker);
+              arrivalMarker = L.marker([lat, lng]).addTo(arrivalMap).bindPopup('Votre position').openPopup();
+            }
+            setAddressFields(lat, lng, addr, type);
+            btn.textContent = originalText;
+            btn.disabled = false;
+          });
+        },
+        function(error) {
+          btn.textContent = originalText;
+          btn.disabled = false;
+          console.error('Geolocation error:', error);
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              alert('La géolocalisation a été refusée. Veuillez autoriser l\'accès à votre position dans les paramètres du navigateur.');
+              break;
+            case error.POSITION_UNAVAILABLE:
+              alert('Impossible d\'obtenir votre position. Veuillez réessayer.');
+              break;
+            case error.TIMEOUT:
+              alert('La demande de localisation a expiré. Veuillez réessayer.');
+              break;
+            default:
+              alert('Une erreur est survenue: ' + error.message);
+          }
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
+      );
+    };
+
+    document.getElementById('id_has_route').addEventListener('change', function() {
+      document.getElementById('departure-section').style.display = this.checked ? 'block' : 'none';
+      if (this.checked) {
+        setTimeout(function() { departureMap.invalidateSize(); }, 200);
+      }
+    });
+
+    document.getElementById('id_category').addEventListener('change', function() {
+      var catId = this.value;
+      var subSelect = document.getElementById('id_subcategory');
+      subSelect.innerHTML = '<option value="">— Chargement... —</option>';
+      subSelect.disabled = true;
+      if (!catId) {
+        subSelect.innerHTML = '<option value="">— Choisir une catégorie d\'abord —</option>';
+        return;
+      }
+      fetch('/api/subcategories/' + catId + '/')
+        .then(function(r) {
+          if (!r.ok) throw new Error('Erreur réseau');
+          return r.json();
+        })
+        .then(function(data) {
+          subSelect.innerHTML = '<option value="">— Sélectionner une sous-catégorie —</option>';
+          data.subcategories.forEach(function(sub) {
+            var opt = document.createElement('option');
+            opt.value = sub.id;
+            opt.textContent = sub.name;
+            subSelect.appendChild(opt);
+          });
+          subSelect.disabled = false;
+        })
+        .catch(function(err) {
+          console.error('Erreur chargement:', err);
+          subSelect.innerHTML = '<option value="">— Erreur, réessayer —</option>';
+        });
+    });
+  });
+</script>
+{% endblock %}

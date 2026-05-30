@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Vérification email — SideQuest{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="page-header">
+            <a href="{% url 'accounts:profile' %}" class="btn-back" title="Retour">&#8592;</a>
+        </div>
+        <div class="email-verify-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
+        <h1>Vérifiez votre email</h1>
+        <p class="auth-subtitle">Un code à 6 chiffres a été envoyé à <strong>{{ user.email }}</strong></p>
+
+        {% if messages %}
+        <div class="email-verify-messages">
+            {% for message in messages %}
+            <div class="email-msg email-msg-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="code">Code de vérification</label>
+                <input type="text" id="code" name="code" class="form-input" maxlength="6"
+                       placeholder="Entrez le code à 6 chiffres" required
+                       pattern="[0-9]{6}" inputmode="numeric" autocomplete="one-time-code"
+                       autofocus>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Vérifier</button>
+        </form>
+
+        <div class="auth-links">
+            <form method="post" action="{% url 'accounts:resend_email_code' %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-link">Renvoyer le code</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

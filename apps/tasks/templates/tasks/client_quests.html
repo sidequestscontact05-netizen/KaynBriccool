@@ -1,0 +1,241 @@
+{% extends 'base_client.html' %}
+{% load task_extras %}
+{% load static %}
+
+{% block title %}Mes Quêtes — SideQuest{% endblock %}
+
+{% block dashboard_content %}
+
+<div class="page-header">
+    <a href="{% url 'tasks:client_dashboard' %}" class="btn-back" title="Retour">&#8592;</a>
+    <h2>Historique de mes quêtes</h2>
+</div>
+
+<div class="client-filters">
+    <button class="tab active" data-tab="all">Toutes ({{ tasks.count }})</button>
+    <button class="tab" data-tab="published">Publiées ({{ published.count }})</button>
+    <button class="tab" data-tab="in_progress">En cours ({{ in_progress.count }})</button>
+    <button class="tab" data-tab="finished">Terminées ({{ finished.count }})</button>
+    <button class="tab" data-tab="drafts">Brouillons ({{ drafts.count }})</button>
+</div>
+
+<div class="tab-content" id="tab-all">
+{% if tasks.exists %}
+    <div class="client-task-list">
+        {% for task in tasks %}
+        <div class="client-task-card" data-status="{{ task.status }}">
+            <div class="task-card-header">
+                <h4 class="task-card-title">{{ task.title }}</h4>
+                <p class="task-card-subtitle">{{ task.category.name }}</p>
+            </div>
+            <div class="task-card-divider"></div>
+            <div class="task-card-footer">
+                <div class="task-card-price">
+                    <span class="task-card-price-value">{{ task.reward }}</span>
+                    <span class="task-card-price-unit">DH</span>
+                </div>
+                <div class="task-card-status">
+                    <span class="status-dot {{ task.status }}"></span>
+                    <span class="status-text">{{ task.get_status_display }}</span>
+                </div>
+            </div>
+            <div class="client-task-actions">
+                {% if task.status == 'draft' %}
+                    <a href="{% url 'tasks:task_edit' task.id %}" class="btn btn-sm">Modifier</a>
+                    <a href="{% url 'tasks:task_publish' task.id %}" class="btn btn-sm btn-primary">Publier</a>
+                    <a href="{% url 'tasks:task_delete' task.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer ?')">Supprimer</a>
+                {% elif task.status == 'published' %}
+                    <a href="{% url 'tasks:task_detail' task.id %}" class="btn btn-sm">Voir candidatures</a>
+                    <a href="{% url 'tasks:task_cancel' task.id %}" class="btn btn-sm" onclick="return confirm('Annuler ?')">Annuler</a>
+                {% elif task.status == 'awaiting_confirmation' %}
+                    <a href="{% url 'tasks:task_review_proof' task.id %}" class="btn btn-sm btn-primary">Vérifier la preuve</a>
+                {% elif task.status == 'validated' or task.status == 'resolved' %}
+                    <a href="{% url 'tasks:task_evaluate' task.id %}" class="btn btn-sm" style="background:#FFD60A;color:white;">Évaluer</a>
+                {% elif task.status == 'evaluated' %}
+                    <form method="post" action="{% url 'tasks:task_close' task.id %}" class="inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm" style="background:#1DB954;color:white;">Clôturer</button>
+                    </form>
+                {% elif task.status == 'litige' %}
+                    <span class="text-muted">Litige en cours</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div style="text-align:center;padding:2rem 0;color:#888888;font-size:13px;">
+        <p>Aucune quête pour le moment.</p>
+        <a href="{% url 'tasks:task_create' %}" class="btn" style="background:#1DB954;color:white;border-radius:999px;padding:8px 20px;font-size:13px;margin-top:8px;">Créer une quête</a>
+    </div>
+{% endif %}
+</div>
+
+<div class="tab-content" id="tab-published" style="display:none;">
+{% if published.exists %}
+    <div class="client-task-list">
+        {% for task in published %}
+        <div class="client-task-card" data-status="{{ task.status }}">
+            <div class="task-card-header">
+                <h4 class="task-card-title">{{ task.title }}</h4>
+                <p class="task-card-subtitle">{{ task.category.name }}</p>
+            </div>
+            <div class="task-card-divider"></div>
+            <div class="task-card-footer">
+                <div class="task-card-price">
+                    <span class="task-card-price-value">{{ task.reward }}</span>
+                    <span class="task-card-price-unit">DH</span>
+                </div>
+                <div class="task-card-status">
+                    <span class="status-dot published"></span>
+                    <span class="status-text">{{ task.get_status_display }}</span>
+                </div>
+            </div>
+            <div class="client-task-actions">
+                <a href="{% url 'tasks:task_detail' task.id %}" class="btn btn-sm">Voir candidatures</a>
+                <a href="{% url 'tasks:task_cancel' task.id %}" class="btn btn-sm" onclick="return confirm('Annuler ?')">Annuler</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div style="text-align:center;padding:2rem 0;color:#888888;font-size:13px;"><p>Aucune quête publiée.</p></div>
+{% endif %}
+</div>
+
+<div class="tab-content" id="tab-in_progress" style="display:none;">
+{% if in_progress.exists %}
+    <div class="client-task-list">
+        {% for task in in_progress %}
+        <div class="client-task-card" data-status="{{ task.status }}">
+            <div class="task-card-header">
+                <h4 class="task-card-title">{{ task.title }}</h4>
+                <p class="task-card-subtitle">{{ task.category.name }}</p>
+                <p class="task-card-subtitle">Tasker: {{ task.assigned_tasker.get_full_name|default:'—' }}</p>
+            </div>
+            <div class="task-card-divider"></div>
+            <div class="task-card-footer">
+                <div class="task-card-price">
+                    <span class="task-card-price-value">{{ task.reward }}</span>
+                    <span class="task-card-price-unit">DH</span>
+                </div>
+                <div class="task-card-status">
+                    <span class="status-dot in_progress"></span>
+                    <span class="status-text">{{ task.get_status_display }}</span>
+                </div>
+            </div>
+            <div class="client-task-actions">
+                {% if task.status == 'awaiting_confirmation' %}
+                    <a href="{% url 'tasks:task_review_proof' task.id %}" class="btn btn-sm btn-primary">Vérifier la preuve</a>
+                {% endif %}
+                {% if task_accepted_conv_map|get_item:task.id %}
+                    {% with conv=task_accepted_conv_map|get_item:task.id %}
+                        {% if not conv.is_closed %}
+                            <a href="{% url 'messaging:conversation_detail' conv.id|conv_id %}" class="btn btn-sm">Message</a>
+                        {% endif %}
+                    {% endwith %}
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div style="text-align:center;padding:2rem 0;color:#888888;font-size:13px;"><p>Aucune quête en cours.</p></div>
+{% endif %}
+</div>
+
+<div class="tab-content" id="tab-finished" style="display:none;">
+{% if finished.exists %}
+    <div class="client-task-list">
+        {% for task in finished %}
+        <div class="client-task-card" data-status="{{ task.status }}">
+            <div class="task-card-header">
+                <h4 class="task-card-title">{{ task.title }}</h4>
+                <p class="task-card-subtitle">{{ task.category.name }}</p>
+            </div>
+            <div class="task-card-divider"></div>
+            <div class="task-card-footer">
+                <div class="task-card-price">
+                    <span class="task-card-price-value">{{ task.reward }}</span>
+                    <span class="task-card-price-unit">DH</span>
+                </div>
+                <div class="task-card-status">
+                    <span class="status-dot {{ task.status }}"></span>
+                    <span class="status-text">{{ task.get_status_display }}</span>
+                </div>
+            </div>
+            <div class="client-task-actions">
+                {% if task.status == 'validated' or task.status == 'resolved' %}
+                    <a href="{% url 'tasks:task_evaluate' task.id %}" class="btn btn-sm" style="background:#FFD60A;color:white;">Évaluer</a>
+                {% elif task.status == 'evaluated' %}
+                    <form method="post" action="{% url 'tasks:task_close' task.id %}" class="inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm" style="background:#1DB954;color:white;">Clôturer</button>
+                    </form>
+                {% elif task.status == 'closed' %}
+                    <span class="text-muted">Clôturée</span>
+                {% elif task.status == 'litige' %}
+                    <span class="text-muted">Litige en cours</span>
+                {% else %}
+                    <span class="text-muted">{{ task.get_status_display }}</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div style="text-align:center;padding:2rem 0;color:#888888;font-size:13px;"><p>Aucune quête terminée.</p></div>
+{% endif %}
+</div>
+
+<div class="tab-content" id="tab-drafts" style="display:none;">
+{% if drafts.exists %}
+    <div class="client-task-list">
+        {% for task in drafts %}
+        <div class="client-task-card" data-status="{{ task.status }}">
+            <div class="task-card-header">
+                <h4 class="task-card-title">{{ task.title }}</h4>
+                <p class="task-card-subtitle">{{ task.category.name }}</p>
+                <p class="task-card-hint">Complète et publie ta quête →</p>
+            </div>
+            <div class="task-card-divider"></div>
+            <div class="task-card-footer">
+                <div class="task-card-price">
+                    <span class="task-card-price-value">{{ task.reward }}</span>
+                    <span class="task-card-price-unit">DH</span>
+                </div>
+                <div class="task-card-status">
+                    <span class="status-dot draft"></span>
+                    <span class="status-text">Brouillon</span>
+                </div>
+            </div>
+            <div class="client-task-actions">
+                <a href="{% url 'tasks:task_edit' task.id %}" class="btn btn-sm">Modifier</a>
+                <a href="{% url 'tasks:task_publish' task.id %}" class="btn btn-sm btn-primary">Publier</a>
+                <a href="{% url 'tasks:task_delete' task.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer ?')">Supprimer</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div style="text-align:center;padding:2rem 0;color:#888888;font-size:13px;"><p>Aucun brouillon.</p></div>
+{% endif %}
+</div>
+
+{% endblock %}
+
+{% block dashboard_right %}{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.querySelectorAll('.client-filters .tab').forEach(function(tab) {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.client-filters .tab').forEach(function(t) { t.classList.remove('active'); });
+            this.classList.add('active');
+            var tabId = this.getAttribute('data-tab');
+            document.querySelectorAll('.tab-content').forEach(function(c) { c.style.display = 'none'; });
+            document.getElementById('tab-' + tabId).style.display = 'block';
+        });
+    });
+</script>
+{% endblock %}

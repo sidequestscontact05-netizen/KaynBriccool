@@ -1,0 +1,324 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SideQuest{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/colors.css' %}">
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    <link rel="stylesheet" href="{% static 'css/gnome.css' %}">
+    {% block extra_css %}{% endblock %}
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+</head>
+<body>
+    {% include 'components/navbar.html' %}
+
+    {% if messages %}
+    {% include 'components/flash_messages.html' %}
+    {% endif %}
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    {% include 'components/footer.html' %}
+
+    {% csrf_token %}
+
+    {# ===== Guide System: floating companion + help panel + bubble + highlight ===== #}
+    <div x-data="guideSystem()" x-init="init()">
+        <div class="gnome-corner" role="button" tabindex="0" aria-label="Aide et guidance"
+             @click="toggleHelp()"
+             :class="{ 'gnome-glow': glow }"
+             @keydown.enter="toggleHelp()">
+            <div class="gnome-md gnome-bob">
+                <img src="{% static 'img/guide-face.svg' %}" alt="" class="gnome-img">
+            </div>
+        </div>
+
+        {# ── Guide Bubble (tour or tip) ── #}
+        <template x-if="$store.guide.mode !== 'idle'">
+            <div class="guide-bubble">
+                <template x-if="$store.guide.mode === 'tour'">
+                    <div>
+                        <div class="guide-bubble-progress">
+                            <div class="guide-bubble-progress-fill" :style="'width:'+$store.guide.progress+'%'"></div>
+                        </div>
+                        <div class="guide-bubble-body">
+                            <template x-if="$store.guide.isWelcome">
+                                <div>
+                                    <p class="guide-bubble-msg" x-html="($store.guide.currentStep?.msg || '').replace(/\n/g,'<br>')"></p>
+                                    <div class="guide-bubble-actions">
+                                        <button class="guide-bubble-btn guide-bubble-btn-skip" @click="$store.guide.skip()">Passer</button>
+                                        <button class="guide-bubble-btn guide-bubble-btn-primary" @click="$store.guide.start()">Démarrer la visite</button>
+                                    </div>
+                                </div>
+                            </template>
+                            <template x-if="!$store.guide.isWelcome">
+                                <div>
+                                    <p class="guide-bubble-msg" x-html="($store.guide.currentStep?.msg || '').replace(/\n/g,'<br>')"></p>
+                                    <div class="guide-bubble-actions">
+                                        <button class="guide-bubble-btn guide-bubble-btn-skip" @click="$store.guide.skip()">Passer</button>
+                                        <button class="guide-bubble-btn guide-bubble-btn-primary" @click="$store.guide.next()" x-text="$store.guide.isLast ? 'Compris' : 'Suivant'"></button>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+                <template x-if="$store.guide.mode === 'tip'">
+                    <div class="guide-bubble-body">
+                        <p class="guide-bubble-msg" style="margin-bottom:0.75rem;" x-text="$store.guide.tipMsg"></p>
+                        <div class="guide-bubble-actions">
+                            <button class="guide-bubble-btn guide-bubble-btn-primary" @click="$store.guide.dismissTip()">Compris</button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        {# ── Guide Highlight (element focus) ── #}
+        <div class="guide-highlight" x-show="$store.guide.mode === 'tour' && $store.guide.currentStep?.target"
+             :style="getHighlightStyle()"></div>
+
+        {# ── Help Panel ── #}
+        <div class="help-panel-overlay" x-show="helpOpen" @click="helpOpen = false" x-transition.opacity.duration.200ms></div>
+        <div class="help-panel" x-show="helpOpen" x-transition.opacity.duration.250ms
+             style="display:none;">
+            <div class="help-panel-header">
+                <div class="help-panel-gnome">
+                    <img src="{% static 'img/guide-face.svg' %}" alt="" class="gnome-img">
+                </div>
+                <h2>Aide &amp; Guide</h2>
+                <p>Comment pouvons-nous t&rsquo;aider&nbsp;?</p>
+                <button class="help-panel-close" @click="helpOpen = false">&times;</button>
+            </div>
+            <div class="help-panel-body">
+                <input type="text" class="help-search" placeholder="Rechercher dans la FAQ&hellip;"
+                       x-model="faqSearch">
+                <template x-for="cat in filteredFaq" :key="cat.name">
+                    <div class="help-faq-category">
+                        <h3 class="help-faq-cat-title" x-text="cat.name"></h3>
+                        <template x-for="item in cat.questions" :key="item.q">
+                            <div class="help-faq-item" x-data="{ open: false }">
+                                <button class="help-faq-q" @click="open = !open">
+                                    <span x-text="item.q"></span>
+                                    <svg :class="{ 'rotate-180': open }" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                                </button>
+                                <div class="help-faq-a" x-show="open" x-collapse.duration.200ms x-text="item.a"></div>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+                <p x-show="filteredFaq.length === 0" style="text-align:center;color:var(--sq-text-muted);padding:1rem;">
+                    Aucun résultat pour &laquo;&nbsp;<span x-text="faqSearch"></span>&nbsp;&raquo;
+                </p>
+            </div>
+        </div>
+    </div>
+
+    {% block extra_js %}{% endblock %}
+
+<script>
+document.addEventListener('alpine:init', () => {
+    // ── Global Guide Store ──
+    Alpine.store('guide', {
+        mode: 'idle',           // 'idle' | 'tour' | 'tip'
+        tourSteps: [],
+        tourStep: 0,
+        tourStarted: false,
+        _tourDone: false,
+
+        tipMsg: '',
+        tipTimeout: null,
+
+        get active() { return this.mode !== 'idle'; },
+        get currentStep() { return this.tourSteps[this.tourStep] || null; },
+        get isWelcome() { return this.mode === 'tour' && this.tourStep === 0 && !this.tourStarted; },
+        get isLast() { return this.mode === 'tour' && this.tourStep >= this.tourSteps.length - 1; },
+        get progress() {
+            const total = this.tourSteps.length || 1;
+            const pos = this.tourStarted ? this.tourStep : 0;
+            return (pos / total) * 100;
+        },
+
+        startTour(steps) {
+            this.mode = 'tour';
+            this.tourSteps = steps;
+            this.tourStep = 0;
+            this.tourStarted = false;
+            this._tourDone = false;
+        },
+
+        start() {
+            this.tourStarted = true;
+            if (this.tourStep === 0) this.tourStep = 1;
+        },
+
+        next() {
+            if (this.isLast) { this.finish(); return; }
+            this.tourStep++;
+        },
+
+        skip() {
+            this.mode = 'idle';
+            this.tourSteps = [];
+            this.tourStep = 0;
+            this.tourStarted = false;
+            this._tourDone = true;
+            if (window._sqOnboardingDone) window._sqOnboardingDone();
+        },
+
+        finish() {
+            this.mode = 'idle';
+            this.tourSteps = [];
+            this.tourStep = 0;
+            this.tourStarted = false;
+            this._tourDone = true;
+            if (window._sqOnboardingDone) window._sqOnboardingDone();
+        },
+
+        showTip(msg, opts) {
+            opts = opts || {};
+            if (this.tipTimeout) clearTimeout(this.tipTimeout);
+            this.mode = 'tip';
+            this.tipMsg = msg;
+            if (opts.duration) {
+                this.tipTimeout = setTimeout(() => { this.dismissTip(); }, opts.duration);
+            }
+        },
+
+        dismissTip() {
+            if (this.tipTimeout) { clearTimeout(this.tipTimeout); this.tipTimeout = null; }
+            this.mode = 'idle';
+            this.tipMsg = '';
+        },
+    });
+
+    Alpine.data('guideSystem', () => ({
+        helpOpen: false,
+        glow: {% if user.is_authenticated and not user.profile.onboarding_seen %}true{% else %}false{% endif %},
+        faqSearch: '',
+
+        faq: [
+            { name: 'Missions', questions: [
+                { q: 'Comment fonctionnent les missions ?', a: 'Les clients publient des missions et les taskers peuvent postuler ou accepter les t\u00e2ches disponibles.' },
+                { q: 'Que se passe-t-il apr\u00e8s avoir accept\u00e9 une mission ?', a: 'Un espace de travail priv\u00e9 est cr\u00e9\u00e9 entre le client et le tasker.' },
+                { q: 'Puis-je annuler une mission ?', a: 'Oui, selon le statut de la mission et les r\u00e8gles de la plateforme.' },
+            ]},
+            { name: 'XP & Rangs', questions: [
+                { q: 'Comment gagner de l\u2019XP ?', a: 'Tu gagnes de l\u2019XP en accomplissant des missions avec succ\u00e8s.' },
+                { q: '\u00c0 quoi servent les rangs ?', a: 'Les rangs repr\u00e9sentent ta progression et ton activit\u00e9 sur SideQuest.' },
+            ]},
+            { name: 'Espace de travail', questions: [
+                { q: 'Qu\u2019est-ce que l\u2019espace de travail ?', a: 'C\u2019est un espace de collaboration priv\u00e9 entre le client et le tasker.' },
+                { q: 'Comment soumettre une preuve ?', a: 'T\u00e9l\u00e9charge des fichiers, images ou messages dans l\u2019espace de travail et clique sur \u00ab\u00a0Soumettre comme termin\u00e9\u00a0\u00bb.' },
+            ]},
+            { name: 'Paiements & R\u00e9compenses', questions: [
+                { q: 'Comment fonctionnent les paiements ?', a: 'Les paiements sont trait\u00e9s apr\u00e8s l\u2019ach\u00e8vement de la mission et la validation par le client.' },
+                { q: 'Quelles r\u00e9compenses puis-je gagner ?', a: 'Les r\u00e9compenses sont d\u00e9finies par les clients et pay\u00e9es \u00e0 la fin de la mission.' },
+            ]},
+            { name: 'Syst\u00e8me Client', questions: [
+                { q: 'Comment publier une mission ?', a: 'Utilise le flux de cr\u00e9ation de mission et remplis toutes les informations requises.' },
+                { q: 'Comment valider une mission termin\u00e9e ?', a: 'Examine la preuve soumise et confirme l\u2019ach\u00e8vement ou demande des modifications.' },
+            ]},
+            { name: 'Syst\u00e8me Tasker', questions: [
+                { q: 'Comment trouver des missions ?', a: 'Parcours l\u2019onglet Missions disponibles.' },
+                { q: 'Comment am\u00e9liorer ma r\u00e9putation ?', a: 'Accomplis des missions avec succ\u00e8s et re\u00e7ois des \u00e9valuations positives.' },
+            ]},
+            { name: 'Compte & Profil', questions: [
+                { q: '\u00c0 quoi sert le badge v\u00e9rifi\u00e9 ?', a: 'Il est attribu\u00e9 aux utilisateurs ayant une forte activit\u00e9 et progression.' },
+                { q: 'Puis-je modifier mon profil ?', a: 'Oui, depuis la section param\u00e8tres du profil.' },
+            ]},
+        ],
+
+        get filteredFaq() {
+            const q = this.faqSearch.toLowerCase().trim();
+            if (!q) return this.faq;
+            return this.faq.map(cat => ({
+                ...cat,
+                questions: cat.questions.filter(item =>
+                    item.q.toLowerCase().includes(q) || item.a.toLowerCase().includes(q)
+                ),
+            })).filter(cat => cat.questions.length > 0);
+        },
+
+        init() {
+            if (this.glow) {
+                setTimeout(() => { this.glow = false; }, 15000);
+            }
+        },
+
+        toggleHelp() {
+            this.helpOpen = !this.helpOpen;
+            this.glow = false;
+        },
+
+        getHighlightStyle() {
+            const store = Alpine.store('guide');
+            if (store.mode !== 'tour') return '';
+            const s = store.currentStep;
+            if (!s || !s.target) return '';
+            const el = document.querySelector(s.target);
+            if (!el) return '';
+            const r = el.getBoundingClientRect();
+            return 'top:' + r.top + 'px;left:' + r.left + 'px;width:' + r.width + 'px;height:' + r.height + 'px;';
+        },
+    }));
+});
+</script>
+
+{% if user.is_authenticated and unread_review_notifs %}
+{% for notif in unread_review_notifs %}
+{% with review=notif.related_review %}
+<div id="review-popup-{{ notif.id }}"
+     style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:var(--sq-surface);border-radius:20px;padding:2rem;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.2);text-align:center;position:relative;">
+    <button onclick="this.closest('[id^=review-popup-]').remove(); fetch('{% url 'tasks:mark_notification_read' notif.id %}')"
+            style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--sq-text-muted);line-height:1;">&times;</button>
+
+    <div style="font-size:2.5rem;margin-bottom:0.5rem;">&#11088;</div>
+    <h3 style="margin:0 0 4px;font-size:1.1rem;font-weight:700;color:var(--sq-text);">Avis re&#231;u</h3>
+    <p style="margin:0 0 12px;font-size:0.85rem;color:var(--sq-text-muted);">
+      Pour la mission <strong>{{ notif.related_task.title|truncatechars:30 }}</strong>
+    </p>
+
+    <div style="font-size:1.6rem;margin-bottom:10px;letter-spacing:3px;">
+      {% for i in "12345" %}
+        {% if forloop.counter <= review.rating %}&#11088;{% else %}&#9734;{% endif %}
+      {% endfor %}
+    </div>
+
+    {% if review.comment %}
+    <p style="margin:0 0 16px;font-size:0.88rem;color:var(--sq-text);font-style:italic;line-height:1.4;">
+      &#8220;{{ review.comment }}&#8221;
+    </p>
+    {% endif %}
+
+    <button onclick="this.closest('[id^=review-popup-]').remove(); fetch('{% url 'tasks:mark_notification_read' notif.id %}')"
+            class="btn-ws btn-ws-primary" style="padding:10px 28px;font-size:0.85rem;">Super !</button>
+  </div>
+</div>
+<script>
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    var el = document.getElementById('review-popup-{{ notif.id }}');
+    if (el) { el.remove(); fetch('{% url 'tasks:mark_notification_read' notif.id %}'); }
+  }
+});
+</script>
+{% endwith %}
+{% endfor %}
+{% endif %}
+
+</body>
+</html>

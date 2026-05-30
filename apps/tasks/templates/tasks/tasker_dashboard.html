@@ -1,0 +1,465 @@
+{% extends 'base_tasker.html' %}
+{% load static %}
+{% load task_extras %}
+
+{% block title %}Accueil — SideQuest{% endblock %}
+
+{% block dashboard_content %}
+
+<style>
+.avail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.avail-card {
+  background: var(--sq-surface);
+  border: 1px solid var(--sq-border-light);
+  border-radius: 14px;
+  padding: 18px;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+.avail-card:hover {
+  box-shadow: 0 4px 16px rgba(45,106,79,0.08);
+  border-color: var(--sq-border);
+  transform: translateY(-2px);
+}
+.avail-card-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--sq-text);
+  margin: 0 0 6px;
+  line-height: 1.3;
+}
+.avail-card-client {
+  font-size: 0.75rem;
+  color: var(--sq-text-muted);
+  margin-bottom: 10px;
+}
+.avail-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid var(--sq-border-light);
+}
+.avail-card-price {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--sq-primary);
+}
+.avail-card-location {
+  font-size: 0.7rem;
+  color: var(--sq-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.avail-card-actions {
+  margin-top: 10px;
+}
+.btn-accept {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: none;
+  background: var(--sq-primary);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.btn-accept:hover {
+  background: var(--sq-primary-dark);
+  transform: translateY(-1px);
+}
+
+.section-spacer { margin-bottom: 28px; }
+
+.finished-empty {
+  text-align: center;
+  padding: 2rem;
+  background: var(--sq-surface);
+  border: 1px dashed var(--sq-border);
+  border-radius: 14px;
+  color: var(--sq-text-muted);
+  font-size: 0.85rem;
+  margin-bottom: 28px;
+}
+
+.workspace-link {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--sq-primary);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.workspace-link:hover { text-decoration: underline; }
+
+.tasker-panel { display: none; }
+.tasker-panel.active { display: block; }
+
+.dash-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.dash-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: var(--sq-surface);
+  color: var(--sq-text-muted);
+  border: 1px solid var(--sq-border-light);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.dash-tab:hover {
+  border-color: var(--sq-primary);
+  color: var(--sq-primary);
+}
+.dash-tab.active {
+  background: var(--sq-primary);
+  color: white;
+  border-color: var(--sq-primary);
+}
+.dash-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: rgba(0,0,0,0.07);
+  color: inherit;
+}
+.dash-tab.active .dash-tab-count {
+  background: rgba(255,255,255,0.25);
+}
+</style>
+
+
+{% if user.profile %}
+{% with level=user.profile.level xp=user.profile.xp %}
+{% with next_xp=level|next_level_xp prev_xp=level|prev_level_xp %}
+{% with range_xp=next_xp|sub:prev_xp progress_xp=xp|sub:prev_xp %}
+
+<div class="hero-card-tasker">
+    <div class="hero-left">
+        <div class="hero-greeting">Bonjour, {{ user.full_name|default:"there" }}</div>
+        <p class="hero-tagline">Prête pour ta prochaine quête ?</p>
+        <span class="hero-rank-badge">Niveau {{ level }} · {{ level|rank_name }}</span>
+        <div class="hero-bar-wrap">
+            <div class="hero-bar-bg">
+                <div class="hero-bar-fill" style="width:{% if progress_xp >= range_xp %}100{% else %}{% widthratio progress_xp range_xp 100 %}{% endif %}%;">
+                    <span class="hero-bar-fill-text">{% if progress_xp >= range_xp %}100{% else %}{% widthratio progress_xp range_xp 100 %}{% endif %}%</span>
+                </div>
+                <span class="hero-bar-next">Niv. {{ level|add:1 }}</span>
+            </div>
+            <div class="hero-bar-label">{{ progress_xp }} / {{ range_xp }} XP</div>
+        </div>
+        <div class="hero-chips">
+            <span class="hero-chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 6 9 6 9z"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 18 9 18 9z"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg> {{ user.profile.tasks_completed|default:"0" }} missions</span>
+            <a href="{% url 'badges:my_badges' %}" class="hero-chip" style="text-decoration:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> {{ user_badges.count|default:"0" }} badges</a>
+        </div>
+    </div>
+    <div class="hero-right">
+        <div class="hero-mascot hero-mascot-streak">
+            <span class="hero-mascot-flame"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M12 2S6 8 6 14a6 6 0 0 0 12 0c0-6-6-12-6-12Z"/><path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg></span>
+            <span class="hero-mascot-streak-num">{{ user.profile.current_streak|default:"0" }}j</span>
+        </div>
+    </div>
+</div>
+
+{% endwith %}
+{% endwith %}
+{% endwith %}
+{% endif %}
+
+<div x-data="{ tab: 'available' }" style="margin-top:28px;">
+
+  <div class="dash-tabs">
+    <button class="dash-tab" :class="{ active: tab === 'available' }" @click="tab = 'available'">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Disponibles
+      <span class="dash-tab-count">{{ available_tasks.count }}</span>
+    </button>
+    <button class="dash-tab" :class="{ active: tab === 'active' }" @click="tab = 'active'">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg> Actives
+      <span class="dash-tab-count">{{ active_tasks.count }}</span>
+    </button>
+    <button class="dash-tab" :class="{ active: tab === 'completed' }" @click="tab = 'completed'">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> Termin&#233;es
+      <span class="dash-tab-count">{{ finished_tasks.count }}</span>
+    </button>
+    <button class="dash-tab" :class="{ active: tab === 'applications' }" @click="tab = 'applications'">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Mes candidatures
+      <span class="dash-tab-count">{{ my_applications.count }}</span>
+    </button>
+  </div>
+
+  <div class="tasker-panel" :class="{ active: tab === 'available' }">
+    {% if available_tasks %}
+      <div class="avail-grid" id="avail-grid">
+      {% for task in available_tasks %}
+      <div class="avail-card" id="avail-{{ task.id }}">
+        <h4 class="avail-card-title">{{ task.title }}</h4>
+        <div class="avail-card-client">par {{ task.client.full_name|default:"Client" }}</div>
+        <div class="avail-card-footer">
+          <span class="avail-card-price">{{ task.reward }} DH</span>
+          <span class="avail-card-location"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg> {{ task.arrival_address|truncatechars:25 }}</span>
+        </div>
+        <div class="avail-card-actions">
+          <a href="{% url 'tasks:task_detail' task.id %}" class="btn-accept" style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Voir d&eacute;tails</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-panel">
+      <p>Aucune mission disponible pour le moment.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="tasker-panel" :class="{ active: tab === 'active' }">
+    {% if active_tasks %}
+    <div class="missions-list">
+      {% for task in active_tasks %}
+      {% with status_class=task.status %}
+      <a href="{% url 'tasks:task_workspace' task.id %}" class="mission-card" style="text-decoration:none;color:inherit;">
+        <span class="mission-dot {% if task.status == 'accepted' or task.status == 'in_progress' or task.status == 'awaiting_confirmation' %}active{% elif task.status == 'published' %}pending{% elif task.status == 'validated' or task.status == 'evaluated' or task.status == 'closed' or task.status == 'resolved' %}completed{% else %}cancelled{% endif %}"></span>
+        <div class="mission-body">
+          <div class="mission-title">{{ task.title }}</div>
+          <div class="mission-meta">
+            <span class="mission-meta-item">{{ task.client.full_name|default:"Client" }}</span>
+            {% if task.deadline %}
+            <span class="mission-meta-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> {{ task.deadline|date:"d/m/Y" }}</span>
+            {% endif %}
+          </div>
+          <div class="mission-tags">
+            <span class="mission-tag">{{ task.category.name }}</span>
+          </div>
+        </div>
+        <div class="mission-right">
+          <span class="mission-price">{{ task.reward }} DH</span>
+          <span class="mission-badge {% if task.status == 'accepted' or task.status == 'in_progress' or task.status == 'awaiting_confirmation' %}active{% elif task.status == 'published' %}pending{% elif task.status == 'validated' or task.status == 'evaluated' or task.status == 'closed' or task.status == 'resolved' %}completed{% else %}cancelled{% endif %}">{% if task.proof and task.proof.client_review == 'revision' %}À réviser{% else %}{{ task.get_status_display }}{% endif %}</span>
+        </div>
+      </a>
+      {% endwith %}
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="gnome-empty">
+      <div class="gnome-sm gnome-bob">
+        <img src="{% static 'img/guide-face.svg' %}" alt="" class="gnome-img">
+      </div>
+      <h3 class="gnome-empty-title">Aucune mission en cours</h3>
+      <p class="gnome-empty-text">Explore les missions disponibles et commence &#224; gagner de l'exp&#233;rience !</p>
+      <a href="{% url 'tasks:task_list' %}" class="gnome-btn-primary">Explorer les missions</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="tasker-panel" :class="{ active: tab === 'completed' }">
+    {% if finished_tasks %}
+    <div class="missions-list">
+      {% for task in finished_tasks %}
+      {% with client_review=task.client_review.0 %}
+      <div class="mission-card" x-data="{ detail: false }" style="cursor:pointer;">
+        <div @click="detail = !detail" style="display:flex;align-items:center;gap:12px;width:100%;">
+          <span class="mission-dot completed"></span>
+          <div class="mission-body">
+            <div class="mission-title">{{ task.title }}</div>
+            <div class="mission-meta">
+              <span class="mission-meta-item">{{ task.client.full_name|default:"Client" }}</span>
+              {% if task.deadline %}
+              <span class="mission-meta-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> {{ task.deadline|date:"d/m/Y" }}</span>
+              {% endif %}
+            </div>
+            <div class="mission-tags">
+              <span class="mission-tag">{{ task.category.name }}</span>
+            </div>
+          </div>
+          <div class="mission-right">
+            <span class="mission-price">{{ task.reward }} DH</span>
+            <span class="mission-badge completed">{{ task.get_status_display }}</span>
+            {% if task.status == 'validated' or task.status == 'resolved' or task.status == 'evaluated' %}
+            <a href="{% url 'reputation:tasker_review_client' task.id %}" class="btn-accent" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;font-size:0.75rem;margin-top:6px;text-decoration:none;background:var(--sq-primary);color:#fff;border:none;border-radius:999px;font-weight:600;cursor:pointer;" @click.stop>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Évaluer
+            </a>
+            {% endif %}
+          </div>
+        </div>
+        <div x-show="detail" x-transition.opacity.duration.200ms style="margin-top:12px;padding:16px;background:var(--sq-bg);border-radius:12px;border:1px solid var(--sq-border);">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:0.82rem;">
+            <div><strong>Description</strong><br><span style="color:var(--sq-text-muted);">{{ task.description|truncatechars:120 }}</span></div>
+            <div><strong>Catégorie</strong><br><span style="color:var(--sq-text-muted);">{{ task.category.name }}</span></div>
+            {% if task.subcategory %}
+            <div><strong>Sous-catégorie</strong><br><span style="color:var(--sq-text-muted);">{{ task.subcategory.name }}</span></div>
+            {% endif %}
+            <div><strong>Récompense</strong><br><span style="color:var(--sq-text-muted);">{{ task.reward }} DH</span></div>
+            {% if client_review %}
+            <div style="grid-column:1/-1;"><strong>Évaluation du client</strong><br>
+              <span style="color:var(--sq-text-muted);">
+                {% for i in "12345" %}{% if forloop.counter <= client_review.rating %}<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>{% else %}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>{% endif %}{% endfor %}
+                {% if client_review.comment %} — "{{ client_review.comment }}"{% endif %}
+              </span>
+            </div>
+            {% endif %}
+            <div style="grid-column:1/-1;display:flex;gap:0.5rem;margin-top:0.25rem;padding-top:0.75rem;border-top:1px solid var(--sq-border);">
+              <a href="{% url 'tasks:task_workspace' task.id %}" class="btn-accept" style="display:inline-flex;align-items:center;gap:4px;padding:6px 14px;font-size:0.78rem;text-decoration:none;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Voir le workspace
+              </a>
+              {% if task.status == 'validated' or task.status == 'resolved' or task.status == 'evaluated' %}
+              <a href="{% url 'reputation:tasker_review_client' task.id %}" class="btn-accept" style="display:inline-flex;align-items:center;gap:4px;padding:6px 14px;font-size:0.78rem;text-decoration:none;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Évaluer le client
+              </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endwith %}
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-panel">
+      <p>Aucune mission termin&#233;e.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="tasker-panel" :class="{ active: tab === 'applications' }">
+    {% if my_applications %}
+    <div class="missions-list">
+      {% for app in my_applications %}
+      <div class="mission-card" style="align-items:center;">
+        <span class="mission-dot {% if app.status == 'pending' %}pending{% elif app.status == 'accepted' %}active{% elif app.status == 'rejected' %}cancelled{% endif %}"></span>
+        <div class="mission-body">
+          <div class="mission-title">
+            {% if app.task %}
+            <a href="{% url 'tasks:task_detail' app.task.id %}" style="color:inherit;text-decoration:none;">{{ app.task.title }}</a>
+            {% else %}
+            Mission supprimée
+            {% endif %}
+          </div>
+          <div class="mission-meta">
+            {% if app.task %}
+            <span class="mission-meta-item">par {{ app.task.client.full_name|default:"Client" }}</span>
+            <span class="mission-meta-item">{{ app.task.reward }} DH</span>
+            {% endif %}
+          </div>
+          <div class="mission-meta">
+            <span class="mission-meta-item">Postulé le {{ app.created_at|date:"d/m/Y à H:i" }}</span>
+          </div>
+        </div>
+        <div class="mission-right">
+          <span class="mission-badge {% if app.status == 'pending' %}pending{% elif app.status == 'accepted' %}active{% elif app.status == 'rejected' %}cancelled{% endif %}">
+            {% if app.status == 'pending' %}En attente{% elif app.status == 'accepted' %}Acceptée{% elif app.status == 'rejected' %}Refusée{% endif %}
+          </span>
+          {% if app.status == 'pending' and app.task %}
+          <form method="post" action="{% url 'tasks:task_cancel_application' app.task.id app.id %}" style="margin-top:6px;" onsubmit="return confirm('Annuler cette candidature ?');">
+            {% csrf_token %}
+            <button type="submit" class="btn-ws btn-ws-outline" style="font-size:0.75rem;padding:3px 10px;color:#DC2626;border-color:#DC2626;">Annuler</button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-panel">
+      <p>Tu n'as postul&#233; &#224; aucune mission pour le moment.</p>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+
+{% if user_badges %}
+<div class="badges-section">
+    <div class="section-header">
+        <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg> Badges récents</h2>
+        <a href="{% url 'badges:my_badges' %}" class="section-link">Voir tout →</a>
+    </div>
+    <div class="badges-grid">
+        {% for ub in user_badges %}
+        <div class="badge-cell">
+            <span class="badge-cell-icon">{{ ub.badge.icon }}</span>
+            <span class="badge-cell-name">{{ ub.badge.name }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<script>
+(function() {
+  var onboardingSeen = {% if user.is_authenticated and not user.profile.onboarding_seen %}false{% else %}true{% endif %};
+  if (onboardingSeen) return;
+
+  document.addEventListener('alpine:init', function() {
+    var guide = Alpine.store('guide');
+    if (!guide) return;
+
+    window._sqOnboardingDone = function() {
+      var csrf = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+      fetch('{% url "accounts:onboarding_done" %}', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrf, 'Content-Type': 'application/json' },
+      });
+      var gnome = document.querySelector('[x-data="guideSystem"]')?.__x;
+      if (gnome) gnome.$data.glow = false;
+    };
+
+    guide.startTour([
+      { msg: 'Bienvenue sur SideQuest !\nLaisse-moi te montrer comment commencer \u00e0 accomplir des missions.' },
+      { target: '.hero-card-tasker', msg: 'Voici ton tableau de progression.\nAccomplis des missions pour gagner de l\u2019XP, d\u00e9bloquer des rangs et am\u00e9liorer ta r\u00e9putation.' },
+      { target: '.dash-tab:nth-child(1)', msg: 'Ici tu peux explorer les missions publiques publi\u00e9es par les clients.' },
+      { target: '.avail-card:first-child', msg: 'Chaque carte de mission affiche les infos cl\u00e9s en un coup d\u2019\u0153il avant d\u2019accepter une t\u00e2che.' },
+    ]);
+  });
+})();
+</script>
+{% endblock %}
+
+{% block dashboard_right %}
+{% if user.profile %}
+{% with level=user.profile.level xp=user.profile.xp %}
+<div class="stats-box">
+    <div class="stats-box-item">
+        <span class="stats-box-value">{{ xp }} XP</span>
+        <span class="stats-box-label">Expérience</span>
+    </div>
+    <div class="stats-box-item">
+        <span class="stats-box-value">Niv. {{ level }}</span>
+        <span class="stats-box-label">Niveau</span>
+    </div>
+    <div class="stats-box-item">
+        <span class="stats-box-value">{{ user.profile.tasks_completed|default:"0" }}</span>
+        <span class="stats-box-label">Missions OK</span>
+    </div>
+</div>
+{% endwith %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Devenir Tasker — SideQuest{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    .become-tasker-header { text-align: center; margin-bottom: 2rem; }
+    .become-tasker-header h1 { font-size: 1.75rem; margin-bottom: 0.5rem; }
+    .become-tasker-header p { color: var(--sq-text-muted); }
+    .face-capture-wrap { position: relative; max-width: 320px; margin: 0 auto; }
+    .step-indicator { display: flex; justify-content: center; gap: 0.5rem; margin: 1rem 0; }
+    .step-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--sq-border); transition: all 0.3s ease; }
+    .step-dot.active { background: var(--sq-primary); transform: scale(1.3); }
+    .step-dot.done { background: var(--sq-success); }
+    .face-capture-submit { display: none; }
+    .countdown-ring {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        width: 120px; height: 120px; border-radius: 50%;
+        border: 4px solid rgba(255,255,255,0.8);
+        display: none; align-items: center; justify-content: center;
+        font-size: 3rem; font-weight: 800; color: white;
+        background: rgba(0,0,0,0.3); z-index: 5;
+    }
+    .face-step-overlay {
+        display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+        flex-direction: column; align-items: center; justify-content: center;
+        background: rgba(0,0,0,0.55); z-index: 4; pointer-events: none;
+        text-align: center; padding: 1rem;
+    }
+    .step-big-icon { font-size: 4rem; margin-bottom: 0.5rem; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4)); }
+    .step-title { color: white; font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
+    .step-instruction-overlay { color: #e2e8f0; font-size: 1.1rem; font-weight: 500; text-shadow: 0 1px 4px rgba(0,0,0,0.5); }
+    .status-msg { text-align: center; font-size: 1rem; font-weight: 600; margin: 1rem 0; min-height: 1.5rem; }
+    .flash-effect {
+        position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+        background: white; opacity: 0; border-radius: 12px; z-index: 6;
+        pointer-events: none; transition: opacity 0.1s;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card auth-card-wide">
+        <div class="page-header" style="margin-bottom:0;">
+            <a href="javascript:history.back()" class="btn-back" title="Retour">&#8592;</a>
+        </div>
+        <div class="become-tasker-header">
+            <h1><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg> Devenir Tasker</h1>
+            <p>Pour proposer vos services, vérifiez votre identité avec 4 photos faciales.</p>
+        </div>
+
+        <div class="face-capture-wrap">
+            <video id="live-video" autoplay playsinline muted style="width:100%;aspect-ratio:3/4;border-radius:12px;background:#000;object-fit:cover;"></video>
+            <canvas id="live-canvas" style="display:none;"></canvas>
+            <div class="face-step-overlay" id="face-step-overlay">
+                <span class="step-big-icon" id="step-icon"></span>
+                <span class="step-title" id="step-title"></span>
+                <span class="step-instruction-overlay" id="step-instruction"></span>
+            </div>
+            <div class="countdown-ring" id="countdown-ring"></div>
+            <div class="flash-effect" id="flash-effect"></div>
+        </div>
+
+        <div class="step-indicator" id="step-indicator">
+            <span class="step-dot"></span>
+            <span class="step-dot"></span>
+            <span class="step-dot"></span>
+            <span class="step-dot"></span>
+        </div>
+
+        <p class="status-msg" id="status-msg">Préparation de la caméra...</p>
+
+        <form method="post" id="face-form" class="auth-form face-capture-submit">
+            {% csrf_token %}
+            <input type="hidden" name="face_photo_initial_data" id="face_photo_initial_data">
+            <input type="hidden" name="face_photo_left_data" id="face_photo_left_data">
+            <input type="hidden" name="face_photo_right_data" id="face_photo_right_data">
+            <input type="hidden" name="face_photo_blink_data" id="face_photo_blink_data">
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var steps = [
+        { icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>', title: 'Photo initiale', instruction: 'Regardez la caméra face à vous' },
+        { icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3l-6 6 6 6"/></svg>', title: 'Visage gauche', instruction: 'Tournez votre visage vers la gauche' },
+        { icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3l6 6-6 6"/></svg>', title: 'Visage droite', instruction: 'Tournez votre visage vers la droite' },
+        { icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9 12h.01"/><path d="M15 12h.01"/></svg>', title: 'Clignement', instruction: 'Clignez des yeux pour la photo' },
+    ];
+
+    var currentStep = 0;
+    var photos = [null, null, null, null];
+    var video = document.getElementById('live-video');
+    var canvas = document.getElementById('live-canvas');
+    var ctx = canvas.getContext('2d');
+    var faceForm = document.getElementById('face-form');
+    var stepOverlay = document.getElementById('face-step-overlay');
+    var statusMsg = document.getElementById('status-msg');
+    var countdownRing = document.getElementById('countdown-ring');
+    var flashEffect = document.getElementById('flash-effect');
+    var dots = document.querySelectorAll('.step-dot');
+
+    var faceDetector = null;
+    var isDetectingFace = false;
+    if (typeof FaceDetector !== 'undefined') {
+        faceDetector = new FaceDetector({ fastMode: true, maxDetectedFaces: 1 });
+    }
+
+    function flash() {
+        flashEffect.style.opacity = '0.7';
+        setTimeout(function() { flashEffect.style.opacity = '0'; }, 150);
+    }
+
+    function updateDots() {
+        dots.forEach(function(dot, i) {
+            dot.className = 'step-dot';
+            if (photos[i]) { dot.classList.add('done'); }
+            else if (i === currentStep) { dot.classList.add('active'); }
+        });
+    }
+
+    function waitForFace(callback) {
+        if (!faceDetector) {
+            statusMsg.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> Détection faciale non supportée sur ce navigateur. Photo prise automatiquement.';
+            setTimeout(callback, 500);
+            return;
+        }
+        isDetectingFace = true;
+        statusMsg.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Recherche d\'un visage...';
+
+        function check() {
+            if (!isDetectingFace) return;
+            faceDetector.detect(video)
+                .then(function(faces) {
+                    if (faces.length > 0) {
+                        var face = faces[0];
+                        if (face.boundingBox.width > 80 && face.boundingBox.height > 80) {
+                            isDetectingFace = false;
+                            statusMsg.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Visage détecté !';
+                            setTimeout(callback, 300);
+                            return;
+                        }
+                    }
+                    setTimeout(check, 200);
+                })
+                .catch(function() {
+                    setTimeout(check, 300);
+                });
+        }
+        check();
+    }
+
+    function capturePhoto() {
+        if (currentStep > 3) return;
+        waitForFace(function() {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            var dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+            photos[currentStep] = dataUrl;
+            flash();
+
+            var overlay = document.getElementById('face-step-overlay');
+            overlay.style.display = 'flex';
+            setTimeout(function() {
+                overlay.style.display = 'none';
+                currentStep++;
+                updateDots();
+
+                if (currentStep < 4) {
+                    startStep(currentStep);
+                } else {
+                    video.style.display = 'none';
+                    statusMsg.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Vérification terminée ! Envoi en cours...';
+                    var hiddenFields = ['face_photo_initial_data', 'face_photo_left_data', 'face_photo_right_data', 'face_photo_blink_data'];
+                    photos.forEach(function(p, i) {
+                        document.getElementById(hiddenFields[i]).value = p;
+                    });
+                    setTimeout(function() { faceForm.submit(); }, 500);
+                }
+            }, 600);
+        });
+    }
+
+    function startStep(stepIndex) {
+        var s = steps[stepIndex];
+        statusMsg.textContent = s.instruction;
+
+        var overlay = document.getElementById('face-step-overlay');
+        document.getElementById('step-icon').innerHTML = s.icon;
+        document.getElementById('step-title').textContent = s.title;
+        document.getElementById('step-instruction').textContent = s.instruction;
+        overlay.style.display = 'flex';
+
+        setTimeout(function() { overlay.style.display = 'none'; }, 1500);
+
+        setTimeout(function() {
+            countdownRing.style.display = 'flex';
+            var count = 3;
+            countdownRing.textContent = count;
+            var interval = setInterval(function() {
+                count--;
+                if (count > 0) {
+                    countdownRing.textContent = count;
+                } else {
+                    clearInterval(interval);
+                    countdownRing.style.display = 'none';
+                    capturePhoto();
+                }
+            }, 1000);
+        }, 1800);
+    }
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } } })
+        .then(function(stream) {
+            video.srcObject = stream;
+            statusMsg.textContent = 'Regardez la caméra et suivez les instructions...';
+            setTimeout(function() { startStep(0); }, 1000);
+        })
+        .catch(function() {
+            statusMsg.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> Accès caméra refusé. Autorisez la caméra dans votre navigateur.';
+        });
+});
+</script>
+{% endblock %}

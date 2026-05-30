@@ -1,0 +1,53 @@
+{% extends base_template %}
+
+{% block title %}Messages — SideQuest{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-header">
+        <a href="{% url 'home' %}" class="btn-back" title="Retour">&#8592;</a>
+    <h1>Mes conversations</h1>
+</div>
+
+{% if conversations %}
+    <div class="conversation-list">
+        {% for conv in conversations %}
+        <a href="{% url 'messaging:conversation_detail' conv.id %}" class="conversation-item{% if conv.is_closed %} conversation-closed{% endif %}">
+            <div class="conversation-avatar" style="width:32px;height:32px;min-width:32px;min-height:32px;border-radius:50%;overflow:hidden;flex-shrink:0;">
+                {% if conv.client == user %}
+                    {% with other=conv.tasker %}
+                        {% if other.avatar %}
+                            <img src="{{ other.avatar.url }}" alt="{{ other.full_name }}" style="width:32px;height:32px;object-fit:cover;border-radius:50%;display:block;">
+                        {% else %}
+                            <div class="avatar-placeholder" style="width:32px;height:32px;font-size:0.75rem;">{{ other.full_name|first|upper }}</div>
+                        {% endif %}
+                    {% endwith %}
+                {% else %}
+                    {% with other=conv.client %}
+                        {% if other.avatar %}
+                            <img src="{{ other.avatar.url }}" alt="{{ other.full_name }}" style="width:32px;height:32px;object-fit:cover;border-radius:50%;display:block;">
+                        {% else %}
+                            <div class="avatar-placeholder" style="width:32px;height:32px;font-size:0.75rem;">{{ other.full_name|first|upper }}</div>
+                        {% endif %}
+                    {% endwith %}
+                {% endif %}
+            </div>
+            <div class="conversation-info">
+                <h3>{{ conv.task.title }}{% if conv.is_closed %} <span class="conv-closed-tag"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Fermée</span>{% endif %}</h3>
+                <p class="text-muted">
+                    {% if conv.client == user %}
+                        {{ conv.tasker.full_name }}
+                    {% else %}
+                        {{ conv.client.full_name }}
+                    {% endif %}
+                </p>
+                <p class="text-muted">{{ conv.last_activity_at|timesince }}</p>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state">
+        <p>Aucune conversation pour le moment.</p>
+    </div>
+{% endif %}
+{% endblock %}

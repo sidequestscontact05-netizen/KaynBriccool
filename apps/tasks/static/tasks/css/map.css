@@ -1,0 +1,124 @@
+.map-container {
+    height: 75vh;
+    min-height: 450px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 2px solid var(--sq-border);
+    z-index: 1;
+    width: 100%;
+}
+
+.empty-map-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--sq-text-light);
+    font-size: 1rem;
+}
+
+/* Custom pin marker */
+.sq-map-marker {
+    background: none !important;
+    border: none !important;
+}
+
+.sq-marker-pin {
+    width: 30px;
+    height: 42px;
+    background: var(--sq-tasker-accent);
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    box-shadow: 0 2px 8px rgba(8,145,178,0.4);
+    position: relative;
+    transition: transform 0.15s;
+}
+
+.sq-map-marker:hover .sq-marker-pin {
+    transform: rotate(-45deg) scale(1.15);
+}
+
+.sq-marker-pin::after {
+    content: '';
+    width: 14px;
+    height: 14px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+/* Popup styling */
+.sq-popup {
+    padding: 1rem 1.25rem 1.25rem;
+    font-family: inherit;
+}
+
+.sq-popup-cat {
+    font-size: 0.7rem;
+    color: var(--sq-tasker-accent);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.25rem;
+}
+
+.sq-popup h4 {
+    margin: 0 0 0.35rem;
+    font-size: 1rem;
+    color: var(--sq-text);
+    line-height: 1.3;
+    font-weight: 700;
+}
+
+.sq-popup-reward {
+    display: inline-block;
+    font-weight: 700;
+    color: var(--sq-tasker-accent);
+    font-size: 1.05rem;
+    margin-bottom: 0.5rem;
+}
+
+.sq-popup-addr {
+    margin: 0 0 0.75rem;
+    font-size: 0.8rem;
+    color: var(--sq-text-light);
+    line-height: 1.4;
+}
+
+.sq-popup-btn {
+    display: inline-block;
+    padding: 0.45rem 1.25rem;
+    background: var(--sq-tasker-accent);
+    color: white;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.sq-popup-btn:hover {
+    background: #067590;
+}
+
+.leaflet-popup-content-wrapper {
+    border-radius: var(--radius-lg) !important;
+    padding: 0 !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
+}
+
+.leaflet-popup-content {
+    margin: 0 !important;
+    min-width: 240px;
+}
+
+.leaflet-popup-tip {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;
+}
+
+.leaflet-popup-close-button {
+    color: var(--sq-text-light) !important;
+    font-size: 20px !important;
+    padding: 4px 8px !important;
+}

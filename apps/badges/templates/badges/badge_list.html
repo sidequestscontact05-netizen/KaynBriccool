@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Badges — SideQuest{% endblock %}
+
+{% block content %}
+<div class="page-header">
+        <a href="javascript:history.back()" class="btn-back" title="Retour">&#8592;</a>
+    <h1>Badges disponibles</h1>
+</div>
+
+<div class="badges-grid">
+    {% for badge in badges %}
+    <div class="badge-card" style="border-color: {{ badge.color }}">
+        <div class="badge-card-icon" style="background: {{ badge.color }}">
+            {{ badge.icon }}
+        </div>
+        <h3>{{ badge.name }}</h3>
+        <p>{{ badge.description }}</p>
+        <a href="{% url 'badges:badge_detail' badge.slug %}" class="btn btn-sm">Détails</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

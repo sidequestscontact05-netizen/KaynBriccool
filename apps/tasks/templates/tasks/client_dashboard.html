@@ -1,0 +1,456 @@
+{% extends 'base_client.html' %}
+{% load task_extras %}
+{% load static %}
+
+{% block title %}Mes Quêtes — SideQuest{% endblock %}
+
+{% block dashboard_content %}
+
+<style>
+.client-section-card {
+  background: var(--sq-surface);
+  border: 1px solid var(--sq-border-light);
+  border-radius: 14px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: all 0.2s ease;
+}
+.client-section-card:hover {
+  box-shadow: 0 4px 16px rgba(45,106,79,0.08);
+  border-color: var(--sq-border);
+}
+.client-section-card .card-body { flex: 1; min-width: 0; }
+.client-section-card .card-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--sq-text);
+  margin: 0 0 4px;
+}
+.client-section-card .card-meta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.client-section-card .card-meta-item {
+  font-size: 0.75rem;
+  color: var(--sq-text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.client-section-card .card-right {
+  flex-shrink: 0;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.client-section-card .card-price {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--sq-primary);
+}
+.client-section-card .card-badge {
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+.card-badge.draft { background: rgba(156,163,175,0.12); color: #6B7280; }
+.card-badge.published { background: rgba(82,183,136,0.12); color: #2D6A4F; }
+.card-badge.accepted { background: rgba(59,130,246,0.12); color: #1D4ED8; }
+.card-badge.in_progress { background: rgba(245,158,11,0.12); color: #B45309; }
+.card-badge.awaiting_confirmation { background: rgba(139,92,246,0.12); color: #6D28D9; }
+.card-badge.validated,
+.card-badge.evaluated,
+.card-badge.closed { background: rgba(82,183,136,0.12); color: #2D6A4F; }
+.card-badge.cancelled,
+.card-badge.rejected { background: rgba(239,68,68,0.12); color: #DC2626; }
+.card-badge.litige { background: rgba(239,68,68,0.12); color: #DC2626; }
+.card-badge.resolved { background: rgba(107,114,128,0.12); color: #4B5563; }
+.card-badge.completed { background: rgba(82,183,136,0.12); color: #2D6A4F; }
+
+.card-action-link {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--sq-primary);
+  text-decoration: none;
+}
+.card-action-link:hover { text-decoration: underline; }
+
+.empty-panel {
+  text-align: center;
+  padding: 2rem;
+  background: var(--sq-surface);
+  border: 1px dashed var(--sq-border);
+  border-radius: 14px;
+  color: var(--sq-text-muted);
+  font-size: 0.85rem;
+}
+
+.client-panel { display: none; }
+.client-panel.active { display: block; }
+
+.dash-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.dash-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: var(--sq-surface);
+  color: var(--sq-text-muted);
+  border: 1px solid var(--sq-border-light);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.dash-tab:hover {
+  border-color: var(--sq-primary);
+  color: var(--sq-primary);
+}
+.dash-tab.active {
+  background: var(--sq-primary);
+  color: white;
+  border-color: var(--sq-primary);
+}
+.dash-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: rgba(0,0,0,0.07);
+  color: inherit;
+}
+.dash-tab.active .dash-tab-count {
+  background: rgba(255,255,255,0.25);
+}
+</style>
+
+
+<div class="hero-card-client">
+    <div class="hero-block-text">
+        <h1>Bienvenue, {{ user.full_name|default:"there" }}</h1>
+        <p>Prêt à publier votre prochaine quête ?</p>
+        <a href="{% url 'tasks:task_create' %}" class="btn-hero">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Publier une quête
+        </a>
+    </div>
+    {% with active_quests=in_progress.count|add:accepted.count %}
+    <div class="hero-block-stat">
+        <span class="hero-stat-value green">{{ active_quests }}</span>
+        <span class="hero-stat-label">Quêtes actives</span>
+    </div>
+    {% endwith %}
+    <div class="hero-block-stat">
+        <span class="hero-stat-value gold">{% if user.profile.client_rating_avg and user.profile.client_rating_avg > 0 %}{{ user.profile.client_rating_avg|floatformat:1 }}{% else %}—{% endif %}</span>
+        <span class="hero-stat-label">Note moy.</span>
+    </div>
+</div>
+
+<div x-data="{ tab: 'publications' }" style="margin-top:28px;">
+
+  <div class="dash-tabs">
+    <button class="dash-tab" :class="{ active: tab === 'drafts' }" @click="tab = 'drafts'">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M16 2v4a2 2 0 0 0 2 2h4"/><rect x="2" y="2" width="18" height="18" rx="2"/><path d="M12 11v6"/><path d="M9 14h6"/></svg> Brouillons
+      <span class="dash-tab-count">{{ drafts.count }}</span>
+    </button>
+    <button class="dash-tab" :class="{ active: tab === 'publications' }" @click="tab = 'publications'">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="m21 14-6-5.5v11Z"/><path d="M10 7v10"/><rect x="3" y="7" width="7" height="10" rx="1.5"/><circle cx="7" cy="17" r="2.2"/></svg> Publications
+      <span class="dash-tab-count">{{ published.count }}</span>
+    </button>
+    <button class="dash-tab" :class="{ active: tab === 'active' }" @click="tab = 'active'">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg> Actives
+      <span class="dash-tab-count">{{ accepted.count|add:in_progress.count }}</span>
+    </button>
+    <button class="dash-tab" :class="{ active: tab === 'completed' }" @click="tab = 'completed'">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> Termin&#233;es
+      <span class="dash-tab-count">{{ finished.count }}</span>
+    </button>
+  </div>
+
+  <div class="client-panel" :class="{ active: tab === 'drafts' }">
+    {% if drafts %}
+    <div class="missions-list">
+      {% for task in drafts %}
+      <div class="client-section-card">
+        <span class="mission-dot" style="flex-shrink:0;background:#9CA3AF;"></span>
+        <div class="card-body">
+          <h4 class="card-title">{{ task.title|default:"Sans titre" }}</h4>
+          <div class="card-meta">
+            <span class="card-meta-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> {{ task.created_at|date:"d/m/Y" }}</span>
+            {% if task.reward %}<span class="card-meta-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="12" cy="12" r="10"/><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path d="M12 9v6"/><path d="M9 12h6"/></svg> {{ task.reward }} DH</span>{% endif %}
+          </div>
+        </div>
+        <div class="card-right">
+          <span class="card-badge draft">Brouillon</span>
+          <div style="display:flex;gap:8px;margin-top:4px;align-items:center;">
+            <a href="{% url 'tasks:task_edit' task.id %}" class="card-action-link"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> Modifier</a>
+            <form method="post" action="{% url 'tasks:task_publish' task.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="card-action-link" style="background:none;border:none;cursor:pointer;font-size:0.72rem;font-weight:600;color:var(--sq-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09Z"/><path d="m12 15-3 3a2 2 0 0 0 0 4h1.5l.5-2 2-2"/><path d="M16 12c2.5-5 2-9 0-12-4 0-8 2-10 7"/></svg> Publier</button>
+            </form>
+            <form method="post" action="{% url 'tasks:task_delete' task.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="card-action-link" style="background:none;border:none;cursor:pointer;font-size:0.72rem;font-weight:600;color:#DC2626;" onclick="return confirm('Supprimer ce brouillon ?');"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg> Suppr.</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-panel">
+      <p>Aucun brouillon. <a href="{% url 'tasks:task_create' %}" style="color:var(--sq-primary);font-weight:600;">Créez une nouvelle quête</a>.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="client-panel" :class="{ active: tab === 'publications' }">
+    {% if published %}
+    <div class="missions-list">
+      {% for task in published %}
+      <div class="client-section-card">
+        <span class="mission-dot active" style="flex-shrink:0;"></span>
+        <div class="card-body">
+          <h4 class="card-title">{{ task.title }}</h4>
+          <div class="card-meta">
+            <span class="card-meta-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> {{ task.published_at|date:"d/m/Y"|default:"R&#233;cemment" }}</span>
+            <span class="card-meta-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> {{ task.applications.count }} candidature{{ task.applications.count|pluralize:"s" }}</span>
+            {% if task.deadline %}<span class="card-meta-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> {{ task.deadline|date:"d/m/Y" }}</span>{% endif %}
+          </div>
+        </div>
+        <div class="card-right">
+          <span class="card-price">{{ task.reward }} DH</span>
+          <span class="card-badge published">Publi&#233;e</span>
+          <a href="{% url 'tasks:task_detail' task.id %}" class="card-action-link">Voir candidatures</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-panel">
+      <p>Aucune mission publi&#233;e pour le moment.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="client-panel" :class="{ active: tab === 'active' }">
+    {% if accepted or in_progress %}
+    <div class="missions-list">
+      {% for task in accepted %}
+      <a href="{% url 'tasks:task_workspace' task.id %}" class="client-section-card" style="text-decoration:none;color:inherit;">
+        <span class="mission-dot active"></span>
+        <div class="card-body">
+          <h4 class="card-title">{{ task.title }}</h4>
+          <div class="card-meta">
+            <span class="card-meta-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> {{ task.assigned_tasker.full_name|default:"Tasker" }}</span>
+            {% if task.deadline %}<span class="card-meta-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> {{ task.deadline|date:"d/m/Y" }}</span>{% endif %}
+          </div>
+        </div>
+        <div class="card-right">
+          <span class="card-price">{{ task.reward }} DH</span>
+          <span class="card-badge accepted">Accept&#233;e</span>
+        </div>
+      </a>
+      {% endfor %}
+      {% for task in in_progress %}
+      <a href="{% url 'tasks:task_workspace' task.id %}" class="client-section-card" style="text-decoration:none;color:inherit;">
+        <span class="mission-dot active"></span>
+        <div class="card-body">
+          <h4 class="card-title">{{ task.title }}</h4>
+          <div class="card-meta">
+            <span class="card-meta-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> {{ task.assigned_tasker.full_name|default:"Tasker" }}</span>
+            {% if task.deadline %}<span class="card-meta-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> {{ task.deadline|date:"d/m/Y" }}</span>{% endif %}
+          </div>
+        </div>
+        <div class="card-right">
+          <span class="card-price">{{ task.reward }} DH</span>
+          <span class="card-badge {% if task.status == 'awaiting_confirmation' %}awaiting_confirmation{% else %}in_progress{% endif %}">
+            {% if task.status == 'awaiting_confirmation' %}En attente de confirmation{% else %}En cours{% endif %}
+          </span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-panel">
+      <p>Aucune mission en cours. Publiez une mission et choisissez un tasker !</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="client-panel" :class="{ active: tab === 'completed' }">
+    {% if finished %}
+    <div class="missions-list">
+      {% for task in finished %}
+      <div class="client-section-card">
+        <span class="mission-dot completed"></span>
+        <div class="card-body">
+          <h4 class="card-title">{{ task.title }}</h4>
+          <div class="card-meta">
+            <span class="card-meta-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> {{ task.assigned_tasker.full_name|default:"&#8212;" }}</span>
+            {% if task.deadline %}<span class="card-meta-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> {{ task.deadline|date:"d/m/Y" }}</span>{% endif %}
+          </div>
+        </div>
+        <div class="card-right">
+          <span class="card-price">{{ task.reward }} DH</span>
+          <span class="card-badge {% if task.status == 'validated' or task.status == 'evaluated' or task.status == 'closed' %}completed{% else %}{{ task.status }}{% endif %}">{{ task.get_status_display }}</span>
+          {% if task.status == 'validated' or task.status == 'resolved' %}
+            <a href="{% url 'tasks:task_evaluate' task.id %}" class="card-action-link"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> &#201;valuer</a>
+          {% elif task.status == 'evaluated' %}
+            <form method="post" action="{% url 'tasks:task_close' task.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="card-action-link" style="background:none;border:none;cursor:pointer;font-size:0.72rem;font-weight:600;color:var(--sq-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> Cl&#244;turer</button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-panel">
+      <p>Aucune mission termin&#233;e.</p>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('guideBubble', () => ({
+        shown: {% if user.is_authenticated and not user.profile.onboarding_seen %}true{% else %}false{% endif %},
+        step: 0,
+        started: false,
+
+        steps: [
+            { msg: 'Bienvenue sur SideQuest !\nCr\u00e9ons ta premi\u00e8re mission ensemble.' },
+            { target: '.hero-card-client', msg: 'Ce tableau de bord t\u2019aide \u00e0 g\u00e9rer toutes tes missions publi\u00e9es et les taskers.' },
+            { target: '.btn-hero', msg: 'Cr\u00e9e des missions pour trouver des taskers capables d\u2019accomplir tes t\u00e2ches.' },
+            { target: '.dash-tabs', msg: 'Suis tes publications, missions actives et t\u00e2ches termin\u00e9es depuis ces onglets.' },
+        ],
+
+        get currentStep() {
+            return this.steps[this.step] || null;
+        },
+        get isWelcome() {
+            return this.step === 0 && !this.started;
+        },
+        get isLast() {
+            return this.step === this.steps.length - 1;
+        },
+        get progress() {
+            return ((Math.max(this.step, this.started ? 1 : 0)) / this.steps.length) * 100;
+        },
+
+        get highlightStyle() {
+            const s = this.currentStep;
+            if (!s || !s.target) return '';
+            const el = document.querySelector(s.target);
+            if (!el) return '';
+            const r = el.getBoundingClientRect();
+            return `top:${r.top}px;left:${r.left}px;width:${r.width}px;height:${r.height}px;`;
+        },
+
+        handleStart() {
+            this.started = true;
+            this.step = 1;
+        },
+
+        handleNext() {
+            if (this.isLast) { this.finish(); return; }
+            this.step++;
+        },
+
+        finish() {
+            this.shown = false;
+            const csrf = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+            fetch('{% url "accounts:onboarding_done" %}', {
+                method: 'POST', headers: { 'X-CSRFToken': csrf, 'Content-Type': 'application/json' },
+            });
+            const guide = document.querySelector('[x-data="guideSystem"]')?.__x;
+            if (guide) guide.$data.glow = false;
+        },
+    }));
+});
+</script>
+
+<div x-data="guideBubble" x-show="shown" x-transition.opacity.duration.300ms
+     style="display:none;">
+  <div class="guide-highlight" x-show="currentStep && currentStep.target" :style="highlightStyle"></div>
+  <div class="guide-bubble">
+    <div class="guide-bubble-progress">
+      <div class="guide-bubble-progress-fill" :style="'width:'+progress+'%'"></div>
+    </div>
+    <div class="guide-bubble-body">
+      <template x-if="isWelcome">
+        <div>
+          <p class="guide-bubble-msg" x-html="currentStep.msg.replace(/\n/g,'<br>')"></p>
+          <div class="guide-bubble-actions">
+            <button class="guide-bubble-btn guide-bubble-btn-skip" @click="finish()">Passer</button>
+            <button class="guide-bubble-btn guide-bubble-btn-primary" @click="handleStart()">Démarrer la visite</button>
+          </div>
+        </div>
+      </template>
+      <template x-if="!isWelcome">
+        <div>
+          <p class="guide-bubble-msg" x-html="currentStep.msg.replace(/\n/g,'<br>')"></p>
+          <div class="guide-bubble-actions">
+            <button class="guide-bubble-btn guide-bubble-btn-skip" @click="finish()">Passer</button>
+            <button class="guide-bubble-btn guide-bubble-btn-primary" @click="handleNext()" x-text="isLast ? 'Compris' : 'Suivant'"></button>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block dashboard_right %}
+<aside class="dashboard-right">
+    <div class="ranking-widget">
+        <div class="ranking-widget-header">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1DB954" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <h3 class="ranking-widget-title">Meilleurs Taskers</h3>
+        </div>
+        {% if top_taskers %}
+            {% for profile in top_taskers %}
+            <div class="ranking-item">
+                <span class="ranking-dot {% if forloop.counter == 1 %}gold{% elif forloop.counter == 2 %}silver{% else %}bronze{% endif %}"></span>
+                <div class="ranking-avatar">
+                    {% if profile.user.avatar %}
+                        <img src="{{ profile.user.avatar.url }}" alt="{{ profile.user.full_name }}">
+                    {% else %}
+                        {{ profile.user.full_name|first|upper }}
+                    {% endif %}
+                </div>
+                <div class="ranking-info">
+                    <div class="ranking-name">{{ profile.user.full_name|truncatechars:14 }}</div>
+                    <div class="ranking-stars">{{ profile.tasker_rating_avg|floatformat:1 }} <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+                    <div class="ranking-stats">{{ profile.tasks_completed }} quêtes</div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div style="text-align:center;padding:1rem 0;color:#888888;font-size:11px;">Aucun tasker pour le moment</div>
+        {% endif %}
+        <a href="{% url 'reputation:leaderboard' %}" class="ranking-link">Voir tout →</a>
+    </div>
+</aside>
+{% endblock %}

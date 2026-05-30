@@ -1,0 +1,147 @@
+{% extends 'base_admin.html' %}
+
+{% block title %}Admin — Tableau de bord{% endblock %}
+
+{% block dashboard_content %}
+<div class="admin-header-bar">
+    <div>
+        <h1><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Tableau de bord</h1>
+        <p class="text-muted" style="margin-top:0.25rem;">Vue d'ensemble de la plateforme</p>
+    </div>
+</div>
+
+<!-- Statistiques principales -->
+<div class="admin-stats-grid">
+    <div class="admin-stat-card">
+        <div class="admin-stat-icon users"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div class="admin-stat-body">
+            <span class="admin-stat-value">{{ stats.total_users }}</span>
+            <span class="admin-stat-label">Utilisateurs</span>
+        </div>
+    </div>
+    <div class="admin-stat-card">
+        <div class="admin-stat-icon clients"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg></div>
+        <div class="admin-stat-body">
+            <span class="admin-stat-value">{{ stats.clients }}</span>
+            <span class="admin-stat-label">Clients</span>
+        </div>
+    </div>
+    <div class="admin-stat-card">
+        <div class="admin-stat-icon taskers"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+        <div class="admin-stat-body">
+            <span class="admin-stat-value">{{ stats.taskers }}</span>
+            <span class="admin-stat-label">Taskers</span>
+        </div>
+    </div>
+    <div class="admin-stat-card">
+        <div class="admin-stat-icon missions"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+        <div class="admin-stat-body">
+            <span class="admin-stat-value">{{ stats.active_missions }}</span>
+            <span class="admin-stat-label">Missions actives</span>
+        </div>
+    </div>
+    <div class="admin-stat-card">
+        <div class="admin-stat-icon verifications"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div class="admin-stat-body">
+            <span class="admin-stat-value">{{ stats.pending_verifications }}</span>
+            <span class="admin-stat-label">Vérifications</span>
+        </div>
+    </div>
+    <div class="admin-stat-card">
+        <div class="admin-stat-icon litiges"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>
+        <div class="admin-stat-body">
+            <span class="admin-stat-value">{{ stats.open_litiges }}</span>
+            <span class="admin-stat-label">Litiges ouverts</span>
+        </div>
+    </div>
+</div>
+
+<!-- Actions rapides -->
+<h2 style="font-size:1.1rem;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Actions rapides</h2>
+<div class="admin-quick-actions">
+    <a href="{% url 'admin_sidequest:users' %}" class="admin-quick-action">
+        <span class="admin-quick-action-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+        <span class="admin-quick-action-label">Gestion utilisateurs</span>
+    </a>
+    <a href="{% url 'admin_sidequest:verifications' %}" class="admin-quick-action">
+        <span class="admin-quick-action-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <span class="admin-quick-action-label">Validation taskers</span>
+    </a>
+    {% if stats.open_litiges > 0 %}
+    <a href="{% url 'admin_sidequest:dashboard' %}#litiges" class="admin-quick-action">
+        <span class="admin-quick-action-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></span>
+        <span class="admin-quick-action-label">{{ stats.open_litiges }} litige(s) ouvert(s)</span>
+    </a>
+    {% endif %}
+    <a href="{% url 'reputation:leaderboard' %}" class="admin-quick-action">
+        <span class="admin-quick-action-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></span>
+        <span class="admin-quick-action-label">Classement</span>
+    </a>
+</div>
+
+<!-- Vérifications en attente -->
+{% if stats.pending_verifications > 0 %}
+<div class="admin-section">
+    <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Vérifications en attente</h2>
+    <p class="text-muted" style="margin-bottom:1rem;">{{ stats.pending_verifications }} tasker(s) en attente de validation</p>
+    <a href="{% url 'admin_sidequest:verifications' %}" class="btn-admin">Voir les vérifications</a>
+</div>
+{% endif %}
+
+<!-- Litiges ouverts -->
+{% if litiges %}
+<div class="admin-section" id="litiges">
+    <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg> Litiges ouverts</h2>
+    {% for task in litiges %}
+    <div class="litige-card">
+        <div>
+            <strong>{{ task.title }}</strong>
+            <span class="text-muted" style="margin-left:0.5rem;">{{ task.client.full_name }} / {{ task.assigned_tasker.full_name|default:"—" }}</span>
+        </div>
+        <span style="font-size:0.8rem;color:var(--sq-text-muted);display:block;margin-top:4px;">Motif : {{ task.litige_reason|default:"Non précisé" }}</span>
+        <div style="margin-top:8px;display:flex;gap:6px;">
+          <a href="{% url 'tasks:task_workspace' task.id %}" class="btn-admin-outline btn-sm">Voir</a>
+          <a href="{% url 'tasks:task_resolve_litige' task.id %}" class="btn-admin btn-sm" style="background:#059669;color:#fff;text-decoration:none;padding:4px 12px;border-radius:6px;font-size:0.8rem;" onclick="return confirm('Résoudre ce litige ? La mission passera en statut Résolue.')">Résoudre</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Utilisateurs récents -->
+<div class="admin-section">
+    <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Utilisateurs récents</h2>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Rôle</th>
+                <th>Vérifié</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in recent_users %}
+            <tr>
+                <td><a href="{% url 'admin_sidequest:user_detail' user.id %}">{{ user.full_name }}</a></td>
+                <td>{{ user.email }}</td>
+                <td><span class="admin-role-badge admin-role-{{ user.role }}">{{ user.get_role_display }}</span></td>
+                <td>
+                    {% if user.is_verified %}
+                        <span class="badge badge-success">Oui</span>
+                    {% else %}
+                        <span class="badge badge-warning">Non</span>
+                    {% endif %}
+                </td>
+                <td>{{ user.date_joined|date:"d/m/Y" }}</td>
+                <td>
+                    <a href="{% url 'admin_sidequest:user_detail' user.id %}" class="btn-admin-outline">Voir</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

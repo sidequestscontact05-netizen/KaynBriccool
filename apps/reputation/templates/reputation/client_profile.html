@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ client.full_name }} — Profil Client{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <a href="javascript:history.back()" class="btn-back" title="Retour">&#8592;</a>
+    <h1>Profil de {{ client.full_name }}</h1>
+</div>
+<div class="client-profile-container">
+    <div class="client-profile-card">
+        <div class="client-profile-header">
+            {% if client.avatar %}
+                <img src="{{ client.avatar.url }}" alt="{{ client.full_name }}" class="client-avatar">
+            {% else %}
+                <div class="client-avatar client-avatar-placeholder">{{ client.full_name|first|upper }}</div>
+            {% endif %}
+            <div class="client-info">
+                <h1>{{ client.full_name }}</h1>
+                <p class="text-muted">Client sur SideQuest{% if member_since %} · Membre depuis {{ member_since|date:"F Y" }}{% endif %}</p>
+            </div>
+        </div>
+
+        <div class="client-stats">
+            <div class="stat-item">
+                <span class="stat-value">{{ avg_rating }}</span>
+                <span class="stat-label">Note moyenne</span>
+                <div class="stars-display">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= avg_rating %}
+                            <span class="star-filled"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+                        {% else %}
+                            <span class="star-empty"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">{{ total_reviews }}</span>
+                <span class="stat-label">Avis reçus</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">{{ completed_tasks }}</span>
+                <span class="stat-label">Missions terminées</span>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="section-title">Avis des Taskers</h2>
+
+    {% if reviews %}
+        <div class="reviews-list">
+            {% for review in reviews %}
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        {% if review.reviewer.avatar %}
+                            <img src="{{ review.reviewer.avatar.url }}" alt="{{ review.reviewer.full_name }}" class="reviewer-avatar">
+                        {% else %}
+                            <div class="reviewer-avatar reviewer-avatar-placeholder">{{ review.reviewer.full_name|first|upper }}</div>
+                        {% endif %}
+                        <div>
+                            <strong>{{ review.reviewer.full_name }}</strong>
+                            <span class="review-task-link">Mission : {{ review.task.title }}</span>
+                        </div>
+                    </div>
+                    <div class="review-rating">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= review.rating %}
+                                <span class="star-filled"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+                            {% else %}
+                                <span class="star-empty"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% if review.comment %}
+                    <p class="review-comment">{{ review.comment }}</p>
+                {% endif %}
+                <span class="review-date">{{ review.created_at|date:"d F Y" }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <p>Aucun avis pour le moment.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

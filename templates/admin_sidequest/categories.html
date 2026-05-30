@@ -1,0 +1,47 @@
+{% extends 'base_admin.html' %}
+
+{% block title %}Admin — Catégories{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-header">
+    <a href="{% url 'admin_sidequest:dashboard' %}" class="btn-back" title="Retour">&#8592;</a>
+    <h1>Catégories</h1>
+    <a href="{% url 'admin_sidequest:create_category' %}" class="btn btn-admin">+ Ajouter</a>
+</div>
+
+<table class="admin-table">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Slug</th>
+            <th>Actif</th>
+            <th>Sous-catégories</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cat in categories %}
+        <tr>
+            <td>{{ cat.name }}</td>
+            <td>{{ cat.slug }}</td>
+            <td>
+                {% if cat.is_active %}
+                    <span class="badge badge-success">Oui</span>
+                {% else %}
+                    <span class="badge badge-danger">Non</span>
+                {% endif %}
+            </td>
+            <td>{{ cat.subcategories.count }}</td>
+            <td>
+                <a href="{% url 'admin_sidequest:edit_category' cat.id %}" class="btn btn-sm btn-admin-outline">Modifier</a>
+                <a href="{% url 'admin_sidequest:delete_category' cat.id %}" class="btn btn-sm btn-admin-danger">Supprimer</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" class="text-center text-muted">Aucune catégorie.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

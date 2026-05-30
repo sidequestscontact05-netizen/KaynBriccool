@@ -1,0 +1,27 @@
+{% if messages %}
+<script>
+(function() {
+    var msgs = [
+        {% for message in messages %}
+        { text: "{{ message|escapejs }}", tags: "{{ message.tags }}" },
+        {% endfor %}
+    ];
+
+    var check = setInterval(function() {
+        try {
+            var guide = window.Alpine ? Alpine.store('guide') : null;
+            if (!guide || !msgs.length) return;
+            clearInterval(check);
+
+            function showNext() {
+                if (!msgs.length) return;
+                var m = msgs.shift();
+                guide.showTip(m.text, { duration: 10000 });
+                if (msgs.length) setTimeout(showNext, 11000);
+            }
+            showNext();
+        } catch(e) {}
+    }, 200);
+})();
+</script>
+{% endif %}

@@ -1,0 +1,85 @@
+{% extends 'base_admin.html' %}
+
+{% block title %}Admin — Vérifications Face ID{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-header">
+    <a href="{% url 'admin_sidequest:dashboard' %}" class="btn-back" title="Retour">&#8592;</a>
+    <h1>Vérifications Face ID</h1>
+</div>
+
+<div class="admin-filter-tabs">
+    <a href="?status=pending" class="admin-tab {% if status_filter == 'pending' %}active{% endif %}">En attente</a>
+    <a href="?status=approved" class="admin-tab {% if status_filter == 'approved' %}active{% endif %}">Approuvées</a>
+    <a href="?status=rejected" class="admin-tab {% if status_filter == 'rejected' %}active{% endif %}">Rejetées</a>
+    <a href="?status=all" class="admin-tab {% if status_filter == 'all' %}active{% endif %}">Toutes</a>
+</div>
+
+{% if verifications %}
+    <div class="verification-list">
+        {% for v in verifications %}
+        <div class="verification-card">
+            <div class="verification-card-header">
+                <h3>{{ v.user.full_name }}</h3>
+                <span class="status-badge status-{{ v.face_status }}">
+                    {{ v.get_face_status_display }}
+                </span>
+            </div>
+            <p class="text-muted">{{ v.user.email }} — {{ v.created_at|date:"d/m/Y H:i" }}</p>
+            <div class="verification-photos">
+                {% if v.face_photo_initial %}
+                    <div class="verification-photo">
+                        <span class="verification-photo-label">Initiale</span>
+                        <img src="{{ v.face_photo_initial.url }}" alt="Photo initiale">
+                        <a href="{% url 'admin_sidequest:delete_face_photo' v.id 'face_photo_initial' %}"
+                           class="btn-delete-photo"
+                           onclick="return confirm('Supprimer cette photo ?');"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></a>
+                    </div>
+                {% endif %}
+                {% if v.face_photo_left %}
+                    <div class="verification-photo">
+                        <span class="verification-photo-label">Gauche</span>
+                        <img src="{{ v.face_photo_left.url }}" alt="Photo gauche">
+                        <a href="{% url 'admin_sidequest:delete_face_photo' v.id 'face_photo_left' %}"
+                           class="btn-delete-photo"
+                           onclick="return confirm('Supprimer cette photo ?');"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></a>
+                    </div>
+                {% endif %}
+                {% if v.face_photo_right %}
+                    <div class="verification-photo">
+                        <span class="verification-photo-label">Droite</span>
+                        <img src="{{ v.face_photo_right.url }}" alt="Photo droite">
+                        <a href="{% url 'admin_sidequest:delete_face_photo' v.id 'face_photo_right' %}"
+                           class="btn-delete-photo"
+                           onclick="return confirm('Supprimer cette photo ?');"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></a>
+                    </div>
+                {% endif %}
+                {% if v.face_photo_blink %}
+                    <div class="verification-photo">
+                        <span class="verification-photo-label">Clignement</span>
+                        <img src="{{ v.face_photo_blink.url }}" alt="Photo clignement">
+                        <a href="{% url 'admin_sidequest:delete_face_photo' v.id 'face_photo_blink' %}"
+                           class="btn-delete-photo"
+                           onclick="return confirm('Supprimer cette photo ?');"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></a>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="verification-card-actions">
+                {% if v.face_status == 'pending' %}
+                    <a href="{% url 'admin_sidequest:verify_face' v.id %}" class="btn btn-admin btn-sm">Vérifier</a>
+                {% else %}
+                    <span class="text-muted">{{ v.admin_notes|default:"—" }}</span>
+                {% endif %}
+                <a href="{% url 'admin_sidequest:delete_verification' v.id %}"
+                   class="btn btn-admin-danger btn-sm"
+                   onclick="return confirm('Supprimer cette vérification Face ID ?');">Supprimer Face ID</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state">
+        <p>Aucune vérification pour le moment.</p>
+    </div>
+{% endif %}
+{% endblock %}

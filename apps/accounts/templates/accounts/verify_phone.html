@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Vérification — SideQuest{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="page-header">
+            <a href="{% url 'accounts:profile' %}" class="btn-back" title="Retour">&#8592;</a>
+        </div>
+        <h1>Vérification</h1>
+        <p class="auth-subtitle">Un code a été envoyé à <strong>{{ user.email }}</strong></p>
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="form-group">
+                {{ form.code.label_tag }}
+                {{ form.code }}
+                {{ form.code.errors }}
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Vérifier</button>
+        </form>
+        <div class="auth-links">
+            <form method="post" action="{% url 'accounts:resend_code' %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-link">Renvoyer le code</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

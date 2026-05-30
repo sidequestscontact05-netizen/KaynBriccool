@@ -1,0 +1,64 @@
+{% extends 'base_admin.html' %}
+
+{% block title %}Admin — Utilisateurs{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-header">
+    <a href="{% url 'admin_sidequest:dashboard' %}" class="btn-back" title="Retour">&#8592;</a>
+    <h1>Utilisateurs</h1>
+</div>
+
+<form method="get" class="admin-search-form">
+    <input type="text" name="q" value="{{ search }}" placeholder="Rechercher par nom, email, téléphone..." class="form-input admin-search-input">
+    <select name="role" class="form-input">
+        <option value="">Tous les rôles</option>
+        <option value="client" {% if role_filter == 'client' %}selected{% endif %}>Client</option>
+        <option value="tasker" {% if role_filter == 'tasker' %}selected{% endif %}>Tasker</option>
+        <option value="both" {% if role_filter == 'both' %}selected{% endif %}>Client & Tasker</option>
+    </select>
+    <button type="submit" class="btn btn-admin">Chercher</button>
+</form>
+
+<table class="admin-table">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Email</th>
+            <th>Téléphone</th>
+            <th>Rôle</th>
+            <th>Vérifié</th>
+            <th>Statut</th>
+            <th>Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td><a href="{% url 'admin_sidequest:user_detail' user.id %}">{{ user.full_name }}</a></td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.phone_number|default:"—" }}</td>
+            <td><span class="admin-role-badge admin-role-{{ user.role }}">{{ user.get_role_display }}</span></td>
+            <td>
+                {% if user.is_verified %}
+                    <span class="badge badge-success">Oui</span>
+                {% else %}
+                    <span class="badge badge-warning">Non</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if user.is_active %}
+                    <span class="badge badge-success">Actif</span>
+                {% else %}
+                    <span class="badge badge-danger">Banni</span>
+                {% endif %}
+            </td>
+            <td>{{ user.date_joined|date:"d/m/Y" }}</td>
+            <td>
+                <a href="{% url 'admin_sidequest:user_detail' user.id %}" class="btn btn-sm btn-admin-outline">Voir</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,343 @@
+{% extends 'base_client.html' %}
+{% load static %}
+
+{% block title %}Modifier — {{ task.title }}{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+.create-header {
+  max-width: 820px;
+  margin: 0 auto 40px;
+  padding: 0 24px;
+}
+.create-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--sq-text);
+  margin: 0;
+}
+.create-header p {
+  color: var(--sq-text-muted);
+  font-size: 0.95rem;
+  margin: 8px 0 0;
+}
+
+.card-form {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 0 24px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-card {
+  background: var(--sq-surface);
+  border: 1px solid var(--sq-border-light);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  transition: all 0.25s ease;
+  position: relative;
+}
+.form-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  border-color: var(--sq-border);
+}
+.form-card:focus-within {
+  border-color: var(--sq-primary);
+  box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1);
+}
+
+.form-card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.form-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.form-card-icon.green { background: rgba(45, 106, 79, 0.1); color: var(--sq-primary); }
+.form-card-icon.amber { background: rgba(245, 158, 11, 0.1); color: #B45309; }
+.form-card-icon.blue  { background: rgba(59, 130, 246, 0.1); color: #1D4ED8; }
+.form-card-icon.purple { background: rgba(139, 92, 246, 0.1); color: #6D28D9; }
+.form-card-icon.teal  { background: rgba(20, 184, 166, 0.1); color: #0F766E; }
+.form-card-icon.rose  { background: rgba(244, 63, 94, 0.1); color: #BE123C; }
+.form-card-icon.indigo { background: rgba(99, 102, 241, 0.1); color: #4338CA; }
+
+.form-card-label {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sq-text-muted);
+}
+.form-card-title {
+  margin: 2px 0 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--sq-text);
+}
+
+.form-card-body select,
+.form-card-body input,
+.form-card-body textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--sq-border);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-family: Inter, sans-serif;
+  background: var(--sq-surface);
+  color: var(--sq-text);
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+.form-card-body select:focus,
+.form-card-body input:focus,
+.form-card-body textarea:focus {
+  outline: none;
+  border-color: var(--sq-primary);
+  box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1);
+}
+.form-card-body select:hover,
+.form-card-body input:hover,
+.form-card-body textarea:hover {
+  border-color: var(--sq-primary-light);
+}
+.form-card-body textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+.form-card-body select {
+  appearance: auto;
+  cursor: pointer;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+.btn-save {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  background: var(--sq-primary);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.btn-save:hover {
+  background: var(--sq-primary-dark);
+  transform: translateY(-1px);
+}
+.btn-cancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: 1px solid var(--sq-border);
+  background: var(--sq-surface);
+  color: var(--sq-text);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.btn-cancel:hover {
+  border-color: var(--sq-text-muted);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var catSelect = document.getElementById('id_category');
+  var subSelect = document.getElementById('id_subcategory');
+
+  if (catSelect) {
+    catSelect.addEventListener('change', function() {
+      var catId = this.value;
+      subSelect.innerHTML = '<option value="">— Chargement... —</option>';
+      subSelect.disabled = true;
+      if (!catId) {
+        subSelect.innerHTML = '<option value="">— Choisir une catégorie d\'abord —</option>';
+        return;
+      }
+      fetch('/api/subcategories/' + catId + '/')
+        .then(function(r) {
+          if (!r.ok) throw new Error('Erreur réseau');
+          return r.json();
+        })
+        .then(function(data) {
+          subSelect.innerHTML = '<option value="">— Sélectionner une sous-catégorie —</option>';
+          data.subcategories.forEach(function(sub) {
+            var opt = document.createElement('option');
+            opt.value = sub.id;
+            opt.textContent = sub.name;
+            subSelect.appendChild(opt);
+          });
+          subSelect.disabled = false;
+        })
+        .catch(function(err) {
+          console.error('Erreur chargement:', err);
+          subSelect.innerHTML = '<option value="">— Erreur, réessayer —</option>';
+        });
+    });
+  }
+});
+</script>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="create-header">
+  <a href="javascript:history.back()" class="btn-back" title="Retour">&#8592;</a>
+  <h1>Modifier la qu&#234;te</h1>
+  <p>Modifiez les d&#233;tails de votre mission.</p>
+</div>
+
+<form method="post" class="card-form">
+  {% csrf_token %}
+
+  <div class="form-card">
+    <div class="form-card-header">
+      <div class="form-card-icon green"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+      <div>
+        <p class="form-card-label">Cat&#233;gorie</p>
+        <h3 class="form-card-title">Quel type de mission ?</h3>
+      </div>
+    </div>
+    <div class="form-card-body">
+      {{ form.category }}
+      {{ form.category.errors }}
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-card-header">
+      <div class="form-card-icon blue"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg></div>
+      <div>
+        <p class="form-card-label">Sous-cat&#233;gorie</p>
+        <h3 class="form-card-title">Pr&#233;cisez le type de t&#226;che</h3>
+      </div>
+    </div>
+    <div class="form-card-body">
+      {{ form.subcategory }}
+      {{ form.subcategory.errors }}
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-card-header">
+      <div class="form-card-icon purple"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></div>
+      <div>
+        <p class="form-card-label">Titre</p>
+        <h3 class="form-card-title">Titre de la mission</h3>
+      </div>
+    </div>
+    <div class="form-card-body">
+      {{ form.title }}
+      {{ form.title.errors }}
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-card-header">
+      <div class="form-card-icon amber"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M16 2v4a2 2 0 0 0 2 2h4"/><rect x="2" y="2" width="18" height="18" rx="2"/><path d="M12 11v6"/><path d="M9 14h6"/></svg></div>
+      <div>
+        <p class="form-card-label">Description</p>
+        <h3 class="form-card-title">Expliquez la mission en d&#233;tail</h3>
+      </div>
+    </div>
+    <div class="form-card-body">
+      {{ form.description }}
+      {{ form.description.errors }}
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-card-header">
+      <div class="form-card-icon teal"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="12" cy="12" r="10"/><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path d="M12 9v6"/><path d="M9 12h6"/></svg></div>
+      <div>
+        <p class="form-card-label">R&#233;mun&#233;ration</p>
+        <h3 class="form-card-title">Combien proposez-vous ?</h3>
+      </div>
+    </div>
+    <div class="form-card-body">
+      {{ form.reward }}
+      {{ form.reward.errors }}
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-card-header">
+      <div class="form-card-icon rose"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+      <div>
+        <p class="form-card-label">Date limite</p>
+        <h3 class="form-card-title">Jusqu'&#224; quand ?</h3>
+      </div>
+    </div>
+    <div class="form-card-body">
+      {{ form.deadline }}
+      {{ form.deadline.errors }}
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-card-header">
+      <div class="form-card-icon indigo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>
+      <div>
+        <p class="form-card-label">Adresse d'arriv&#233;e</p>
+        <h3 class="form-card-title">O&#249; doit se rendre le tasker ?</h3>
+      </div>
+    </div>
+    <div class="form-card-body">
+      {{ form.arrival_address }}
+      {{ form.arrival_address.errors }}
+    </div>
+  </div>
+
+  <label class="form-card toggle-card">
+    <div class="form-card-header">
+      <div class="form-card-icon green"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2Z"/><circle cx="12" cy="13" r="4"/></svg></div>
+      <div>
+        <p class="form-card-label">Preuve</p>
+        <h3 class="form-card-title">Preuve photo requise</h3>
+      </div>
+    </div>
+    {{ form.proof_required }}
+    <div class="toggle-track"></div>
+  </label>
+
+  <div class="form-actions">
+    <a href="{% url 'tasks:client_dashboard' %}" class="btn-cancel">Annuler</a>
+    <button type="submit" class="btn-save">Sauvegarder</button>
+  </div>
+</form>
+{% endblock %}

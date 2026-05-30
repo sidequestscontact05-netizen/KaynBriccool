@@ -1,0 +1,64 @@
+{% extends 'base_admin.html' %}
+
+{% block title %}Vérifier — {{ verification.user.full_name }}{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-header">
+    <a href="{% url 'admin_sidequest:verifications' %}" class="btn-back" title="Retour">&#8592;</a>
+    <h1>Vérification de {{ verification.user.full_name }}</h1>
+</div>
+
+<div class="verification-detail">
+    <h2>Photos soumises</h2>
+    <div class="verification-photos">
+        {% if verification.face_photo_initial %}
+            <div class="verification-photo">
+                <span class="verification-photo-label">Photo initiale</span>
+                <img src="{{ verification.face_photo_initial.url }}" alt="Photo initiale">
+                <a href="{% url 'admin_sidequest:delete_face_photo' verification.id 'face_photo_initial' %}"
+                   class="btn-delete-photo"
+                   onclick="return confirm('Supprimer cette photo ?');">Supprimer</a>
+            </div>
+        {% endif %}
+        {% if verification.face_photo_left %}
+            <div class="verification-photo">
+                <span class="verification-photo-label">Visage gauche</span>
+                <img src="{{ verification.face_photo_left.url }}" alt="Photo gauche">
+                <a href="{% url 'admin_sidequest:delete_face_photo' verification.id 'face_photo_left' %}"
+                   class="btn-delete-photo"
+                   onclick="return confirm('Supprimer cette photo ?');">Supprimer</a>
+            </div>
+        {% endif %}
+        {% if verification.face_photo_right %}
+            <div class="verification-photo">
+                <span class="verification-photo-label">Visage droite</span>
+                <img src="{{ verification.face_photo_right.url }}" alt="Photo droite">
+                <a href="{% url 'admin_sidequest:delete_face_photo' verification.id 'face_photo_right' %}"
+                   class="btn-delete-photo"
+                   onclick="return confirm('Supprimer cette photo ?');">Supprimer</a>
+            </div>
+        {% endif %}
+        {% if verification.face_photo_blink %}
+            <div class="verification-photo">
+                <span class="verification-photo-label">Clignement</span>
+                <img src="{{ verification.face_photo_blink.url }}" alt="Photo clignement">
+                <a href="{% url 'admin_sidequest:delete_face_photo' verification.id 'face_photo_blink' %}"
+                   class="btn-delete-photo"
+                   onclick="return confirm('Supprimer cette photo ?');">Supprimer</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <form method="post" class="form form-wide">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Notes admin</label>
+            <textarea name="notes" class="form-input" rows="3" placeholder="Raison de l'approbation ou du rejet..."></textarea>
+        </div>
+        <div class="form-actions">
+            <button type="submit" name="action" value="approve" class="btn btn-admin-success"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Approuver</button>
+            <button type="submit" name="action" value="reject" class="btn btn-admin-danger"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Rejeter</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

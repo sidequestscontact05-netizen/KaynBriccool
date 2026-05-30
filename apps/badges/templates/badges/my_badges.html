@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Mes badges — SideQuest{% endblock %}
+
+{% block content %}
+<div class="page-header">
+        <a href="javascript:history.back()" class="btn-back" title="Retour">&#8592;</a>
+    <h1>Mes badges</h1>
+</div>
+
+{% if user.role == 'both' %}
+<div class="badge-role-tabs">
+    <a href="?role=client" class="badge-role-tab {% if active_role == 'client' or not active_role %}active{% endif %}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg> Client ({{ client_count }})
+    </a>
+    <a href="?role=tasker" class="badge-role-tab {% if active_role == 'tasker' %}active{% endif %}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Tasker ({{ tasker_count }})
+    </a>
+</div>
+{% endif %}
+
+{% if user_badges %}
+    <div class="badges-grid">
+        {% for ub in user_badges %}
+        <div class="badge-card" style="border-color: {{ ub.badge.color }}">
+            <div class="badge-card-icon" style="background: {{ ub.badge.color }}">
+                {{ ub.badge.icon }}
+            </div>
+            <h3>{{ ub.badge.name }}</h3>
+            <p>Obtenu le {{ ub.earned_at|date:"d/m/Y" }}</p>
+            {% if ub.badge.target_role != 'both' %}
+            <span class="badge-role-pill badge-role-{{ ub.badge.target_role }}">
+                {{ ub.badge.get_target_role_display }}
+            </span>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state">
+        <p>
+            {% if active_role == 'client' %}
+                Aucun badge client pour le moment. Publiez des quêtes et gagnez des badges !
+            {% elif active_role == 'tasker' %}
+                Aucun badge tasker pour le moment. Accomplissez des missions pour gagner des badges !
+            {% else %}
+                Vous n'avez pas encore de badges. Continuez à accomplir des missions !
+            {% endif %}
+        </p>
+    </div>
+{% endif %}
+{% endblock %}

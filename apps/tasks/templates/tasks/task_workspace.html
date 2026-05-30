@@ -1,0 +1,725 @@
+{% extends base_template %}
+{% load static %}
+
+{% block title %}Espace de travail — {{ task.title }}{% endblock %}
+
+{% block dashboard_content %}
+
+<style>
+.workspace {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.workspace-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.workspace-info { flex: 1; min-width: 0; }
+.workspace-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--sq-text);
+  margin: 0 0 4px;
+}
+.workspace-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+.workspace-meta-item {
+  font-size: 0.82rem;
+  color: var(--sq-text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.workspace-meta-item strong { color: var(--sq-text); }
+.workspace-meta-item .reward { color: var(--sq-primary); font-weight: 700; }
+.workspace-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.workspace-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--sq-border);
+  padding-bottom: 0;
+}
+.workspace-tab {
+  padding: 10px 18px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--sq-text-muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.workspace-tab:hover { color: var(--sq-text); }
+.workspace-tab.active {
+  color: var(--sq-primary);
+  border-bottom-color: var(--sq-primary);
+}
+.workspace-panel { display: none; }
+.workspace-panel.active { display: block; }
+
+/* Chat embedded */
+.ws-chat {
+  border: 1px solid var(--sq-border);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--sq-surface);
+}
+.ws-chat-messages {
+  height: 360px;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: var(--sq-bg);
+}
+.ws-chat-input {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--sq-border);
+  background: var(--sq-surface);
+}
+.ws-chat-input input { flex: 1; }
+.ws-chat-empty {
+  text-align: center;
+  color: var(--sq-text-muted);
+  padding: 2rem;
+  font-size: 0.85rem;
+}
+
+/* Status badge */
+.ws-badge {
+  display: inline-flex;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.ws-badge.published { background: rgba(82,183,136,0.12); color: #2D6A4F; }
+.ws-badge.accepted { background: rgba(59,130,246,0.12); color: #1D4ED8; }
+.ws-badge.in_progress { background: rgba(245,158,11,0.12); color: #B45309; }
+.ws-badge.awaiting_confirmation { background: rgba(139,92,246,0.12); color: #6D28D9; }
+.ws-badge.validated,
+.ws-badge.evaluated,
+.ws-badge.closed { background: rgba(82,183,136,0.12); color: #2D6A4F; }
+.ws-badge.cancelled,
+.ws-badge.rejected { background: rgba(239,68,68,0.12); color: #DC2626; }
+.ws-badge.litige { background: rgba(239,68,68,0.12); color: #DC2626; }
+.ws-badge.resolved { background: rgba(107,114,128,0.12); color: #4B5563; }
+.ws-badge.completed { background: rgba(82,183,136,0.12); color: #2D6A4F; }
+.ws-badge.draft { background: rgba(156,163,175,0.12); color: #6B7280; }
+
+.btn-ws {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.btn-ws-primary { background: var(--sq-primary); color: white; }
+.btn-ws-primary:hover { background: var(--sq-primary-dark); transform: translateY(-1px); }
+.btn-ws-outline { background: transparent; color: var(--sq-text); border: 1px solid var(--sq-border); }
+.btn-ws-outline:hover { border-color: var(--sq-primary); color: var(--sq-primary); }
+.btn-ws-success { background: #52B788; color: white; }
+.btn-ws-success:hover { background: #40916C; transform: translateY(-1px); }
+.btn-ws-warning { background: #F59E0B; color: white; }
+.btn-ws-warning:hover { background: #D97706; transform: translateY(-1px); }
+.btn-ws-danger { background: #EF4444; color: white; }
+.btn-ws-danger:hover { background: #DC2626; transform: translateY(-1px); }
+
+.ws-panel-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+.ws-panel-full { grid-column: 1 / -1; }
+
+.ws-proof-box {
+  background: var(--sq-surface);
+  border: 1px solid var(--sq-border);
+  border-radius: 14px;
+  padding: 1.25rem;
+}
+.ws-proof-box h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.ws-proof-box .ws-proof-meta {
+  font-size: 0.78rem;
+  color: var(--sq-text-muted);
+  margin-bottom: 1rem;
+}
+
+.ws-review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 1rem;
+}
+.ws-review-radio {
+  display: none;
+}
+.ws-review-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 2px solid var(--sq-border);
+  background: var(--sq-surface);
+  color: var(--sq-text);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.ws-review-radio:checked + .ws-review-label[data-action="accept"] { border-color: #52B788; background: rgba(82,183,136,0.1); color: #2D6A4F; }
+.ws-review-radio:checked + .ws-review-label[data-action="revision"] { border-color: #F59E0B; background: rgba(245,158,11,0.1); color: #B45309; }
+.ws-review-radio:checked + .ws-review-label[data-action="reject"] { border-color: #EF4444; background: rgba(239,68,68,0.1); color: #DC2626; }
+.ws-review-radio:checked + .ws-review-label[data-action="litige"] { border-color: #EF4444; background: rgba(239,68,68,0.1); color: #DC2626; }
+
+.ws-form-group {
+  margin-bottom: 1rem;
+}
+.ws-form-group label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--sq-text);
+  margin-bottom: 4px;
+}
+.ws-form-group textarea,
+.ws-form-group input[type="file"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--sq-border);
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-family: Inter, sans-serif;
+  box-sizing: border-box;
+}
+.ws-form-group textarea:focus {
+  outline: none;
+  border-color: var(--sq-primary);
+  box-shadow: 0 0 0 3px rgba(45,106,79,0.1);
+}
+.ws-form-group textarea { min-height: 80px; resize: vertical; }
+
+@media (max-width: 768px) {
+  .workspace-header { flex-direction: column; }
+  .workspace-meta { gap: 6px; }
+  .ws-panel-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+<div class="workspace">
+
+  <div class="workspace-header">
+    <div class="workspace-info">
+      <div class="page-header" style="margin-bottom:0.5rem;padding:0;">
+        <a href="javascript:history.back()" class="btn-back" title="Retour">&#8592;</a>
+        <h1 style="margin:0;font-size:1.2rem;">Espace de travail</h1>
+      </div>
+      <h2 class="workspace-title">{{ task.title }}</h2>
+      <span class="ws-badge {{ task.status }}">{{ task.get_status_display }}</span>
+      <div class="workspace-meta">
+        <span class="workspace-meta-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="12" cy="12" r="10"/><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path d="M12 9v6"/><path d="M9 12h6"/></svg> <strong class="reward">{{ task.reward }} DH</strong></span>
+        {% if task.deadline %}
+        <span class="workspace-meta-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> {{ task.deadline|date:"d/m/Y" }}</span>
+        {% endif %}
+        <span class="workspace-meta-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg> {{ task.arrival_address|truncatechars:40 }}</span>
+        <span class="workspace-meta-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> {% if request.user == task.client %}{{ task.assigned_tasker.full_name|default:"En attente" }}{% else %}{{ task.client.full_name }}{% endif %}</span>
+      </div>
+    </div>
+    <div class="workspace-actions">
+      {% if request.user == task.assigned_tasker %}
+        {% if task.status == 'accepted' %}
+          {% if not task.proof_required %}
+          <form method="post" style="display:inline;" onsubmit="this.querySelector('button').disabled = true; this.querySelector('button').textContent = 'Envoi…';">
+            {% csrf_token %}
+            <input type="hidden" name="complete_mission" value="1">
+            <button type="submit" class="btn-ws btn-ws-success"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> Terminer la mission</button>
+          </form>
+          {% else %}
+          <form method="post" action="{% url 'tasks:task_start' task.id %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn-ws btn-ws-primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polygon points="5 3 19 12 5 21 5 3"/></svg> Démarrer la mission</button>
+          </form>
+          {% endif %}
+        {% endif %}
+        {% if task.status == 'in_progress' and not task.proof_required %}
+          <form method="post" style="display:inline;" onsubmit="this.querySelector('button').disabled = true; this.querySelector('button').textContent = 'Envoi…';">
+            {% csrf_token %}
+            <input type="hidden" name="complete_mission" value="1">
+            <button type="submit" class="btn-ws btn-ws-success"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> Terminer la mission</button>
+          </form>
+        {% endif %}
+        {% if task.status == 'validated' or task.status == 'resolved' or task.status == 'evaluated' %}
+          <a href="{% url 'reputation:tasker_review_client' task.id %}" class="btn-ws btn-ws-outline"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Évaluer le client</a>
+        {% endif %}
+        {% if task.status == 'evaluated' or task.status == 'closed' or task.status == 'rejected' or task.status == 'cancelled' %}
+          <span class="btn-ws btn-ws-outline" style="opacity:0.6;cursor:default;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> {{ task.get_status_display }}</span>
+        {% endif %}
+      {% elif request.user == task.client %}
+        {% if task.status == 'published' %}
+          <a href="{% url 'tasks:task_detail' task.id %}" class="btn-ws btn-ws-primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Voir les candidatures</a>
+        {% endif %}
+        {% if task.status == 'validated' or task.status == 'resolved' %}
+          <a href="{% url 'tasks:task_evaluate' task.id %}" class="btn-ws btn-ws-primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Évaluer</a>
+        {% endif %}
+        {% if task.status == 'evaluated' %}
+          <form method="post" action="{% url 'tasks:task_close' task.id %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn-ws btn-ws-success"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> Clôturer</button>
+          </form>
+        {% endif %}
+        {% if task.status == 'draft' %}
+          <a href="{% url 'tasks:task_edit' task.id %}" class="btn-ws btn-ws-primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> Modifier</a>
+          <a href="{% url 'tasks:task_publish' task.id %}" class="btn-ws btn-ws-success"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09Z"/><path d="m12 15-3 3a2 2 0 0 0 0 4h1.5l.5-2 2-2"/><path d="M16 12c2.5-5 2-9 0-12-4 0-8 2-10 7"/></svg> Publier</a>
+        {% endif %}
+      {% elif is_admin %}
+        <span class="btn-ws btn-ws-outline" style="opacity:0.7;cursor:default;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Vue admin — lecture seule</span>
+      {% endif %}
+  </div>
+  </div>
+
+  {% if is_admin %}
+  <div class="admin-contact-box" style="background:#f0fdf4;border:1px solid #86efac;border-radius:12px;padding:1rem;margin-bottom:1rem;display:flex;gap:1.5rem;flex-wrap:wrap;">
+    <div style="flex:1;min-width:200px;">
+      <strong style="color:#166534;">Client</strong>
+      <div style="margin-top:4px;font-size:0.9rem;">
+        <div>{{ task.client.full_name }}</div>
+        <div style="color:var(--sq-text-muted);">{{ task.client.email }}</div>
+        {% if task.client.phone_number %}<div style="color:var(--sq-text-muted);">{{ task.client.phone_number }}</div>{% endif %}
+      </div>
+    </div>
+    <div style="flex:1;min-width:200px;">
+      <strong style="color:#166534;">Tasker</strong>
+      <div style="margin-top:4px;font-size:0.9rem;">
+        <div>{{ task.assigned_tasker.full_name|default:"—" }}</div>
+        {% if task.assigned_tasker %}
+        <div style="color:var(--sq-text-muted);">{{ task.assigned_tasker.email }}</div>
+        {% if task.assigned_tasker.phone_number %}<div style="color:var(--sq-text-muted);">{{ task.assigned_tasker.phone_number }}</div>{% endif %}
+        {% endif %}
+      </div>
+    </div>
+    {% if task.status == 'litige' %}
+    <div style="display:flex;align-items:center;">
+      <a href="{% url 'tasks:task_resolve_litige' task.id %}" class="btn-ws btn-ws-success" style="font-size:0.9rem;" onclick="return confirm('Résoudre ce litige ? La mission passera en Résolue.')">Résoudre le litige</a>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <div class="workspace-tabs">
+    <button class="workspace-tab active" data-tab="chat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Chat</button>
+    {% if not task.proof_required %}
+    <button class="workspace-tab" data-tab="mission"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> Mission</button>
+    {% endif %}
+    {% if task.proof_required %}
+    <button class="workspace-tab" data-tab="proof"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M16 2v4a2 2 0 0 0 2 2h4"/><rect x="2" y="2" width="18" height="18" rx="2"/><path d="M12 11v6"/><path d="M9 14h6"/></svg> Preuve</button>
+    {% endif %}
+  </div>
+
+  <!-- ─── PANEL: Chat ─── -->
+  <div class="workspace-panel active" id="panel-chat">
+    {% if conversation %}
+    <div class="ws-chat">
+      <div class="ws-chat-messages" id="ws-messages" data-conversation-id="{{ conversation.id }}" data-poll-url="{% url 'messaging:conversation_poll' conversation.id %}">
+        {% for msg in chat_messages %}
+          {% include 'messaging/snippets/message_bubble.html' with message=msg request_user=request.user %}
+        {% empty %}
+          <div class="ws-chat-empty">Aucun message pour le moment. Commencez la conversation !</div>
+        {% endfor %}
+      </div>
+      {% if not conversation.is_closed %}
+      <form method="post" class="ws-chat-input" id="ws-chat-form"
+            hx-post="{% url 'tasks:task_workspace' task.id %}"
+            hx-target="#ws-messages"
+            hx-swap="beforeend"
+            hx-on::after-request="document.getElementById('ws-chat-form').querySelector('[name=content]').value='';document.getElementById('ws-chat-form').querySelector('[name=content]').focus();">
+        {% csrf_token %}
+        <input type="hidden" name="send_message" value="1">
+        {{ chat_form.content }}
+        <button type="submit" class="btn-ws btn-ws-primary">Envoyer</button>
+      </form>
+      {% else %}
+      <div class="chat-closed-banner" style="border-radius:0;">
+        <p><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Conversation fermée</p>
+      </div>
+      {% endif %}
+    </div>
+    {% else %}
+    <div class="ws-chat-empty" style="padding:3rem;border:1px dashed var(--sq-border);border-radius:14px;">
+      <p style="font-size:1rem;margin:0;">Aucune conversation active pour cette mission.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  {% if not task.proof_required %}
+  <!-- ─── PANEL: Mission (sans preuve) ─── -->
+  <div class="workspace-panel" id="panel-mission">
+    {% if is_tasker %}
+      {% if task.status == 'accepted' or task.status == 'in_progress' %}
+        <div class="ws-proof-box" style="text-align:center;padding:2rem;">
+          <div style="font-size:3rem;margin-bottom:1rem;">🎯</div>
+          <h3 style="margin:0 0 0.5rem;">Mission terminée ?</h3>
+          <p style="color:var(--sq-text-muted);max-width:400px;margin:0 auto 1.5rem;">Confirmez que vous avez accompli la mission. Le client sera notifié pour valider la fin.</p>
+          <form method="post" onsubmit="this.querySelector('button').disabled = true; this.querySelector('button').textContent = 'Envoi…';">
+            {% csrf_token %}
+            <input type="hidden" name="complete_mission" value="1">
+            <button type="submit" class="btn-ws btn-ws-success" style="font-size:1.1rem;padding:0.9rem 2.5rem;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;"><polyline points="20 6 9 17 4 12"/></svg> Terminer la mission</button>
+          </form>
+        </div>
+      {% elif task.status == 'awaiting_confirmation' %}
+        <div class="ws-proof-box" style="text-align:center;padding:2rem;">
+          <div style="font-size:3rem;margin-bottom:1rem;">⏳</div>
+          <h3 style="margin:0 0 0.5rem;">En attente du client</h3>
+          <p style="color:var(--sq-text-muted);">Vous avez marqué la mission comme terminée. Le client doit confirmer la fin.</p>
+        </div>
+      {% elif task.status == 'validated' or task.status == 'evaluated' or task.status == 'closed' or task.status == 'resolved' %}
+        <div class="ws-proof-box" style="text-align:center;padding:2rem;">
+          <div style="font-size:3rem;margin-bottom:1rem;">✅</div>
+          <h3 style="margin:0 0 0.5rem;">Mission terminée !</h3>
+          <p style="color:var(--sq-text-muted);">Cette mission est terminée. Merci pour votre travail !</p>
+        </div>
+      {% elif task.status == 'rejected' or task.status == 'cancelled' or task.status == 'litige' %}
+        <div class="ws-proof-box" style="text-align:center;padding:2rem;border-color:#DC2626;">
+          <div style="font-size:3rem;margin-bottom:1rem;">❌</div>
+          <h3 style="margin:0 0 0.5rem;">Mission {{ task.get_status_display|lower }}</h3>
+          <p style="color:var(--sq-text-muted);">Cette mission n'a pas abouti.</p>
+        </div>
+      {% else %}
+        <div class="ws-chat-empty" style="padding:3rem;border:1px dashed var(--sq-border);border-radius:14px;">
+          <p style="font-size:1rem;margin:0;">Le suivi de mission apparaîtra ici.</p>
+        </div>
+      {% endif %}
+    {% else %}
+      {# ── CLIENT ── #}
+      {% if task.status == 'awaiting_confirmation' %}
+        <div class="ws-panel-grid">
+          <div class="ws-proof-box" style="text-align:center;padding:2rem;">
+            <div style="font-size:3rem;margin-bottom:1rem;">🚀</div>
+            <h3 style="margin:0 0 0.5rem;">Le tasker a terminé la mission</h3>
+            <p style="color:var(--sq-text-muted);max-width:400px;margin:0 auto 1.5rem;">{{ task.assigned_tasker.full_name }} a marqué cette mission comme terminée. Confirmez-vous que tout est en ordre ?</p>
+          </div>
+          <div class="ws-proof-box">
+            <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M4 10V3h16v7"/><path d="M4 10v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1"/><path d="M12 3v13"/><path d="M8 22h8"/><path d="M12 22v-6"/></svg> Votre décision</h3>
+            <p class="ws-proof-meta">Confirmez la fin de mission ou ouvrez un litige.</p>
+            <form method="post" onsubmit="this.querySelector('button[type=submit]').disabled = true; this.querySelector('button[type=submit]').textContent = 'Traitement…';">
+              {% csrf_token %}
+              <input type="hidden" name="confirm_completion" value="1">
+              <div class="ws-review-actions">
+                <input type="radio" name="completion_action" value="accept" id="ca_accept" class="ws-review-radio" checked>
+                <label for="ca_accept" class="ws-review-label" data-action="accept"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Confirmer</label>
+                <input type="radio" name="completion_action" value="litige" id="ca_litige" class="ws-review-radio">
+                <label for="ca_litige" class="ws-review-label" data-action="litige"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Litige</label>
+              </div>
+              <div class="ws-form-group" style="margin-top:1rem;">
+                <label for="id_completion_notes">Notes (obligatoire pour litige)</label>
+                <textarea name="notes" id="id_completion_notes" rows="3" placeholder="Expliquez pourquoi vous ouvrez un litige..."></textarea>
+              </div>
+              <button type="submit" class="btn-ws btn-ws-primary" style="margin-top:0.5rem;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> Confirmer la décision</button>
+            </form>
+          </div>
+        </div>
+      {% elif task.status == 'validated' or task.status == 'evaluated' or task.status == 'closed' or task.status == 'resolved' %}
+        <div class="ws-proof-box" style="text-align:center;padding:2rem;">
+          <div style="font-size:3rem;margin-bottom:1rem;">✅</div>
+          <h3 style="margin:0 0 0.5rem;">Mission terminée !</h3>
+          <p style="color:var(--sq-text-muted);">Merci d'avoir confirmé la fin de cette mission.</p>
+        </div>
+      {% elif task.status == 'litige' %}
+        <div class="ws-proof-box" style="text-align:center;padding:2rem;border-color:#DC2626;">
+          <div style="font-size:3rem;margin-bottom:1rem;">⚖️</div>
+          <h3 style="margin:0 0 0.5rem;">Litige ouvert</h3>
+          <p style="color:var(--sq-text-muted);">Un litige est en cours pour cette mission.</p>
+        </div>
+      {% else %}
+        <div class="ws-chat-empty" style="padding:3rem;border:1px dashed var(--sq-border);border-radius:14px;">
+          <p style="font-size:1rem;margin:0;">Le suivi de mission apparaîtra ici une fois le tasker en cours.</p>
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% if task.proof_required %}
+  <!-- ─── PANEL: Preuve ─── -->
+  <div class="workspace-panel" id="panel-proof">
+    {% if is_tasker %}
+      {# ── TASKER: soumettre la preuve ── #}
+      {% if is_revision %}
+        <div class="ws-proof-box" style="border-color:#F59E0B;">
+          <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M16 2v4a2 2 0 0 0 2 2h4"/><rect x="2" y="2" width="18" height="18" rx="2"/><path d="M12 11v6"/><path d="M9 14h6"/></svg> Preuve soumise</h3>
+          <p class="ws-proof-meta">Soumis le {{ existing_proof.submitted_at|date:"d/m/Y à H:i" }} — <strong>Modification demandée</strong></p>
+          <div class="ws-revision-notes" style="background:#FEF3C7;border:1px solid #F59E0B;border-radius:10px;padding:0.75rem 1rem;margin-bottom:1rem;">
+            <strong style="color:#92400E;">Note du client :</strong>
+            <p style="margin:0.25rem 0 0;color:#78350F;">{{ existing_proof.revision_notes|default:"Aucune précision." }}</p>
+          </div>
+          <p>{{ existing_proof.description|linebreaks }}</p>
+          {% if existing_proof.photos %}
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.75rem;margin-top:0.75rem;">
+            {% for url in existing_proof.photos %}
+            <img src="{{ url }}" alt="Photo preuve" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;border:1px solid var(--sq-border);">
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        <div class="ws-proof-box" style="margin-top:1rem;">
+          <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg> Renvoyer la preuve corrigée</h3>
+          <form method="post" enctype="multipart/form-data" onsubmit="document.querySelector('#resend-correction-btn').disabled = true; this.querySelector('button[type=submit]').textContent = 'Envoi en cours…';">
+            {% csrf_token %}
+            <input type="hidden" name="submit_proof" value="1">
+            <div class="ws-form-group">
+              <label for="id_description">{{ proof_form.description.label }}</label>
+              {{ proof_form.description }}
+              {{ proof_form.description.errors }}
+            </div>
+            <div class="ws-form-group">
+              <label for="id_photos">{{ proof_form.photos.label }}</label>
+              {{ proof_form.photos }}
+              {{ proof_form.photos.errors }}
+            </div>
+            <button type="submit" id="resend-correction-btn" class="btn-ws btn-ws-success"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> Envoyer la correction</button>
+          </form>
+        </div>
+      {% elif existing_proof %}
+        <div class="ws-proof-box">
+          <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M16 2v4a2 2 0 0 0 2 2h4"/><rect x="2" y="2" width="18" height="18" rx="2"/><path d="M12 11v6"/><path d="M9 14h6"/></svg> Preuve soumise</h3>
+          <p class="ws-proof-meta">Soumis le {{ existing_proof.submitted_at|date:"d/m/Y à H:i" }}</p>
+          <p>{{ existing_proof.description|linebreaks }}</p>
+          {% if existing_proof.photos %}
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.75rem;margin-top:0.75rem;">
+            {% for url in existing_proof.photos %}
+            <img src="{{ url }}" alt="Photo preuve" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;border:1px solid var(--sq-border);">
+            {% endfor %}
+          </div>
+          {% endif %}
+          <p style="margin-top:1rem;font-size:0.85rem;color:var(--sq-text-muted);">
+            Statut :
+            {% if existing_proof.client_review == 'pending' %}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> En attente du client
+            {% elif existing_proof.client_review == 'accepted' %}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Accepté
+            {% elif existing_proof.client_review == 'revision' %}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Modification demandée
+            {% elif existing_proof.client_review == 'rejected' %}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Refusé
+            {% endif %}
+          </p>
+        </div>
+      {% elif task.status == 'accepted' or task.status == 'in_progress' %}
+        <div class="ws-proof-box">
+          <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg> Soumettre une preuve</h3>
+          <p class="ws-proof-meta">Décrivez le travail accompli et ajoutez des photos.</p>
+          <form method="post" enctype="multipart/form-data" onsubmit="document.querySelector('#submit-proof-btn').disabled = true; this.querySelector('button[type=submit]').textContent = 'Envoi en cours…';">
+            {% csrf_token %}
+            <input type="hidden" name="submit_proof" value="1">
+            <div class="ws-form-group">
+              <label for="id_description">{{ proof_form.description.label }}</label>
+              {{ proof_form.description }}
+              {{ proof_form.description.errors }}
+            </div>
+            <div class="ws-form-group">
+              <label for="id_photos">{{ proof_form.photos.label }}</label>
+              {{ proof_form.photos }}
+              {{ proof_form.photos.errors }}
+            </div>
+            <button type="submit" id="submit-proof-btn" class="btn-ws btn-ws-success"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> Soumettre comme terminé</button>
+          </form>
+        </div>
+      {% else %}
+        <div class="ws-chat-empty" style="padding:3rem;border:1px dashed var(--sq-border);border-radius:14px;">
+          <p style="font-size:1rem;margin:0;">La preuve sera disponible ici une fois la mission démarrée.</p>
+        </div>
+      {% endif %}
+    {% else %}
+      {# ── CLIENT: consulter et réviser la preuve ── #}
+      {% if existing_proof %}
+      <div class="ws-panel-grid">
+        <div class="ws-proof-box">
+          <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M16 2v4a2 2 0 0 0 2 2h4"/><rect x="2" y="2" width="18" height="18" rx="2"/><path d="M12 11v6"/><path d="M9 14h6"/></svg> Preuve soumise</h3>
+          <p class="ws-proof-meta">Soumis le {{ existing_proof.submitted_at|date:"d/m/Y à H:i" }} par <strong>{{ existing_proof.tasker.full_name }}</strong></p>
+          <p>{{ existing_proof.description|linebreaks }}</p>
+          {% if existing_proof.photos %}
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:0.75rem;margin-top:0.75rem;">
+            {% for url in existing_proof.photos %}
+            <img src="{{ url }}" alt="Photo preuve" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;border:1px solid var(--sq-border);cursor:pointer;" onclick="window.open(this.src)">
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        {% if task.status == 'awaiting_confirmation' and existing_proof.client_review == 'pending' %}
+        <div class="ws-proof-box">
+          <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M4 10V3h16v7"/><path d="M4 10v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1"/><path d="M12 3v13"/><path d="M8 22h8"/><path d="M12 22v-6"/></svg> Votre décision</h3>
+          <p class="ws-proof-meta">Validez la preuve ou demandez des modifications.</p>
+          <form method="post" onsubmit="document.querySelector('#decision-submit-btn').disabled = true; this.querySelector('button[type=submit]').textContent = 'Traitement en cours…';">
+            {% csrf_token %}
+            <input type="hidden" name="review_proof" value="1">
+            <div class="ws-review-actions">
+              <input type="radio" name="action" value="accept" id="ra_accept" class="ws-review-radio" checked>
+              <label for="ra_accept" class="ws-review-label" data-action="accept"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Accepter</label>
+              <input type="radio" name="action" value="revision" id="ra_revision" class="ws-review-radio">
+              <label for="ra_revision" class="ws-review-label" data-action="revision"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Révision</label>
+              <input type="radio" name="action" value="reject" id="ra_reject" class="ws-review-radio">
+              <label for="ra_reject" class="ws-review-label" data-action="reject"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Refuser</label>
+              <input type="radio" name="action" value="litige" id="ra_litige" class="ws-review-radio">
+              <label for="ra_litige" class="ws-review-label" data-action="litige"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Litige</label>
+            </div>
+            <div class="ws-form-group" style="margin-top:1rem;">
+              <label for="id_notes">Notes (obligatoire pour révision/refus/litige)</label>
+              <textarea name="notes" id="id_notes" rows="3" placeholder="Expliquez votre décision..."></textarea>
+            </div>
+            <button type="submit" id="decision-submit-btn" class="btn-ws btn-ws-primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> Confirmer la décision</button>
+          </form>
+        </div>
+        {% else %}
+        <div class="ws-proof-box">
+          <p>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> Décision :
+            {% if existing_proof.client_review == 'accepted' %}<strong style="color:#2D6A4F;">Acceptée</strong>
+            {% elif existing_proof.client_review == 'revision' %}<strong style="color:#B45309;">Modification demandée</strong>
+            {% elif existing_proof.client_review == 'rejected' %}<strong style="color:#DC2626;">Refusée</strong>
+            {% elif existing_proof.client_review == 'pending' %}<strong style="color:#6D28D9;">En attente</strong>
+            {% endif %}
+          </p>
+          {% if existing_proof.revision_notes %}
+          <p style="font-size:0.82rem;color:var(--sq-text-muted);margin:0.5rem 0 0;">{{ existing_proof.revision_notes }}</p>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+      {% else %}
+      <div class="ws-chat-empty" style="padding:3rem;border:1px dashed var(--sq-border);border-radius:14px;">
+        <p style="font-size:1rem;margin:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> En attente de la preuve du tasker.</p>
+      </div>
+      {% endif %}
+    {% endif %}
+  </div>
+  {% endif %}
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var tabs = document.querySelectorAll('.workspace-tab');
+  var defaultTab = 'chat';
+
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('tab') === 'proof') defaultTab = 'proof';
+  if (params.get('tab') === 'mission') defaultTab = 'mission';
+
+  tabs.forEach(function(tab) {
+    if (tab.dataset.tab === defaultTab) {
+      tab.classList.add('active');
+    } else {
+      tab.classList.remove('active');
+    }
+  });
+  document.querySelectorAll('.workspace-panel').forEach(function(p) { p.classList.remove('active'); });
+  var panel = document.getElementById('panel-' + defaultTab);
+  if (panel) panel.classList.add('active');
+
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      tabs.forEach(function(t) { t.classList.remove('active'); });
+      tab.classList.add('active');
+      document.querySelectorAll('.workspace-panel').forEach(function(p) { p.classList.remove('active'); });
+      document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  var chatMsgs = document.getElementById('ws-messages');
+  if (chatMsgs) {
+    chatMsgs.scrollTop = chatMsgs.scrollHeight;
+    document.addEventListener('htmx:afterRequest', function(evt) {
+      if (evt.detail.target && evt.detail.target.id === 'ws-messages') {
+        chatMsgs.scrollTop = chatMsgs.scrollHeight;
+        if (evt.detail.successful) {
+          var lastId = evt.detail.xhr.responseText.match(/data-message-id="([^"]+)"/);
+          if (lastId) window._chatLastId = lastId[1];
+        }
+      }
+    });
+
+    var conversationId = chatMsgs.dataset.conversationId;
+    var pollUrl = chatMsgs.dataset.pollUrl;
+    var lastId = '';
+    if (window._chatLastId) lastId = window._chatLastId;
+    setInterval(function() {
+      if (window._chatLastId && window._chatLastId !== lastId) {
+        lastId = window._chatLastId;
+      }
+      var url = pollUrl + (lastId ? '?last_id=' + lastId : '');
+      fetch(url)
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.messages && data.messages.length > 0) {
+            data.messages.forEach(function(msg) {
+              if (chatMsgs.querySelector('[data-message-id="' + msg.id + '"]')) return;
+              var bubble = document.createElement('div');
+              bubble.className = 'message-bubble ' + (msg.is_mine ? 'message-mine' : 'message-other');
+              bubble.dataset.messageId = msg.id;
+              bubble.innerHTML = '<div class="message-content">' + msg.content + '</div><span class="message-time">' + new Date(msg.created_at).toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'}) + '</span>';
+              chatMsgs.appendChild(bubble);
+              lastId = msg.id;
+            });
+            chatMsgs.scrollTop = chatMsgs.scrollHeight;
+          }
+        })
+        .catch(function(err) { console.error('Poll error:', err); });
+    }, 3000);
+  }
+});
+
+{% if user.is_authenticated and request.user == task.assigned_tasker %}
+// ── Onboarding contextual tips (tasker only) ──
+(function() {
+  var check = setInterval(function() {
+    try {
+      var guide = window.Alpine ? Alpine.store('guide') : null;
+      if (!guide) return;
+      clearInterval(check);
+
+      // Step 6 — Workspace Introduction
+      {% if task.status == 'accepted' or task.status == 'in_progress' or task.status == 'awaiting_confirmation' %}
+      if (!sessionStorage.getItem('sq_tip_step6')) {
+        guide.showTip('Voici ton espace de travail priv\u00e9 pour la mission. Utilise l\u2019onglet Chat pour communiquer avec le client et l\u2019onglet Preuve pour soumettre ton travail termin\u00e9. Toute la collaboration se fait ici.', { duration: 14000 });
+        sessionStorage.setItem('sq_tip_step6', '1');
+      }
+      {% endif %}
+
+      // Step 7 — Completion System
+      {% if task.status == 'validated' or task.status == 'evaluated' or task.status == 'closed' or task.status == 'resolved' %}
+      if (!sessionStorage.getItem('sq_tip_step7')) {
+        guide.showTip('Mission termin\u00e9e ! Une fois que le client a valid\u00e9 ton travail et que vous vous \u00eates \u00e9valu\u00e9s, la mission se cl\u00f4ture. Tu gagnes de l\u2019XP, des r\u00e9compenses et tu b\u00e2tis ta r\u00e9putation \u00e0 chaque qu\u00eate r\u00e9ussie.', { duration: 14000 });
+        sessionStorage.setItem('sq_tip_step7', '1');
+      }
+      {% endif %}
+    } catch(e) {}
+  }, 200);
+})();
+{% endif %}
+</script>
+{% endblock %}

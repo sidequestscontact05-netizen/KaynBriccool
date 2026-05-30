@@ -1,0 +1,34 @@
+{% extends 'base_admin.html' %}
+
+{% block title %}Admin — Sous-catégories{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-header">
+    <a href="{% url 'admin_sidequest:dashboard' %}" class="btn-back" title="Retour">&#8592;</a>
+    <h1>Sous-catégories</h1>
+    <a href="{% url 'admin_sidequest:create_subcategory' %}" class="btn btn-admin">+ Ajouter</a>
+</div>
+
+<table class="admin-table">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Catégorie</th>
+            <th>Slug</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for sub in subcategories %}
+        <tr>
+            <td>{{ sub.name }}</td>
+            <td><span class="badge badge-info">{{ sub.category.name }}</span></td>
+            <td>{{ sub.slug }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3" class="text-center text-muted">Aucune sous-catégorie.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

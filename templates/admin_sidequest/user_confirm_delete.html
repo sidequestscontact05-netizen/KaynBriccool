@@ -1,0 +1,21 @@
+{% extends 'base_admin.html' %}
+
+{% block title %}Supprimer — {{ profile_user.full_name }}{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-header">
+    <a href="{% url 'admin_sidequest:user_detail' profile_user.id %}" class="btn-back" title="Retour">&#8592;</a>
+    <h1>Supprimer {{ profile_user.full_name }}</h1>
+</div>
+
+<div class="admin-confirm">
+    <p>Es-tu sûr de vouloir supprimer <strong>{{ profile_user.full_name }}</strong> ?</p>
+    <p class="text-muted">Cette action est irréversible. Toutes les données de l'utilisateur seront perdues.</p>
+
+    <form method="post" class="admin-confirm-form">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-admin-danger">Confirmer la suppression</button>
+        <a href="{% url 'admin_sidequest:user_detail' profile_user.id %}" class="btn btn-admin-outline">Annuler</a>
+    </form>
+</div>
+{% endblock %}

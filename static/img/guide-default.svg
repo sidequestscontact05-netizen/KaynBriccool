@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 200" fill="none">
+  <!-- Body -->
+  <path d="M60 120 L80 200 L100 120" fill="#2D6A4F" stroke="#1B4332" stroke-width="2"/>
+  <!-- Belt -->
+  <rect x="62" y="108" width="36" height="8" rx="4" fill="#1B4332"/>
+  <circle cx="80" cy="112" r="4" fill="#F5F0EB" stroke="#1B4332" stroke-width="1"/>
+  <!-- Arms waving -->
+  <path d="M60 116 L30 96" stroke="#40916C" stroke-width="8" stroke-linecap="round"/>
+  <path d="M100 116 L130 96" stroke="#40916C" stroke-width="8" stroke-linecap="round"/>
+  <!-- Hands -->
+  <circle cx="30" cy="96" r="6" fill="#E8B4A0"/>
+  <circle cx="130" cy="96" r="6" fill="#E8B4A0"/>
+  <!-- Head -->
+  <circle cx="80" cy="56" r="40" fill="#F5F0EB" stroke="#2D6A4F" stroke-width="2"/>
+  <!-- Hat -->
+  <path d="M44 46 Q80 4 116 46" fill="#2D6A4F" stroke="#1B4332" stroke-width="1.5"/>
+  <circle cx="80" cy="36" r="4" fill="#95D5B2"/>
+  <!-- Eyes -->
+  <circle cx="68" cy="54" r="3.5" fill="#1a1a2e"/>
+  <circle cx="92" cy="54" r="3.5" fill="#1a1a2e"/>
+  <circle cx="69.5" cy="52.5" r="1.2" fill="white"/>
+  <circle cx="93.5" cy="52.5" r="1.2" fill="white"/>
+  <!-- Beard -->
+  <path d="M50 62 Q80 86 110 62" fill="#E8E0D8" stroke="#D4C8BE" stroke-width="1.2"/>
+  <!-- Nose -->
+  <ellipse cx="80" cy="62" rx="5" ry="4" fill="#E8B4A0"/>
+  <!-- Smile -->
+  <path d="M73 70 Q80 76 87 70" stroke="#1a1a2e" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <!-- Cheeks -->
+  <circle cx="54" cy="64" r="5" fill="#F0C0B0" opacity="0.35"/>
+  <circle cx="106" cy="64" r="5" fill="#F0C0B0" opacity="0.35"/>
+  <!-- Legs -->
+  <rect x="64" y="192" width="14" height="12" rx="4" fill="#1B4332"/>
+  <rect x="82" y="192" width="14" height="12" rx="4" fill="#1B4332"/>
+  <!-- Shoes -->
+  <ellipse cx="64" cy="198" rx="10" ry="5" fill="#1a1a2e"/>
+  <ellipse cx="96" cy="198" rx="10" ry="5" fill="#1a1a2e"/>
+</svg>

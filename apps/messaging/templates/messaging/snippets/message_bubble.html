@@ -1,0 +1,4 @@
+<div class="message-bubble {% if message.sender == request_user %}message-mine{% else %}message-other{% endif %}" data-message-id="{{ message.id }}">
+    <div class="message-content">{{ message.content }}</div>
+    <span class="message-time">{{ message.created_at|date:"H:i" }}</span>
+</div>

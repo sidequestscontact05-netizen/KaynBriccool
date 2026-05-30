@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}Mon profil — SideQuest{% endblock %}
+
+{% block content %}
+<div class="page-header">
+        <a href="javascript:history.back()" class="btn-back" title="Retour">&#8592;</a>
+    <h1>Mon profil</h1>
+</div>
+<div class="profile-container">
+    <div class="profile-header">
+        {% if user.avatar %}
+            <img src="{{ user.avatar.url }}" alt="{{ user.full_name }}" class="profile-avatar">
+        {% else %}
+            <div class="profile-avatar profile-avatar-placeholder">{{ user.full_name|first|upper }}</div>
+        {% endif %}
+        <h1>{{ user.full_name }}</h1>
+        <p class="profile-email">{{ user.email }}</p>
+        {% if user.phone_number %}
+            <p class="profile-phone">
+                {{ user.phone_number }}
+                {% if user.phone_verified %}
+                    <span class="badge badge-success">Vérifié</span>
+                {% else %}
+                    <span class="badge badge-warning">Non vérifié</span>
+                {% endif %}
+            </p>
+        {% endif %}
+    </div>
+
+    <div class="profile-stats">
+        {% if profile.xp or profile.level %}
+        <div class="stat-card stat-card-xp">
+            <span class="stat-value">Niv. {{ profile.level }}</span>
+            <span class="stat-label">{{ profile.xp }} XP</span>
+        </div>
+        {% endif %}
+        {% if user.is_tasker or user.role == 'both' %}
+            <div class="stat-card">
+                <span class="stat-value">{{ profile.tasker_rating_avg }}</span>
+                <span class="stat-label">Note moyenne</span>
+                <span class="stat-count">({{ profile.tasker_rating_count }} avis)</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">{{ profile.tasks_completed }}</span>
+                <span class="stat-label">Tâches réalisées</span>
+            </div>
+        {% endif %}
+        {% if user.is_client or user.role == 'both' %}
+            <div class="stat-card">
+                <span class="stat-value">{{ profile.client_rating_avg }}</span>
+                <span class="stat-label">Note client</span>
+                <span class="stat-count">({{ profile.client_rating_count }} avis)</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">{{ profile.tasks_published }}</span>
+                <span class="stat-label">Tâches publiées</span>
+            </div>
+        {% endif %}
+        {% if user.is_tasker or user.role == 'both' %}
+        <div class="stat-card">
+            <span class="stat-value">{% if user.is_verified %}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>{% else %}—{% endif %}</span>
+            <span class="stat-label">Identité {% if user.is_verified %}vérifiée{% else %}en attente{% endif %}</span>
+        </div>
+        {% endif %}
+    </div>
+
+     {% if user.badges_earned.exists %}
+     <div class="profile-badges-glass">
+          <div class="badges-header-glass">
+              <div class="badges-title-wrapper">
+                  <h2 class="badges-title-glass">Mes Badges</h2>
+                  <span class="badges-count-glass">{{ user.badges_earned.count }}</span>
+              </div>
+          </div>
+         {% if user.role == 'both' %}
+             <div class="badge-category-glass">
+                 <div class="category-header-glass">
+                     <span class="category-emoji-glass"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg></span>
+                     <h3 class="category-title-glass">Client</h3>
+                 </div>
+                 <div class="badges-showcase-glass">
+                     {% for ub in user.badges_earned.all %}
+                         {% if ub.badge.target_role == 'client' or ub.badge.target_role == 'both' %}
+                         <div class="badge-card-glass" style="--badge-hue: {{ ub.badge.color }}">
+                             <div class="badge-icon-glass">
+                                 <span class="badge-emoji-glass">{{ ub.badge.icon }}</span>
+                             </div>
+                             <div class="badge-info-glass">
+                                 <h4 class="badge-name-glass">{{ ub.badge.name }}</h4>
+                                 <span class="badge-date-glass"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg> {{ ub.earned_at|date:"M Y" }}</span>
+                                 {% if ub.badge.description %}
+                                 <p class="badge-desc-glass">{{ ub.badge.description }}</p>
+                                 {% endif %}
+                             </div>
+                         </div>
+                         {% endif %}
+                     {% endfor %}
+                 </div>
+             </div>
+             <div class="badge-category-glass">
+                 <div class="category-header-glass">
+                     <span class="category-emoji-glass"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
+                     <h3 class="category-title-glass">Tasker</h3>
+                 </div>
+                 <div class="badges-showcase-glass">
+                     {% for ub in user.badges_earned.all %}
+                         {% if ub.badge.target_role == 'tasker' or ub.badge.target_role == 'both' %}
+                         <div class="badge-card-glass" style="--badge-hue: {{ ub.badge.color }}">
+                             <div class="badge-icon-glass">
+                                 <span class="badge-emoji-glass">{{ ub.badge.icon }}</span>
+                             </div>
+                             <div class="badge-info-glass">
+                                 <h4 class="badge-name-glass">{{ ub.badge.name }}</h4>
+                                 <span class="badge-date-glass"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg> {{ ub.earned_at|date:"M Y" }}</span>
+                                 {% if ub.badge.description %}
+                                 <p class="badge-desc-glass">{{ ub.badge.description }}</p>
+                                 {% endif %}
+                             </div>
+                         </div>
+                         {% endif %}
+                     {% endfor %}
+                 </div>
+             </div>
+         {% else %}
+             <div class="badges-showcase-glass">
+                 {% for ub in user.badges_earned.all %}
+                 <div class="badge-card-glass" style="--badge-hue: {{ ub.badge.color }}">
+                     <div class="badge-icon-glass">
+                         <span class="badge-emoji-glass">{{ ub.badge.icon }}</span>
+                     </div>
+                     <div class="badge-info-glass">
+                         <h4 class="badge-name-glass">{{ ub.badge.name }}</h4>
+                         <span class="badge-date-glass"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg> {{ ub.earned_at|date:"M Y" }}</span>
+                         {% if ub.badge.description %}
+                         <p class="badge-desc-glass">{{ ub.badge.description }}</p>
+                         {% endif %}
+                     </div>
+                 </div>
+                 {% endfor %}
+             </div>
+         {% endif %}
+     </div>
+     {% endif %}
+
+    <div class="profile-edit">
+        <h2>Modifier le profil</h2>
+        <form method="post" enctype="multipart/form-data" class="form">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.full_name.label_tag }}
+                {{ form.full_name }}
+            </div>
+            <div class="form-group">
+                {{ form.phone_number.label_tag }}
+                {{ form.phone_number }}
+            </div>
+            <div class="form-group">
+                {{ form.avatar.label_tag }}
+                {{ form.avatar }}
+            </div>
+            <button type="submit" class="btn btn-primary">Sauvegarder</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

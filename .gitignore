@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+*.egg
+.venv/
+venv/
+env/
+
+# Django
+*.sqlite3
+local.sqlite3
+media/
+staticfiles/
+static/CACHE/
+
+# Env
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Project specific
+backup/
+tmp/
+*.log
+server_*.log
+_check_emoji.py
+check_*.py
+!check_migration*.py

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ badge.name }} — SideQuest{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <a href="{% url 'badges:badge_list' %}" class="btn-back" title="Retour">&#8592;</a>
+    <h1>{{ badge.name }}</h1>
+</div>
+    <p>{{ badge.description }}</p>
+
+    <h2>Condition d'obtention</h2>
+    <div class="badge-condition">
+        <p>{{ badge.get_condition_type_display }}</p>
+        {% for key, value in badge.condition_value.items %}
+            <p><strong>{{ key }} :</strong> {{ value }}</p>
+        {% endfor %}
+    </div>
+
+    <h2>Attribué à {{ badge.user_badges.count }} utilisateur(s)</h2>
+</div>
+{% endblock %}

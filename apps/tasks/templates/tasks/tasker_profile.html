@@ -1,0 +1,92 @@
+{% extends 'base_tasker.html' %}
+{% load task_extras %}
+
+{% block title %}Profil — SideQuest{% endblock %}
+
+{% block dashboard_content %}
+
+<div class="page-header">
+    <a href="{% url 'tasks:tasker_dashboard' %}" class="btn-back" title="Retour">&#8592;</a>
+    <h1>Mon Profil</h1>
+</div>
+
+{% with level=user.profile.level xp=user.profile.xp %}
+
+<div class="profile-header">
+    <div class="profile-avatar">
+        {% if user.avatar %}
+        <img src="{{ user.avatar.url }}" alt="{{ user.full_name }}">
+        {% else %}
+        {{ user.full_name|first|upper }}
+        {% endif %}
+    </div>
+    <h1 class="profile-name">{{ user.full_name }}</h1>
+    <p class="profile-title">Niveau {{ level }} · {{ level|rank_name }} · <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="0.5" style="vertical-align:middle;margin:-2px 1px 0 0;color:#FFD60A;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> {{ user.profile.tasker_rating_avg|floatformat:1 }}</p>
+    <div class="profile-stats-row">
+        <div class="profile-stat">
+            <div class="profile-stat-value">{{ xp }} XP</div>
+            <div class="profile-stat-label">Expérience</div>
+        </div>
+        <div class="profile-stat">
+            <div class="profile-stat-value">Niv. {{ level }}</div>
+            <div class="profile-stat-label">Niveau</div>
+        </div>
+        <div class="profile-stat">
+            <div class="profile-stat-value">{{ user.profile.tasks_completed|default:"0" }}</div>
+            <div class="profile-stat-label">Missions</div>
+        </div>
+        <div class="profile-stat">
+            <div class="profile-stat-value"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="0.5" style="vertical-align:middle;margin:-2px 1px 0 0;color:#FFD60A;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> {{ user.profile.tasker_rating_avg|floatformat:1 }}</div>
+            <div class="profile-stat-label">Note moyenne</div>
+        </div>
+    </div>
+</div>
+
+{% endwith %}
+
+{% if all_badges %}
+<div class="badges-section">
+    <div class="section-header">
+        <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg> Badges</h2>
+        <a href="{% url 'badges:my_badges' %}" class="section-link">Voir tout →</a>
+    </div>
+    <div class="badges-grid">
+        {% for badge in all_badges %}
+        <div class="badge-cell {% if badge.slug not in earned_slugs %}locked{% endif %}">
+            <span class="badge-cell-icon">{{ badge.icon }}</span>
+            <span class="badge-cell-name">{{ badge.name }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div class="stats-box">
+    <div class="section-header">
+        <h2>Statistiques détaillées</h2>
+    </div>
+    <div class="stats-box-item">
+        <span class="stats-box-value">{{ user.profile.xp }} XP</span>
+        <span class="stats-box-label">Total XP</span>
+    </div>
+    <div class="stats-box-item">
+        <span class="stats-box-value">{{ user.profile.tasks_completed }}</span>
+        <span class="stats-box-label">Missions complétées</span>
+    </div>
+    <div class="stats-box-item">
+            <span class="stats-box-value"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="0.5" style="vertical-align:middle;margin:-2px 2px 0 0;color:#FFD60A;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> {{ user.profile.tasker_rating_avg|floatformat:2 }}</span>
+        <span class="stats-box-label">Note moyenne</span>
+    </div>
+    <div class="stats-box-item">
+        <span class="stats-box-value">{{ user.profile.tasker_rating_count }}</span>
+        <span class="stats-box-label">Nombre d'avis</span>
+    </div>
+    <div class="stats-box-item">
+        <span class="stats-box-value">{{ user.profile.level }}</span>
+        <span class="stats-box-label">Niveau</span>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block dashboard_right %}{% endblock %}

@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+/* Override base container for admin - full width */
+main.container {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Admin dashboard layout */
+.dashboard-layout { display: flex; gap: 0; min-height: calc(100vh - 60px); }
+.sidebar {
+    width: 240px;
+    background: var(--sq-surface);
+    border-right: 1px solid var(--sq-border);
+    padding: 1.5rem 0;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0 1.5rem 1.5rem;
+    border-bottom: 1px solid var(--sq-border);
+    margin-bottom: 1rem;
+}
+.sidebar-brand-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--sq-admin-accent), #A78BFA);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: white;
+}
+.sidebar-brand-text { font-weight: 700; font-size: 1.1rem; color: var(--sq-text); }
+.sidebar-brand-sub { font-size: 0.7rem; color: var(--sq-text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.sidebar nav { display: flex; flex-direction: column; gap: 2px; padding: 0 0.75rem; }
+.sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 1rem;
+    border-radius: var(--radius-md);
+    color: var(--sq-text-muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all var(--transition);
+    text-decoration: none;
+}
+.sidebar a:hover { background: var(--sq-admin-light); color: var(--sq-admin-accent); }
+.sidebar a.active { background: var(--sq-admin-accent); color: white; box-shadow: 0 2px 8px rgba(124,58,237,0.3); }
+.sidebar a .nav-icon { font-size: 1.1rem; width: 22px; text-align: center; }
+
+/* Admin header */
+.dashboard-content {
+    flex: 1;
+    min-width: 0;
+    padding: 1.5rem 2rem;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.admin-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--sq-border);
+}
+.admin-header-bar h1 { margin: 0; font-size: 1.5rem; font-weight: 800; color: var(--sq-text); }
+
+/* Stats cards */
+.admin-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+.admin-stat-card {
+    background: var(--sq-surface);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--sq-border);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all var(--transition);
+}
+.admin-stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.admin-stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+}
+.admin-stat-icon.users { background: #EEF2FF; }
+.admin-stat-icon.clients { background: #F0FDF4; }
+.admin-stat-icon.taskers { background: #ECFEFF; }
+.admin-stat-icon.verifications { background: #FFF7ED; }
+.admin-stat-icon.missions { background: #FDF2F8; }
+.admin-stat-icon.litiges { background: #FEE2E2; }
+.admin-stat-icon.tasks { background: #F5F3FF; }
+.admin-stat-body { flex: 1; }
+.admin-stat-value { font-size: 1.5rem; font-weight: 800; color: var(--sq-text); }
+.admin-stat-label { font-size: 0.8rem; color: var(--sq-text-muted); font-weight: 500; }
+
+/* Admin sections */
+.admin-section {
+    background: var(--sq-surface);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--sq-border);
+}
+.admin-section h2 { margin: 0 0 1rem; font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+
+/* Admin search */
+.admin-search-form {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+.admin-search-form .admin-search-input {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* Table responsive wrapper */
+.admin-table-wrapper {
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+}
+
+/* Admin table */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    min-width: 600px;
+}
+.admin-table th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    background: var(--sq-bg);
+    font-weight: 600;
+    color: var(--sq-text-muted);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border-bottom: 2px solid var(--sq-border);
+}
+.admin-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--sq-border);
+    vertical-align: middle;
+}
+.admin-table tr:last-child td { border-bottom: none; }
+.admin-table a { color: var(--sq-admin-accent); text-decoration: none; font-weight: 500; }
+.admin-table a:hover { text-decoration: underline; }
+
+/* Admin badges */
+.admin-role-badge {
+    display: inline-block;
+    padding: 0.2rem 0.65rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+.admin-role-badge.admin { background: #D8F3DC; color: #1B4332; }
+.admin-role-badge.client { background: #D8F3DC; color: #2D6A4F; }
+.admin-role-badge.tasker { background: #95D5B2; color: #2D6A4F; }
+.admin-role-badge.both { background: #D8F3DC; color: #52B788; }
+
+/* Admin action buttons */
+.btn-admin { background: var(--sq-admin-accent); color: white; border: none; padding: 0.5rem 1rem; border-radius: var(--radius-md); font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all var(--transition); text-decoration: none; display: inline-block; }
+.btn-admin:hover { background: #6D28D9; }
+.btn-admin-outline { background: transparent; color: var(--sq-admin-accent); border: 1px solid var(--sq-admin-accent); padding: 0.4rem 0.85rem; border-radius: var(--radius-md); font-weight: 500; font-size: 0.8rem; cursor: pointer; transition: all var(--transition); text-decoration: none; display: inline-block; }
+.btn-admin-outline:hover { background: var(--sq-admin-light); }
+.btn-admin-danger { background: #EF4444; color: white; border: none; padding: 0.4rem 0.85rem; border-radius: var(--radius-md); font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: all var(--transition); text-decoration: none; display: inline-block; }
+.btn-admin-danger:hover { background: #DC2626; }
+.btn-admin-warning { background: #F59E0B; color: white; border: none; padding: 0.4rem 0.85rem; border-radius: var(--radius-md); font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: all var(--transition); text-decoration: none; display: inline-block; }
+.btn-admin-warning:hover { background: #D97706; }
+.btn-admin-success { background: #10B981; color: white; border: none; padding: 0.4rem 0.85rem; border-radius: var(--radius-md); font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: all var(--transition); text-decoration: none; display: inline-block; }
+.btn-admin-success:hover { background: #059669; }
+
+/* Quick actions row */
+.admin-quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+.admin-quick-action {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    background: var(--sq-surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    text-decoration: none;
+    color: var(--sq-text);
+    transition: all var(--transition);
+    border: 1px solid var(--sq-border);
+}
+.admin-quick-action:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--sq-admin-accent); }
+.admin-quick-action-icon { font-size: 1.5rem; }
+.admin-quick-action-label { font-weight: 600; font-size: 0.85rem; }
+
+/* Litige card */
+.litige-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: var(--sq-bg);
+    border-radius: var(--radius-md);
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+}
+.litige-card:last-child { margin-bottom: 0; }
+
+/* Admin form wide */
+.form-wide {
+    max-width: 100%;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .dashboard-layout { flex-direction: column; }
+    .sidebar { width: 100%; height: auto; position: relative; border-right: none; border-bottom: 1px solid var(--sq-border); padding: 0.75rem 0; }
+    .sidebar-brand { display: none; }
+    .sidebar nav { flex-direction: row; overflow-x: auto; gap: 0.25rem; padding: 0 0.75rem; }
+    .sidebar a { white-space: nowrap; padding: 0.5rem 0.75rem; font-size: 0.8rem; }
+    .dashboard-content { padding: 1rem; }
+    .admin-stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .admin-quick-actions { grid-template-columns: 1fr; }
+    .admin-table { font-size: 0.8rem; }
+    .admin-table th, .admin-table td { padding: 0.5rem; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div>
+                <div class="sidebar-brand-text">SideQuest</div>
+                <div class="sidebar-brand-sub">Admin</div>
+            </div>
+        </div>
+        <nav>
+            <a href="{% url 'admin_sidequest:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg></span> Tableau de bord
+            </a>
+            <a href="{% url 'admin_sidequest:users' %}" class="{% if request.resolver_match.url_name == 'users' or request.resolver_match.url_name == 'user_detail' or request.resolver_match.url_name == 'ban_user' or request.resolver_match.url_name == 'delete_user' %}active{% endif %}">
+                <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> Utilisateurs
+            </a>
+            <a href="{% url 'admin_sidequest:categories' %}" class="{% if 'categorie' in request.resolver_match.url_name|default:'' %}active{% endif %}">
+                <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg></span> Catégories
+            </a>
+            <a href="{% url 'admin_sidequest:subcategories' %}" class="{% if 'subcategory' in request.resolver_match.url_name|default:'' %}active{% endif %}">
+                <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/><path d="M2 10h20"/></svg></span> Sous-catégories
+            </a>
+            <a href="{% url 'admin_sidequest:badges' %}" class="{% if request.resolver_match.url_name == 'badges' or request.resolver_match.url_name == 'create_badge' or request.resolver_match.url_name == 'edit_badge' %}active{% endif %}">
+                <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg></span> Badges
+            </a>
+            <a href="{% url 'admin_sidequest:verifications' %}" class="{% if request.resolver_match.url_name == 'verifications' or request.resolver_match.url_name == 'verify_face' %}active{% endif %}">
+                <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span> Face ID
+            </a>
+        </nav>
+    </aside>
+    <div class="dashboard-content">
+        {% block dashboard_content %}{% endblock %}
+    </div>
+</div>
+{% endblock %}

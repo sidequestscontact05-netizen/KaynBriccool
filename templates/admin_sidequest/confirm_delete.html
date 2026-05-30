@@ -1,0 +1,24 @@
+{% extends 'base_admin.html' %}
+
+{% block title %}Confirmer la suppression{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-header">
+    {% if return_url %}
+        <a href="{% url return_url %}" class="btn-back" title="Retour">&#8592;</a>
+    {% endif %}
+    <h1>Supprimer</h1>
+</div>
+
+<div class="admin-confirm">
+    <p>Es-tu sûr de vouloir supprimer <strong>{{ item }}</strong> ?</p>
+
+    <form method="post" class="admin-confirm-form">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-admin-danger">Confirmer</button>
+        {% if return_url %}
+            <a href="{% url return_url %}" class="btn btn-admin-outline">Annuler</a>
+        {% endif %}
+    </form>
+</div>
+{% endblock %}

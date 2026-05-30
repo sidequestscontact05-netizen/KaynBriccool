@@ -1,0 +1,889 @@
+/* ========================================
+   Guide Gnome — SideQuest Mascot System
+   ======================================== */
+
+/* ─── Gnome SVG sizes ─── */
+.gnome-face {
+  width: 48px;
+  height: 48px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.gnome-sm {
+  width: 64px;
+  height: 80px;
+}
+.gnome-md {
+  width: 96px;
+  height: 120px;
+}
+.gnome-lg {
+  width: 128px;
+  height: 160px;
+}
+.gnome-xl {
+  width: 160px;
+  height: 200px;
+}
+
+.gnome-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* ─── Positioning helpers ─── */
+.gnome-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.gnome-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.gnome-corner {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  z-index: 100;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.gnome-corner:hover {
+  transform: scale(1.05);
+}
+.gnome-corner .gnome-md {
+  opacity: 0.7;
+  transition: opacity 0.3s;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.08));
+}
+.gnome-corner:hover .gnome-md {
+  opacity: 1;
+}
+.gnome-corner:focus-visible {
+  outline: 2px solid var(--lp-accent);
+  outline-offset: 4px;
+  border-radius: 50%;
+}
+
+/* ─── Empty states ─── */
+.gnome-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  gap: 0.75rem;
+}
+.gnome-empty-text {
+  font-size: 0.95rem;
+  color: var(--lp-text-secondary);
+  max-width: 280px;
+  line-height: 1.5;
+}
+.gnome-empty-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--lp-text);
+}
+
+/* ─── Tip card ─── */
+.gnome-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: var(--lp-surface);
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius-md);
+  max-width: 360px;
+  box-shadow: var(--lp-shadow-md);
+}
+.gnome-tip-text {
+  font-size: 0.82rem;
+  color: var(--lp-text);
+  line-height: 1.5;
+}
+.gnome-tip-text strong {
+  color: var(--lp-accent);
+  font-weight: 600;
+}
+.gnome-tip-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ─── Tooltip ─── */
+.gnome-tooltip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: help;
+}
+.gnome-tooltip-content {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--lp-surface);
+  color: var(--lp-text);
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--lp-radius-sm);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  white-space: nowrap;
+  max-width: 240px;
+  white-space: normal;
+  box-shadow: var(--lp-shadow-lg);
+  border: 1px solid var(--lp-border);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  transform: translateX(-50%) translateY(4px);
+  z-index: 100;
+}
+.gnome-tooltip:hover .gnome-tooltip-content,
+.gnome-tooltip:focus .gnome-tooltip-content {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.gnome-tooltip-content::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--lp-border);
+}
+
+/* ─── Animations ─── */
+@keyframes gnomeBob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+.gnome-bob {
+  animation: gnomeBob 3s ease-in-out infinite;
+}
+
+@keyframes gnomeWave {
+  0%, 100% { transform: rotate(0deg); }
+  25%      { transform: rotate(-12deg); }
+  75%      { transform: rotate(12deg); }
+}
+.gnome-wave {
+  animation: gnomeWave 2s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes gnomeCelebrate {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25%      { transform: scale(1.05) rotate(-3deg); }
+  75%      { transform: scale(1.05) rotate(3deg); }
+}
+.gnome-celebrate {
+  animation: gnomeCelebrate 1s ease-in-out infinite;
+}
+
+@keyframes gnomeFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.gnome-fade-in {
+  animation: gnomeFadeIn 0.5s ease-out forwards;
+}
+
+.gnome-fade-in-delay-1 { animation-delay: 0.1s; }
+.gnome-fade-in-delay-2 { animation-delay: 0.2s; }
+.gnome-fade-in-delay-3 { animation-delay: 0.3s; }
+
+@keyframes gnomeGlow {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(82, 183, 136, 0.25)); }
+  50%      { filter: drop-shadow(0 0 16px rgba(82, 183, 136, 0.55)); }
+}
+.gnome-glow .gnome-md {
+  animation: gnomeGlow 2s ease-in-out infinite, gnomeBob 3s ease-in-out infinite;
+}
+.gnome-glow::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #e74c3c;
+  box-shadow: 0 1px 4px rgba(231, 76, 60, 0.5);
+  z-index: 2;
+}
+
+.gnome-notification-dot {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #e74c3c;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(231, 76, 60, 0.4);
+  z-index: 2;
+  line-height: 1;
+}
+
+.gnome-corner-tooltip {
+  position: absolute;
+  right: calc(100% + 14px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--lp-surface);
+  border: 1px solid var(--lp-border);
+  border-radius: 12px;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.8rem;
+  color: var(--lp-text);
+  white-space: nowrap;
+  box-shadow: var(--lp-shadow-lg);
+  pointer-events: auto;
+  z-index: 101;
+  line-height: 1.4;
+}
+.gnome-corner-tooltip::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 6px solid transparent;
+  border-left-color: var(--lp-surface);
+}
+.gnome-corner-start-btn {
+  display: block;
+  margin-top: 6px;
+  padding: 5px 12px;
+  border: none;
+  border-radius: 8px;
+  background: var(--lp-accent);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.gnome-corner-start-btn:hover {
+  background: var(--lp-primary);
+}
+
+/* ─── Gnome buttons ─── */
+.gnome-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.5rem;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  line-height: 1.3;
+  border: 1px solid var(--lp-border);
+  background: var(--lp-surface);
+  color: var(--lp-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+.gnome-btn:hover {
+  border-color: var(--lp-accent);
+  color: var(--lp-accent);
+  transform: translateY(-1px);
+  box-shadow: var(--lp-shadow-md);
+}
+
+.gnome-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.75rem;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.3;
+  border: none;
+  background: var(--lp-accent);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(82, 183, 136, 0.3);
+}
+.gnome-btn-primary:hover {
+  background: var(--lp-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(82, 183, 136, 0.4);
+}
+.gnome-btn-primary:active {
+  transform: translateY(0);
+}
+.gnome-btn-primary svg,
+.gnome-btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* ─── Onboarding / tutorial bubble ─── */
+.gnome-bubble {
+  position: relative;
+  background: var(--lp-surface);
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius-lg);
+  padding: 1rem 1.25rem;
+  box-shadow: var(--lp-shadow-lg);
+  max-width: 300px;
+}
+.gnome-bubble::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-top-color: var(--lp-surface);
+  filter: drop-shadow(0 1px 0 var(--lp-border));
+}
+.gnome-bubble-text {
+  font-size: 0.85rem;
+  color: var(--lp-text);
+  line-height: 1.5;
+  margin: 0;
+}
+.gnome-bubble-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--lp-primary);
+  margin: 0 0 0.25rem;
+}
+
+/* ─── Responsive ─── */
+/* ─── Help Panel ─── */
+.help-panel-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.25);
+  z-index: 998;
+}
+.help-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 380px;
+  max-width: 90vw;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--lp-surface);
+  box-shadow: -4px 0 24px rgba(0,0,0,0.1);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.help-panel-header {
+  padding: 1.5rem 1.5rem 1rem;
+  text-align: center;
+  border-bottom: 1px solid var(--lp-border);
+  position: relative;
+  flex-shrink: 0;
+}
+.help-panel-gnome {
+  width: 56px;
+  height: 72px;
+  margin: 0 auto 0.5rem;
+}
+.help-panel-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--lp-text);
+}
+.help-panel-header p {
+  margin: 0.15rem 0 0;
+  font-size: 0.82rem;
+  color: var(--lp-text-secondary);
+}
+.help-panel-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: var(--lp-bg);
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--lp-text-secondary);
+  transition: all 0.2s;
+  line-height: 1;
+}
+.help-panel-close:hover {
+  background: var(--lp-border);
+  color: var(--lp-text);
+}
+.help-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.5rem 2rem;
+}
+.help-btn-tour {
+  width: 100%;
+  padding: 0.85rem;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--lp-accent), var(--lp-primary));
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+  margin-bottom: 1.5rem;
+}
+.help-btn-tour:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.help-faq-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--lp-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.75rem;
+}
+.help-faq-item {
+  border: 1px solid var(--lp-border);
+  border-radius: 10px;
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+}
+.help-faq-question {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--lp-text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  transition: background 0.2s;
+}
+.help-faq-question:hover {
+  background: var(--lp-bg);
+}
+.help-faq-question svg {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s;
+  color: var(--lp-text-secondary);
+}
+.help-faq-question svg.rotated {
+  transform: rotate(180deg);
+}
+.help-faq-answer {
+  padding: 0 1rem 0.75rem;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--lp-text-secondary);
+}
+
+/* ─── Tour System ─── */
+.tour-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+}
+.tour-mask-highlight {
+  position: absolute;
+  box-shadow: 0 0 0 9999px rgba(0,0,0,0.45);
+  border-radius: 10px;
+  transition: all 0.35s ease;
+  z-index: 1001;
+  pointer-events: none;
+}
+.tour-tooltip {
+  position: fixed;
+  z-index: 1002;
+  background: var(--lp-surface);
+  border: 1px solid var(--lp-border);
+  border-radius: 14px;
+  padding: 1.25rem 1.25rem 1rem;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  max-width: 340px;
+  width: max-content;
+  pointer-events: auto;
+}
+.tour-tooltip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+}
+.tour-tooltip-step {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--lp-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.tour-tooltip-close {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: var(--lp-bg);
+  border-radius: 50%;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--lp-text-secondary);
+  transition: all 0.2s;
+  line-height: 1;
+}
+.tour-tooltip-close:hover {
+  background: var(--lp-border);
+  color: var(--lp-text);
+}
+.tour-tooltip-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--lp-text);
+  margin: 0 0 0.3rem;
+}
+.tour-tooltip-desc {
+  font-size: 0.83rem;
+  color: var(--lp-text-secondary);
+  line-height: 1.5;
+  margin: 0 0 0.9rem;
+}
+.tour-tooltip-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.tour-btn-skip {
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--lp-border);
+  border-radius: 8px;
+  background: none;
+  font-size: 0.8rem;
+  color: var(--lp-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tour-btn-skip:hover {
+  border-color: var(--lp-text-secondary);
+  color: var(--lp-text);
+}
+.tour-btn-next {
+  padding: 0.45rem 1.15rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--lp-accent);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tour-btn-next:hover {
+  background: var(--lp-primary);
+}
+.tour-btn-finish {
+  background: var(--lp-primary);
+}
+
+/* ─── Level-up overlay ─── */
+.gnome-level-up {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.35);
+}
+.gnome-level-up-card {
+  background: var(--lp-surface);
+  border-radius: 20px;
+  padding: 2rem 2.5rem;
+  text-align: center;
+  max-width: 320px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+}
+.gnome-level-up-card .gnome-lg {
+  margin: 0 auto;
+}
+.gnome-level-up-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--lp-primary);
+  margin: 0.75rem 0 0.25rem;
+}
+.gnome-level-up-sub {
+  font-size: 0.9rem;
+  color: var(--lp-text-secondary);
+  margin: 0 0 1.25rem;
+}
+.gnome-level-up-btn {
+  padding: 0.7rem 2rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--lp-accent);
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.gnome-level-up-btn:hover {
+  background: var(--lp-primary);
+}
+
+/* ─── Responsive ─── */
+/* ─── Help Search ─── */
+.help-search {
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius-md);
+  font-size: 0.82rem;
+  color: var(--lp-text);
+  background: var(--lp-bg);
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+.help-search:focus {
+  border-color: var(--lp-accent);
+}
+.help-search::placeholder {
+  color: var(--lp-text-secondary);
+  opacity: 0.7;
+}
+
+/* ─── FAQ Category ─── */
+.help-faq-category {
+  margin-bottom: 1.25rem;
+}
+.help-faq-cat-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--lp-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.5rem;
+}
+
+/* ─── FAQ Items (revised inside help-panel) ─── */
+.help-faq-q {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--lp-text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  transition: background 0.2s;
+  font-family: inherit;
+}
+.help-faq-q:hover {
+  background: var(--lp-bg);
+}
+.help-faq-q svg {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  transition: transform 0.2s;
+  color: var(--lp-text-secondary);
+}
+.help-faq-q svg.rotate-180 {
+  transform: rotate(180deg);
+}
+.help-faq-a {
+  padding: 0 1rem 0.75rem;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--lp-text-secondary);
+}
+
+/* ─── Guide Bubble (mascot speech bubble) ─── */
+@keyframes guideBubbleIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.guide-bubble {
+  position: fixed;
+  bottom: calc(1.25rem + 120px + 14px);
+  right: 1.25rem;
+  z-index: 99;
+  background: var(--lp-surface);
+  border: 1px solid var(--lp-border);
+  border-radius: 16px;
+  padding: 0;
+  max-width: 320px;
+  width: calc(100vw - 2.5rem);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  animation: guideBubbleIn 0.35s ease-out;
+}
+.guide-bubble::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  right: 32px;
+  border: 10px solid transparent;
+  border-top-color: var(--lp-surface);
+  filter: drop-shadow(0 1px 0 var(--lp-border));
+}
+.guide-bubble-progress {
+  height: 3px;
+  background: var(--lp-bg);
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
+}
+.guide-bubble-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--lp-accent), var(--lp-primary));
+  border-radius: 16px 16px 0 0;
+  transition: width 0.4s ease;
+}
+.guide-bubble-body {
+  padding: 1rem 1.25rem 0.9rem;
+}
+.guide-bubble-msg {
+  margin: 0 0 0.85rem;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--lp-text);
+  white-space: pre-line;
+}
+.guide-bubble-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+.guide-bubble-btn {
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  font-family: inherit;
+  line-height: 1.3;
+}
+.guide-bubble-btn-skip {
+  background: transparent;
+  color: var(--lp-text-secondary);
+  border: 1px solid var(--lp-border);
+}
+.guide-bubble-btn-skip:hover {
+  border-color: var(--lp-text-secondary);
+  color: var(--lp-text);
+}
+.guide-bubble-btn-primary {
+  background: var(--lp-accent);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(82, 183, 136, 0.25);
+}
+.guide-bubble-btn-primary:hover {
+  background: var(--lp-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(82, 183, 136, 0.35);
+}
+
+/* ─── Guide Highlight (subtle element focus) ─── */
+@keyframes guideHighlightPulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(82, 183, 136, 0.4), 0 0 16px rgba(82, 183, 136, 0.15); }
+  50%      { box-shadow: 0 0 0 5px rgba(82, 183, 136, 0.6), 0 0 24px rgba(82, 183, 136, 0.25); }
+}
+.guide-highlight {
+  position: fixed;
+  z-index: 98;
+  pointer-events: none;
+  border: 2px solid var(--lp-accent);
+  border-radius: 10px;
+  animation: guideHighlightPulse 2s ease-in-out infinite;
+  transition: all 0.35s ease;
+}
+
+@media (max-width: 640px) {
+  .gnome-corner {
+    bottom: 0.75rem;
+    right: 0.75rem;
+  }
+  .gnome-corner-tooltip {
+    display: none;
+  }
+  .gnome-tip {
+    max-width: 100%;
+  }
+  .gnome-empty {
+    padding: 2rem 1rem;
+  }
+  .gnome-lg { width: 96px; height: 120px; }
+  .gnome-xl { width: 128px; height: 160px; }
+  .help-panel {
+    width: 100vw;
+    max-width: 100vw;
+    border-radius: 0;
+  }
+  .tour-tooltip {
+    max-width: 280px;
+  }
+  .guide-bubble {
+    bottom: calc(0.75rem + 120px + 10px);
+    right: 0.75rem;
+    max-width: calc(100vw - 1.5rem);
+  }
+  .guide-bubble::after {
+    right: 24px;
+  }
+}

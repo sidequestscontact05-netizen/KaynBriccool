@@ -1,0 +1,127 @@
+/* ─── MOBILE-FIRST RESPONSIVE ─── */
+
+/* Small phones */
+@media (max-width: 480px) {
+  .container { padding: 0.75rem !important; }
+  h1 { font-size: 1.3rem !important; }
+  h2 { font-size: 1.1rem !important; }
+
+  .topbar-inner { padding: 0 0.75rem; }
+  .topbar-logo { font-size: 1rem; }
+  .topbar-menu { width: 85vw !important; }
+  .topbar-menu-nav a { font-size: 0.85rem; padding: 0.7rem 1rem; }
+
+  .grid-3, .badges-grid, .profile-stats { grid-template-columns: 1fr 1fr !important; }
+  .quick-actions-grid { grid-template-columns: 1fr 1fr !important; gap: 6px; }
+
+  .page-header { flex-wrap: wrap; gap: 0.4rem; }
+  .page-header h1 { font-size: 1.1rem !important; }
+
+  .auth-card { padding: 1.25rem !important; margin: 0.5rem; }
+  .auth-card h2 { font-size: 1.2rem; }
+
+  .task-card { padding: 0.75rem; }
+  .task-card-footer { flex-direction: column; align-items: stretch; gap: 0.5rem; }
+  .task-actions { width: 100%; display: flex; gap: 6px; }
+  .task-actions .btn { flex: 1; text-align: center; font-size: 0.8rem; padding: 8px 12px; }
+
+  .search-bar { flex-direction: column !important; }
+  .search-bar > div, .search-bar select, .search-bar input, .search-bar button { width: 100% !important; min-width: unset !important; }
+  .search-bar button { justify-content: center; }
+
+  .flash-messages { left: 0.5rem; right: 0.5rem; max-width: none; }
+
+  .workspace-header { flex-direction: column; align-items: flex-start !important; gap: 0.5rem; }
+  .workspace-info { width: 100%; }
+  .workspace-actions { width: 100%; flex-wrap: wrap; }
+  .workspace-actions .btn-ws, .workspace-actions form { width: 100%; }
+  .workspace-actions .btn-ws { text-align: center; justify-content: center; }
+  .workspace-meta { flex-wrap: wrap; gap: 0.3rem; }
+  .workspace-meta-item { font-size: 0.78rem; }
+
+  .workspace-tabs { overflow-x: auto; flex-wrap: nowrap; gap: 0; }
+  .workspace-tab { font-size: 0.78rem; padding: 0.55rem 0.75rem; white-space: nowrap; flex-shrink: 0; }
+
+  .ws-chat-messages { height: 50vh !important; }
+  .ws-chat-input { flex-direction: column; gap: 6px; }
+  .ws-chat-input input, .ws-chat-input textarea { width: 100%; }
+  .ws-chat-input button { width: 100%; justify-content: center; }
+
+  .ws-proof-box { padding: 1rem !important; }
+  .ws-panel-grid { grid-template-columns: 1fr !important; }
+  .ws-review-actions { flex-wrap: wrap; gap: 4px; }
+  .ws-review-label { font-size: 0.75rem; padding: 6px 10px; }
+
+  .admin-contact-box { flex-direction: column !important; gap: 0.75rem !important; }
+
+  .dashboard-content { padding: 0.75rem !important; }
+  .dashboard-layout { flex-direction: column !important; }
+  .dashboard-main, .dashboard-right { width: 100% !important; }
+
+  .sidebar nav { overflow-x: auto; flex-wrap: nowrap; }
+  .sidebar a { font-size: 0.78rem; padding: 0.4rem 0.65rem; white-space: nowrap; }
+
+  .missions-list .mission-card { flex-direction: column; align-items: stretch !important; gap: 0.5rem; }
+  .mission-body { width: 100%; }
+  .mission-right { width: 100%; display: flex; justify-content: space-between; align-items: center; }
+
+  .leaderboard-item { flex-wrap: wrap; gap: 0.5rem; }
+  .leaderboard-stats { flex-wrap: wrap; }
+  .podium { flex-direction: column; align-items: center; gap: 1rem; }
+  .podium-item { width: 100% !important; max-width: 280px; }
+  .podium-1 { order: -1; }
+
+  .notif-layout { grid-template-columns: 1fr !important; }
+
+  .tabs { overflow-x: auto; flex-wrap: nowrap; }
+  .tab { font-size: 0.78rem; padding: 0.45rem 0.7rem; white-space: nowrap; flex-shrink: 0; }
+
+  .form-row { flex-direction: column; }
+  .form-actions { flex-direction: column; }
+  .form-actions .btn { width: 100%; justify-content: center; }
+
+  .hero h1 { font-size: 1.6rem !important; }
+  .hero-actions { flex-direction: column; }
+  .hero-actions .btn { width: 100%; text-align: center; }
+
+  .admin-stats-grid { grid-template-columns: 1fr 1fr !important; gap: 0.5rem; }
+  .admin-table { font-size: 0.78rem; }
+  .admin-table th, .admin-table td { padding: 6px 8px; }
+  .litige-card { flex-direction: column; align-items: stretch !important; gap: 0.5rem; }
+
+  .face-steps { grid-template-columns: 1fr !important; }
+
+  .category-filters { overflow-x: auto; flex-wrap: nowrap; }
+  .category-filter { font-size: 0.78rem; padding: 0.4rem 0.7rem; white-space: nowrap; flex-shrink: 0; }
+
+  .pagination { flex-wrap: wrap; justify-content: center; gap: 4px; }
+  .pagination .btn { font-size: 0.78rem; padding: 6px 10px; }
+
+  .empty-panel, .empty-state { padding: 2rem 1rem !important; }
+}
+
+/* Tablets */
+@media (min-width: 481px) and (max-width: 768px) {
+  .container { padding: 1rem !important; }
+
+  .dashboard-layout { flex-direction: column !important; }
+  .dashboard-main, .dashboard-right { width: 100% !important; }
+
+  .workspace-tabs { overflow-x: auto; }
+  .ws-panel-grid { grid-template-columns: 1fr !important; }
+
+  .search-bar { flex-wrap: wrap; }
+  .search-bar > div { min-width: 160px !important; flex: 1 1 45% !important; }
+
+  .podium { gap: 0.75rem; }
+
+  .quick-actions-grid { grid-template-columns: repeat(3, 1fr) !important; }
+  .admin-stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+/* Small desktops */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .dashboard-layout { gap: 1rem; }
+  .sidebar a { font-size: 0.82rem; padding: 0.5rem 0.75rem; }
+  .quick-actions-grid { grid-template-columns: repeat(4, 1fr) !important; }
+}

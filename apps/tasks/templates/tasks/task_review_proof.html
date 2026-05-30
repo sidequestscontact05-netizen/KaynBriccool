@@ -1,0 +1,118 @@
+{% extends 'base_client.html' %}
+
+{% block title %}Réviser la preuve — {{ task.title }}{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-header">
+    <a href="javascript:history.back()" class="btn-back" title="Retour">&#8592;</a>
+    <h1>Réviser la preuve</h1>
+</div>
+<div class="proof-review-container">
+    <p class="text-muted">Mission : <strong>{{ task.title }}</strong></p>
+
+    <div class="tasker-card">
+        <img src="{{ proof.tasker.profile.avatar_url|default:'/static/images/default-avatar.png' }}" alt="{{ proof.tasker.get_full_name }}" class="tasker-avatar">
+        <div>
+            <strong>{{ proof.tasker.get_full_name }}</strong>
+            <p class="text-muted">Soumis le {{ proof.submitted_at|date:"d/m/Y à H:i" }}</p>
+        </div>
+    </div>
+
+    <div class="proof-content">
+        <h2>Description de la preuve</h2>
+        <p>{{ proof.description|linebreaks }}</p>
+
+        {% if proof.photos %}
+            <h2>Photos</h2>
+            <div class="proof-photos">
+                {% for photo_url in proof.photos %}
+                    <img src="{{ photo_url }}" alt="Preuve {{ forloop.counter }}" class="proof-photo">
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    {% if not already_reviewed and task.status == 'awaiting_confirmation' %}
+    <form method="post" class="form form-wide" onsubmit="document.querySelector('#review-submit-btn').disabled = true; this.querySelector('button[type=submit]').textContent = 'Traitement en cours…';">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.action.label_tag }}
+            {{ form.action }}
+        </div>
+        <div class="form-group">
+            {{ form.notes.label_tag }}
+            {{ form.notes }}
+        </div>
+        <div class="form-actions">
+            <button type="submit" id="review-submit-btn" class="btn btn-primary btn-lg">Valider la décision</button>
+            <a href="{% url 'tasks:client_dashboard' %}" class="btn btn-secondary">Annuler</a>
+        </div>
+    </form>
+    {% else %}
+    <div class="proof-content" style="background:var(--sq-surface); border:2px solid var(--sq-border);">
+        <h2>Décision déjà prise</h2>
+        <p>
+            Statut de la preuve :
+            <strong>
+            {% if proof.client_review == 'accepted' %}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Acceptée
+            {% elif proof.client_review == 'revision' %}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Modification demandée
+            {% elif proof.client_review == 'rejected' %}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Refusée
+            {% else %}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> En attente
+            {% endif %}
+            </strong>
+        </p>
+        {% if proof.revision_notes %}
+        <p style="margin-top:0.5rem;font-style:italic;">{{ proof.revision_notes }}</p>
+        {% endif %}
+        <a href="{% url 'tasks:task_workspace' task.id %}?tab=proof" class="btn btn-secondary" style="margin-top:1rem;display:inline-block;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg> Voir dans l'espace de travail</a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.proof-review-container {
+    max-width: 700px;
+}
+
+.tasker-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--sq-surface, #fff);
+    border: 1px solid var(--sq-border, #e2e8f0);
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.tasker-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.proof-content {
+    background: var(--sq-bg, #f8fafc);
+    border: 1px solid var(--sq-border, #e2e8f0);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.proof-photos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.proof-photo {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--sq-border, #e2e8f0);
+}
+</style>
+{% endblock %}

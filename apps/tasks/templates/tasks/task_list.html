@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Tâches disponibles — SideQuest{% endblock %}
+
+{% block content %}
+<div class="page-header">
+        <a href="javascript:history.back()" class="btn-back" title="Retour">&#8592;</a>
+    <h1>Explorer les missions</h1>
+</div>
+
+<form method="get" class="search-bar" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem;align-items:center;">
+  <div style="flex:2;min-width:200px;position:relative;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--sq-text-muted);"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" name="q" placeholder="Titre de la mission..." value="{{ search_q }}" style="width:100%;padding:10px 12px 10px 36px;border:1px solid var(--sq-border);border-radius:10px;font-size:0.9rem;background:var(--sq-surface);color:var(--sq-text);">
+  </div>
+  <div style="flex:1;min-width:150px;">
+    <input type="text" name="location" placeholder="Lieu (ville, adresse...)" value="{{ search_location }}" style="width:100%;padding:10px 12px;border:1px solid var(--sq-border);border-radius:10px;font-size:0.9rem;background:var(--sq-surface);color:var(--sq-text);">
+  </div>
+  <div style="flex:1;min-width:150px;">
+    <select name="category" style="width:100%;padding:10px 12px;border:1px solid var(--sq-border);border-radius:10px;font-size:0.9rem;background:var(--sq-surface);color:var(--sq-text);">
+      <option value="">Toutes les catégories</option>
+      {% for cat in categories %}
+      <option value="{{ cat.slug }}" {% if search_category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary" style="padding:10px 20px;border-radius:10px;">Chercher</button>
+  {% if search_q or search_location or search_category %}
+  <a href="{% url 'tasks:task_list' %}" class="btn btn-sm" style="padding:10px 16px;border-radius:10px;">Réinitialiser</a>
+  {% endif %}
+</form>
+
+{% if tasks %}
+    <div class="task-list">
+      {% for task in tasks %}
+      <div class="task-card">
+          <div class="task-card-header">
+              <div class="task-card-icon" style="background:{{ task.category.color|default:'#EEF2FF' }}20;">
+                  <span class="cat-icon-fallback">{{ task.category.icon|default:'' }}</span>
+              </div>
+              <div class="task-card-header-text">
+                  <h3>{{ task.title }}</h3>
+                  <div class="task-card-meta">
+                      <span class="task-card-meta-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> {{ task.arrival_address|truncatechars:25 }}</span>
+                      <span class="task-card-meta-item">{{ task.category.name }}</span>
+                  </div>
+              </div>
+          </div>
+          <div class="task-card-footer">
+              <span class="task-reward">{{ task.reward }} DH</span>
+              <div class="task-actions">
+                  <a href="{% url 'tasks:task_detail' task.id %}" class="btn btn-sm">View</a>
+                  {% if user.is_tasker or user.role == 'both' %}
+                      {% if task.status == 'published' %}
+                      <a href="{% url 'tasks:task_apply' task.id %}" class="btn btn-sm btn-primary">Accept</a>
+                      {% endif %}
+                  {% endif %}
+              </div>
+          </div>
+      </div>
+      {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state">
+        <p>Aucune mission trouvée.</p>
+        {% if search_q or search_location or search_category %}
+        <a href="{% url 'tasks:task_list' %}" class="btn btn-sm" style="margin-top:8px;">Voir toutes les missions</a>
+        {% endif %}
+    </div>
+{% endif %}
+
+{% if page_obj.has_other_pages %}
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1&q={{ search_q }}&location={{ search_location }}&category={{ search_category }}" class="btn btn-sm">&laquo; Première</a>
+        <a href="?page={{ page_obj.previous_page_number }}&q={{ search_q }}&location={{ search_location }}&category={{ search_category }}" class="btn btn-sm">Précédente</a>
+    {% endif %}
+    <span class="pagination-info">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&q={{ search_q }}&location={{ search_location }}&category={{ search_category }}" class="btn btn-sm">Suivante</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}&q={{ search_q }}&location={{ search_location }}&category={{ search_category }}" class="btn btn-sm">Dernière &raquo;</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

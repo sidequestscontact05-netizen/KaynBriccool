@@ -1,0 +1,456 @@
+{% extends 'base.html' %}
+{% load static task_extras %}
+
+{% block title %}Classement — SideQuest{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <a href="javascript:history.back()" class="btn-back" title="Retour">&#8592;</a>
+    <h1>Classement des Taskers</h1>
+</div>
+
+{% if user_rank and user_profile %}
+<div class="lb-user-rank">
+    <div class="lb-user-rank-main">
+        <div class="lb-user-rank-avatar">
+            {% if user_profile.user.avatar %}
+            <img src="{{ user_profile.user.avatar.url }}" alt="{{ user_profile.user.full_name }}">
+            {% else %}
+            <span>{{ user_profile.user.full_name|first|upper }}</span>
+            {% endif %}
+            <span class="lb-user-rank-badge">#{{ user_rank }}</span>
+        </div>
+        <div class="lb-user-rank-info">
+            <div class="lb-user-rank-name">{{ user_profile.user.full_name }}</div>
+            <div class="lb-user-rank-level">Niveau {{ user_profile.level }}</div>
+            <div class="lb-user-rank-progress">
+                <div class="lb-user-rank-progress-bar">
+                    <div class="lb-user-rank-progress-fill" style="width: {{ user_profile.xp|default:0|floatformat:0 }}%;"></div>
+                </div>
+                <span class="lb-user-rank-progress-label">{{ user_profile.xp }} XP</span>
+            </div>
+        </div>
+        <div class="lb-user-rank-stats">
+            <div class="lb-user-rank-stat">
+                <span class="lb-user-rank-stat-value">{{ user_profile.tasker_rating_avg|floatformat:1 }}</span>
+                <span class="lb-user-rank-stat-label">Note</span>
+            </div>
+            <div class="lb-user-rank-stat">
+                <span class="lb-user-rank-stat-value">{{ user_profile.tasks_completed }}</span>
+                <span class="lb-user-rank-stat-label">Missions</span>
+            </div>
+            <div class="lb-user-rank-stat">
+                <span class="lb-user-rank-stat-value">{{ user_profile.tasker_rating_count }}</span>
+                <span class="lb-user-rank-stat-label">Avis</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if taskers %}
+<!-- PODIUM TOP 3 -->
+<div class="lb-podium">
+    {% for profile in taskers %}
+    {% if forloop.counter <= 3 %}
+    <a href="{% url 'accounts:tasker_profile' profile.user.id %}" class="lb-podium-place {% if forloop.counter == 1 %}first{% elif forloop.counter == 2 %}second{% else %}third{% endif %}">
+        <div class="lb-podium-crown">
+            {% if forloop.counter == 1 %}
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="#FFD93D" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            {% elif forloop.counter == 2 %}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#C0C0C0" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            {% else %}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#CD7F32" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            {% endif %}
+        </div>
+        <div class="lb-podium-avatar">
+            {% if profile.user.avatar %}
+            <img src="{{ profile.user.avatar.url }}" alt="{{ profile.user.full_name }}">
+            {% else %}
+            <span>{{ profile.user.full_name|first|upper }}</span>
+            {% endif %}
+            <span class="lb-podium-rank">{{ forloop.counter }}</span>
+        </div>
+        <div class="lb-podium-name">{{ profile.user.full_name }}</div>
+        <div class="lb-podium-level">Niv. {{ profile.level }}</div>
+        <div class="lb-podium-stars">{{ profile.tasker_rating_avg|stars }}</div>
+        <div class="lb-podium-score">{{ profile.tasker_rating_avg|floatformat:1 }}</div>
+        <div class="lb-podium-meta">{{ profile.tasks_completed }} missions · {{ profile.xp }} XP</div>
+    </a>
+    {% endif %}
+    {% endfor %}
+</div>
+
+<!-- SEARCH + LIST -->
+<div x-data="{ search: '' }">
+    <div class="lb-toolbar">
+        <div class="lb-search-wrap" style="max-width:320px;">
+            <svg class="lb-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" class="lb-search" x-model="search" placeholder="Rechercher un tasker…">
+        </div>
+    </div>
+
+    <div class="lbc-grid">
+        {% for profile in taskers %}
+        <a href="{% url 'accounts:tasker_profile' profile.user.id %}"
+           class="lbc-card {% if profile.user == request.user %}is-me{% endif %}"
+           x-show="!search || '{{ profile.user.full_name|escapejs }}'.toLowerCase().includes(search.toLowerCase())"
+           x-transition.duration.300ms>
+            <span class="lbc-rank {% if forloop.counter == 1 %}gold{% elif forloop.counter == 2 %}silver{% elif forloop.counter == 3 %}bronze{% endif %}">
+                {% if forloop.counter == 1 %}
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                {% elif forloop.counter == 2 %}
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                {% elif forloop.counter == 3 %}
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                {% else %}
+                {{ forloop.counter }}
+                {% endif %}
+            </span>
+            <div class="lbc-header">
+                <div class="lbc-avatar">
+                    {% if profile.user.avatar %}
+                    <img src="{{ profile.user.avatar.url }}" alt="{{ profile.user.full_name }}">
+                    {% else %}
+                    <span>{{ profile.user.full_name|first|upper }}</span>
+                    {% endif %}
+                    {% if profile.user == request.user %}
+                    <span class="lbc-avatar-me">Toi</span>
+                    {% endif %}
+                </div>
+                <div>
+                    <div class="lbc-name">{{ profile.user.full_name }}</div>
+                    <div class="lbc-level">
+                        Niveau {{ profile.level }}
+                        {% if profile.city %}
+                        <span class="lbc-city">· {{ profile.city }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="lbc-stars">
+                {{ profile.tasker_rating_avg|stars }}
+            </div>
+            <div class="lbc-stats">
+                <div class="lbc-stat rating">
+                    <span class="lbc-stat-value">{{ profile.tasker_rating_avg|floatformat:1 }}</span>
+                    <span class="lbc-stat-label">Note</span>
+                </div>
+                <div class="lbc-stat highlight">
+                    <span class="lbc-stat-value">{{ profile.tasks_completed }}</span>
+                    <span class="lbc-stat-label">Missions</span>
+                </div>
+                <div class="lbc-stat highlight">
+                    <span class="lbc-stat-value">{{ profile.xp }}</span>
+                    <span class="lbc-stat-label">XP</span>
+                </div>
+                <div class="lbc-stat">
+                    <span class="lbc-stat-value">{{ profile.tasker_rating_count }}</span>
+                    <span class="lbc-stat-label">Avis</span>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% else %}
+<div class="empty-state">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    <h3>Aucun classement</h3>
+    <p>Commencez à compléter des missions pour apparaître dans le classement.</p>
+</div>
+{% endif %}
+
+<style>
+.lb-user-rank {
+    background: linear-gradient(135deg, var(--sq-primary) 0%, #40916C 100%);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(45, 106, 79, 0.2);
+}
+.lb-user-rank-main {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+.lb-user-rank-avatar {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    overflow: hidden;
+    border: 3px solid rgba(255,255,255,0.4);
+}
+.lb-user-rank-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.lb-user-rank-badge {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    background: #FFD93D;
+    color: #78350F;
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 20px;
+    border: 2px solid #fff;
+    line-height: 1.3;
+}
+.lb-user-rank-info { flex: 1; min-width: 0; }
+.lb-user-rank-name { font-size: 1.05rem; font-weight: 700; }
+.lb-user-rank-level { font-size: 0.8rem; opacity: 0.85; margin-top: 1px; }
+.lb-user-rank-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+.lb-user-rank-progress-bar {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    max-width: 200px;
+}
+.lb-user-rank-progress-fill {
+    height: 100%;
+    background: #FFD93D;
+    border-radius: 10px;
+    transition: width 0.6s ease;
+}
+.lb-user-rank-progress-label {
+    font-size: 0.7rem;
+    opacity: 0.8;
+    white-space: nowrap;
+}
+.lb-user-rank-stats {
+    display: flex;
+    gap: 1rem;
+}
+.lb-user-rank-stat { text-align: center; }
+.lb-user-rank-stat-value { display: block; font-size: 1.1rem; font-weight: 700; }
+.lb-user-rank-stat-label { display: block; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.75; }
+
+.lb-podium {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem 0.5rem;
+}
+.lb-podium-place {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    padding: 1.25rem 1rem 0.75rem;
+    border-radius: var(--radius-lg);
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: podiumIn 0.6s ease both;
+}
+.lb-podium-place:nth-child(1) { animation-delay: 0.1s; }
+.lb-podium-place:nth-child(2) { animation-delay: 0.2s; }
+.lb-podium-place:nth-child(3) { animation-delay: 0.3s; }
+.lb-podium-place.first {
+    background: linear-gradient(180deg, #FEF3C7 0%, #FFFBEB 100%);
+    border: 2px solid #FCD34D;
+    transform: scale(1.05);
+    padding-top: 2rem;
+    min-width: 180px;
+}
+.lb-podium-place.second {
+    background: linear-gradient(180deg, #F1F5F9 0%, #F8FAFC 100%);
+    border: 2px solid #CBD5E1;
+    min-width: 160px;
+}
+.lb-podium-place.third {
+    background: linear-gradient(180deg, #FFF7ED 0%, #FFFBEB 100%);
+    border: 2px solid #FDBA74;
+    min-width: 150px;
+}
+.lb-podium-place:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+.lb-podium-place.first:hover { transform: scale(1.05) translateY(-4px); }
+.lb-podium-crown { position: absolute; top: -12px; }
+.lb-podium-avatar {
+    position: relative;
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+    border: 3px solid;
+}
+.first .lb-podium-avatar { background: linear-gradient(135deg, #FFD93D, #F59E0B); border-color: #F59E0B; }
+.second .lb-podium-avatar { background: linear-gradient(135deg, #CBD5E1, #94A3B8); border-color: #94A3B8; }
+.third .lb-podium-avatar { background: linear-gradient(135deg, #FDBA74, #D97706); border-color: #D97706; }
+.lb-podium-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.lb-podium-rank {
+    position: absolute;
+    bottom: -4px; right: -4px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #fff;
+    border: 2px solid #fff;
+}
+.first .lb-podium-rank { background: #F59E0B; }
+.second .lb-podium-rank { background: #94A3B8; }
+.third .lb-podium-rank { background: #D97706; }
+.lb-podium-name { font-size: 0.95rem; font-weight: 700; text-align: center; line-height: 1.2; }
+.lb-podium-level { font-size: 0.75rem; color: var(--sq-text-muted); margin-top: 2px; }
+.lb-podium-stars { margin-top: 0.25rem; display: flex; gap: 1px; }
+.lb-podium-stars .lbc-star { width: 14px; height: 14px; }
+.lb-podium-score { font-size: 1.5rem; font-weight: 800; margin-top: 0.15rem; }
+.first .lb-podium-score { color: #D97706; }
+.second .lb-podium-score { color: #64748B; }
+.third .lb-podium-score { color: #B45309; }
+.lb-podium-meta { font-size: 0.7rem; color: var(--sq-text-muted); margin-top: 0.15rem; }
+
+.lb-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+.lb-search-wrap { position: relative; flex: 1; }
+.lb-search-icon {
+    position: absolute; left: 10px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--sq-text-muted);
+    pointer-events: none;
+}
+.lb-search {
+    width: 100%;
+    padding: 0.5rem 0.75rem 0.5rem 2rem;
+    border: 1px solid var(--sq-border);
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    background: var(--sq-surface);
+    color: var(--sq-text);
+    outline: none;
+    transition: border-color 0.15s;
+    box-sizing: border-box;
+}
+.lb-search:focus { border-color: var(--sq-primary); }
+.lb-search::placeholder { color: var(--sq-text-muted); }
+
+.lbc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+.lbc-card {
+    background: var(--sq-surface);
+    border: 1px solid var(--sq-border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+    animation: cardIn 0.4s ease both;
+}
+.lbc-card:nth-child(1) { animation-delay: 0.05s; }
+.lbc-card:nth-child(2) { animation-delay: 0.08s; }
+.lbc-card:nth-child(3) { animation-delay: 0.11s; }
+.lbc-card:nth-child(4) { animation-delay: 0.14s; }
+.lbc-card:nth-child(5) { animation-delay: 0.17s; }
+.lbc-card:nth-child(6) { animation-delay: 0.20s; }
+.lbc-card:nth-child(n+7) { animation-delay: 0.23s; }
+.lbc-card:hover {
+    border-color: var(--sq-primary);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+    transform: translateY(-3px);
+}
+.lbc-card.is-me {
+    border-color: var(--sq-primary);
+    background: linear-gradient(135deg, rgba(45, 106, 79, 0.06) 0%, var(--sq-surface) 100%);
+}
+.lbc-rank {
+    position: absolute; top: 0; right: 0;
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800;
+    border-radius: 0 var(--radius-lg) 0 var(--radius-md);
+    background: var(--sq-bg);
+    color: var(--sq-text-muted);
+}
+.lbc-rank.gold { background: linear-gradient(135deg, #FFD93D, #F59E0B); color: #78350F; }
+.lbc-rank.silver { background: linear-gradient(135deg, #E2E8F0, #94A3B8); color: #334155; }
+.lbc-rank.bronze { background: linear-gradient(135deg, #FED7AA, #D97706); color: #7C2D12; }
+.lbc-header {
+    display: flex; align-items: center; gap: 0.75rem;
+    margin-bottom: 0.75rem; padding-right: 32px;
+}
+.lbc-avatar {
+    position: relative;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 700; color: white;
+    background: var(--sq-primary);
+    flex-shrink: 0; overflow: hidden;
+}
+.lbc-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.lbc-avatar-me {
+    position: absolute; bottom: -2px; right: -2px;
+    font-size: 0.5rem; font-weight: 700;
+    background: var(--sq-primary); color: #fff;
+    padding: 1px 5px; border-radius: 20px;
+    border: 2px solid var(--sq-surface); line-height: 1.4;
+}
+.lbc-name { font-size: 15px; font-weight: 600; color: var(--sq-text); line-height: 1.2; }
+.lbc-level { font-size: 11px; color: var(--sq-text-muted); margin-top: 2px; }
+.lbc-city { color: var(--sq-text-muted); }
+.lbc-stars { display: flex; gap: 2px; margin-bottom: 0.625rem; }
+.lbc-star { width: 14px; height: 14px; color: #E2E8F0; }
+.lbc-star.filled { color: #FBBF24; }
+.lbc-star.half { color: #FBBF24; opacity: 0.6; }
+.lbc-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+.lbc-stat { background: var(--sq-bg); border-radius: var(--radius-sm); padding: 0.5rem; text-align: center; }
+.lbc-stat-value { display: block; font-size: 14px; font-weight: 700; color: var(--sq-text); }
+.lbc-stat-label { display: block; font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--sq-text-muted); font-weight: 600; margin-top: 1px; }
+.lbc-stat.highlight .lbc-stat-value { color: var(--sq-primary); }
+.lbc-stat.rating .lbc-stat-value { color: #FBBF24; }
+
+.empty-state { text-align: center; padding: 3rem 1rem; color: var(--sq-text-muted); }
+.empty-state svg { margin-bottom: 0.75rem; opacity: 0.4; }
+.empty-state h3 { font-size: 1.1rem; margin: 0 0 0.25rem; color: var(--sq-text); }
+.empty-state p { font-size: 0.85rem; margin: 0; }
+
+@keyframes podiumIn { from { opacity: 0; transform: translateY(20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes cardIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 768px) {
+    .lb-podium { flex-direction: column; align-items: center; }
+    .lb-podium-place.first { order: -1; }
+    .lb-user-rank-main { flex-direction: column; text-align: center; }
+    .lb-user-rank-stats { justify-content: center; }
+    .lb-user-rank-progress { justify-content: center; }
+    .lbc-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+{% endblock %}

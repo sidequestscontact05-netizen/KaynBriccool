@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Vérification Face ID — SideQuest{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'accounts/js/face_capture.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card auth-card-wide">
+        <div class="page-header">
+            <a href="{% url 'accounts:profile' %}" class="btn-back" title="Retour">&#8592;</a>
+        </div>
+        <h1>Vérification d'identité</h1>
+        <p class="auth-subtitle">Prenez 4 photos selon les instructions ci-dessous</p>
+
+        <div class="face-steps" x-data="{ step: 1 }">
+            <div class="face-step" :class="{ active: step >= 1 }">
+                <div class="face-step-number">1</div>
+                <h3>Photo initiale</h3>
+                <p>Regardez la caméra face à vous</p>
+                <input type="file" name="face_photo_initial" accept="image/*" capture="user" required class="form-input">
+            </div>
+
+            <div class="face-step" :class="{ active: step >= 2 }">
+                <div class="face-step-number">2</div>
+                <h3>Visage tourné à gauche</h3>
+                <p>Tournez votre visage vers la gauche</p>
+                <input type="file" name="face_photo_left" accept="image/*" capture="user" required class="form-input">
+            </div>
+
+            <div class="face-step" :class="{ active: step >= 3 }">
+                <div class="face-step-number">3</div>
+                <h3>Visage tourné à droite</h3>
+                <p>Tournez votre visage vers la droite</p>
+                <input type="file" name="face_photo_right" accept="image/*" capture="user" required class="form-input">
+            </div>
+
+            <div class="face-step" :class="{ active: step >= 4 }">
+                <div class="face-step-number">4</div>
+                <h3>Clignement des yeux</h3>
+                <p>Prenez une photo en clignant des yeux</p>
+                <input type="file" name="face_photo_blink" accept="image/*" capture="user" required class="form-input">
+            </div>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="auth-form">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary btn-full">Envoyer pour vérification</button>
+        </form>
+
+        <p class="form-hint">L'admin validera votre identité manuellement.</p>
+    </div>
+</div>
+{% endblock %}
