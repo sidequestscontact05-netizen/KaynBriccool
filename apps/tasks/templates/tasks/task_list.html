@@ -1,17 +1,17 @@
 {% extends 'base.html' %}
 
-{% block title %}Tâches disponibles — SideQuest{% endblock %}
+{% block title %}Tasks disponibles — SideQuest{% endblock %}
 
 {% block content %}
 <div class="page-header">
         <a href="javascript:history.back()" class="btn-back" title="Retour">&#8592;</a>
-    <h1>Explorer les missions</h1>
+    <h1>Explore les tasks</h1>
 </div>
 
 <form method="get" class="search-bar" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem;align-items:center;">
   <div style="flex:2;min-width:200px;position:relative;">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--sq-text-muted);"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <input type="text" name="q" placeholder="Titre de la mission..." value="{{ search_q }}" style="width:100%;padding:10px 12px 10px 36px;border:1px solid var(--sq-border);border-radius:10px;font-size:0.9rem;background:var(--sq-surface);color:var(--sq-text);">
+    <input type="text" name="q" placeholder="Titre de la task..." value="{{ search_q }}" style="width:100%;padding:10px 12px 10px 36px;border:1px solid var(--sq-border);border-radius:10px;font-size:0.9rem;background:var(--sq-surface);color:var(--sq-text);">
   </div>
   <div style="flex:1;min-width:150px;">
     <input type="text" name="location" placeholder="Lieu (ville, adresse...)" value="{{ search_location }}" style="width:100%;padding:10px 12px;border:1px solid var(--sq-border);border-radius:10px;font-size:0.9rem;background:var(--sq-surface);color:var(--sq-text);">
@@ -64,8 +64,8 @@
     </div>
 {% else %}
     <div class="empty-state">
-        <p>Aucune mission trouvée.</p>
-        <a href="{% url 'tasks:task_list' %}" class="btn btn-sm" style="margin-top:8px;">Voir toutes les missions</a>
+        <p>Aucune task trouvée.</p>
+        <a href="{% url 'tasks:task_list' %}" class="btn btn-sm" style="margin-top:8px;">Voir toutes les tasks</a>
     </div>
 {% endif %}
 

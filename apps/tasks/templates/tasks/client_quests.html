@@ -2,13 +2,13 @@
 {% load task_extras %}
 {% load static %}
 
-{% block title %}Mes Quêtes — SideQuest{% endblock %}
+{% block title %}Mes Tasks — SideQuest{% endblock %}
 
 {% block dashboard_content %}
 
 <div class="page-header">
     <a href="{% url 'tasks:client_dashboard' %}" class="btn-back" title="Retour">&#8592;</a>
-    <h2>Historique de mes quêtes</h2>
+    <h2>Historique de mes tasks</h2>
 </div>
 
 <div class="client-filters">
@@ -65,8 +65,8 @@
     </div>
 {% else %}
     <div style="text-align:center;padding:2rem 0;color:#888888;font-size:13px;">
-        <p>Aucune quête pour le moment.</p>
-        <a href="{% url 'tasks:task_create' %}" class="btn" style="background:#1DB954;color:white;border-radius:999px;padding:8px 20px;font-size:13px;margin-top:8px;">Créer une quête</a>
+        <p>Aucune task pour le moment.</p>
+        <a href="{% url 'tasks:task_create' %}" class="btn" style="background:#1DB954;color:white;border-radius:999px;padding:8px 20px;font-size:13px;margin-top:8px;">Créer une task</a>
     </div>
 {% endif %}
 </div>
@@ -99,7 +99,7 @@
         {% endfor %}
     </div>
 {% else %}
-    <div style="text-align:center;padding:2rem 0;color:#888888;font-size:13px;"><p>Aucune quête publiée.</p></div>
+    <div style="text-align:center;padding:2rem 0;color:#888888;font-size:13px;"><p>No published tasks.</p></div>
 {% endif %}
 </div>
 
@@ -140,7 +140,7 @@
         {% endfor %}
     </div>
 {% else %}
-    <div style="text-align:center;padding:2rem 0;color:#888888;font-size:13px;"><p>Aucune quête en cours.</p></div>
+    <div style="text-align:center;padding:2rem 0;color:#888888;font-size:13px;"><p>No active tasks.</p></div>
 {% endif %}
 </div>
 
@@ -184,7 +184,7 @@
         {% endfor %}
     </div>
 {% else %}
-    <div style="text-align:center;padding:2rem 0;color:#888888;font-size:13px;"><p>Aucune quête terminée.</p></div>
+    <div style="text-align:center;padding:2rem 0;color:#888888;font-size:13px;"><p>No completed tasks.</p></div>
 {% endif %}
 </div>
 
@@ -196,7 +196,7 @@
             <div class="task-card-header">
                 <h4 class="task-card-title">{{ task.title }}</h4>
                 <p class="task-card-subtitle">{{ task.category.name }}</p>
-                <p class="task-card-hint">Complète et publie ta quête →</p>
+                <p class="task-card-hint">Complete and publish your task →</p>
             </div>
             <div class="task-card-divider"></div>
             <div class="task-card-footer">
@@ -218,7 +218,7 @@
         {% endfor %}
     </div>
 {% else %}
-    <div style="text-align:center;padding:2rem 0;color:#888888;font-size:13px;"><p>Aucun brouillon.</p></div>
+    <div style="text-align:center;padding:2rem 0;color:#888888;font-size:13px;"><p>No drafts.</p></div>
 {% endif %}
 </div>
 

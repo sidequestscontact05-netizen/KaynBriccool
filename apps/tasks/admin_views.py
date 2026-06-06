@@ -8,7 +8,7 @@ from apps.tasks.models import Category, SubCategory
 def admin_required(view_func):
     return user_passes_test(
         lambda u: u.is_authenticated and u.is_admin(),
-        login_url='home',
+        login_url='accounts:login',
         redirect_field_name=None,
     )(view_func)
 

@@ -2,7 +2,7 @@
 {% load task_extras %}
 {% load static %}
 
-{% block title %}Mes Quêtes — SideQuest{% endblock %}
+{% block title %}Mes Tasks — SideQuest{% endblock %}
 
 {% block dashboard_content %}
 
@@ -145,16 +145,16 @@
 <div class="hero-card-client">
     <div class="hero-block-text">
         <h1>Bienvenue, {{ user.full_name|default:"there" }}</h1>
-        <p>Prêt à publier votre prochaine quête ?</p>
+        <p>Prêt à publier votre prochaine task ?</p>
         <a href="{% url 'tasks:task_create' %}" class="btn-hero">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Publier une quête
+            Publier une task
         </a>
     </div>
     {% with active_quests=in_progress.count|add:accepted.count %}
     <div class="hero-block-stat">
         <span class="hero-stat-value green">{{ active_quests }}</span>
-        <span class="hero-stat-label">Quêtes actives</span>
+        <span class="hero-stat-label">Tasks actives</span>
     </div>
     {% endwith %}
     <div class="hero-block-stat">
@@ -196,10 +196,10 @@ document.addEventListener('alpine:init', () => {
         started: false,
 
         steps: [
-            { msg: 'Bienvenue sur SideQuest !\nCr\u00e9ons ta premi\u00e8re mission ensemble.' },
-            { target: '.hero-card-client', msg: 'Ce tableau de bord t\u2019aide \u00e0 g\u00e9rer toutes tes missions publi\u00e9es et les taskers.' },
-            { target: '.btn-hero', msg: 'Cr\u00e9e des missions pour trouver des taskers capables d\u2019accomplir tes t\u00e2ches.' },
-            { target: '.dash-tabs', msg: 'Suis tes publications, missions actives et t\u00e2ches termin\u00e9es depuis ces onglets.' },
+            { msg: 'Bienvenue sur SideQuest !\nCr\u00e9ons ta premi\u00e8re task ensemble.' },
+            { target: '.hero-card-client', msg: 'Ce tableau de bord t\'aide à gérer toutes tes tasks publiées et tes taskers.' },
+            { target: '.btn-hero', msg: 'Crée des tasks pour trouver des taskers qui peuvent réaliser tes tasks.' },
+            { target: '.dash-tabs', msg: 'Suis tes publications, tasks actives et tasks terminées depuis ces onglets.' },
         ],
 
         get currentStep() {
@@ -299,7 +299,7 @@ document.addEventListener('alpine:init', () => {
                 <div class="ranking-info">
                     <div class="ranking-name">{{ profile.user.full_name|truncatechars:14 }}</div>
                     <div class="ranking-stars">{{ profile.tasker_rating_avg|floatformat:1 }} <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-                    <div class="ranking-stats">{{ profile.tasks_completed }} quêtes</div>
+                    <div class="ranking-stats">{{ profile.tasks_completed }} tasks</div>
                 </div>
             </div>
             {% endfor %}

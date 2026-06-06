@@ -262,12 +262,12 @@
           <form method="post" style="display:inline;" onsubmit="this.querySelector('button').disabled = true; this.querySelector('button').textContent = 'Envoi…';">
             {% csrf_token %}
             <input type="hidden" name="complete_mission" value="1">
-            <button type="submit" class="btn-ws btn-ws-success"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> Terminer la mission</button>
+            <button type="submit" class="btn-ws btn-ws-success"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> Terminer la task</button>
           </form>
           {% else %}
           <form method="post" action="{% url 'tasks:task_start' task.id %}" style="display:inline;">
             {% csrf_token %}
-            <button type="submit" class="btn-ws btn-ws-primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polygon points="5 3 19 12 5 21 5 3"/></svg> Démarrer la mission</button>
+            <button type="submit" class="btn-ws btn-ws-primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polygon points="5 3 19 12 5 21 5 3"/></svg> Démarrer la task</button>
           </form>
           {% endif %}
         {% endif %}
@@ -275,7 +275,7 @@
           <form method="post" style="display:inline;" onsubmit="this.querySelector('button').disabled = true; this.querySelector('button').textContent = 'Envoi…';">
             {% csrf_token %}
             <input type="hidden" name="complete_mission" value="1">
-            <button type="submit" class="btn-ws btn-ws-success"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> Terminer la mission</button>
+            <button type="submit" class="btn-ws btn-ws-success"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> Terminer la task</button>
           </form>
         {% endif %}
         {% if task.status == 'validated' or task.status == 'resolved' or task.status == 'evaluated' %}
@@ -329,7 +329,7 @@
     </div>
     {% if task.status == 'litige' %}
     <div style="display:flex;align-items:center;">
-      <a href="{% url 'tasks:task_resolve_litige' task.id %}" class="btn-ws btn-ws-success" style="font-size:0.9rem;" onclick="return confirm('Résoudre ce litige ? La mission passera en Résolue.')">Résoudre le litige</a>
+      <a href="{% url 'tasks:task_resolve_litige' task.id %}" class="btn-ws btn-ws-success" style="font-size:0.9rem;" onclick="return confirm('Résoudre ce litige ? La task passera en statut Résolue.')">Résoudre le litige</a>
     </div>
     {% endif %}
   </div>
@@ -338,7 +338,7 @@
   <div class="workspace-tabs">
     <button class="workspace-tab active" data-tab="chat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Chat</button>
     {% if not task.proof_required %}
-    <button class="workspace-tab" data-tab="mission"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> Mission</button>
+    <button class="workspace-tab" data-tab="mission"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> Task</button>
     {% endif %}
     {% if task.proof_required %}
     <button class="workspace-tab" data-tab="proof"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M16 2v4a2 2 0 0 0 2 2h4"/><rect x="2" y="2" width="18" height="18" rx="2"/><path d="M12 11v6"/><path d="M9 14h6"/></svg> Preuve</button>
@@ -375,7 +375,7 @@
     </div>
     {% else %}
     <div class="ws-chat-empty" style="padding:3rem;border:1px dashed var(--sq-border);border-radius:14px;">
-      <p style="font-size:1rem;margin:0;">Aucune conversation active pour cette mission.</p>
+      <p style="font-size:1rem;margin:0;">Pas de conversation active pour cette task.</p>
     </div>
     {% endif %}
   </div>
@@ -387,35 +387,35 @@
       {% if task.status == 'accepted' or task.status == 'in_progress' %}
         <div class="ws-proof-box" style="text-align:center;padding:2rem;">
           <div style="font-size:3rem;margin-bottom:1rem;">🎯</div>
-          <h3 style="margin:0 0 0.5rem;">Mission terminée ?</h3>
-          <p style="color:var(--sq-text-muted);max-width:400px;margin:0 auto 1.5rem;">Confirmez que vous avez accompli la mission. Le client sera notifié pour valider la fin.</p>
+          <h3 style="margin:0 0 0.5rem;">Task terminée ?</h3>
+          <p style="color:var(--sq-text-muted);max-width:400px;margin:0 auto 1.5rem;">Confirme que tu as terminé la task. Le client sera notifié pour valider la completion.</p>
           <form method="post" onsubmit="this.querySelector('button').disabled = true; this.querySelector('button').textContent = 'Envoi…';">
             {% csrf_token %}
             <input type="hidden" name="complete_mission" value="1">
-            <button type="submit" class="btn-ws btn-ws-success" style="font-size:1.1rem;padding:0.9rem 2.5rem;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;"><polyline points="20 6 9 17 4 12"/></svg> Terminer la mission</button>
+            <button type="submit" class="btn-ws btn-ws-success" style="font-size:1.1rem;padding:0.9rem 2.5rem;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;"><polyline points="20 6 9 17 4 12"/></svg> Terminer la task</button>
           </form>
         </div>
       {% elif task.status == 'awaiting_confirmation' %}
         <div class="ws-proof-box" style="text-align:center;padding:2rem;">
           <div style="font-size:3rem;margin-bottom:1rem;">⏳</div>
           <h3 style="margin:0 0 0.5rem;">En attente du client</h3>
-          <p style="color:var(--sq-text-muted);">Vous avez marqué la mission comme terminée. Le client doit confirmer la fin.</p>
+          <p style="color:var(--sq-text-muted);">Tu as marqué cette task comme terminée. Le client doit confirmer la completion.</p>
         </div>
       {% elif task.status == 'validated' or task.status == 'evaluated' or task.status == 'closed' or task.status == 'resolved' %}
         <div class="ws-proof-box" style="text-align:center;padding:2rem;">
           <div style="font-size:3rem;margin-bottom:1rem;">✅</div>
-          <h3 style="margin:0 0 0.5rem;">Mission terminée !</h3>
-          <p style="color:var(--sq-text-muted);">Cette mission est terminée. Merci pour votre travail !</p>
+          <h3 style="margin:0 0 0.5rem;">Task terminée !</h3>
+          <p style="color:var(--sq-text-muted);">Cette task est terminée. Merci pour ton travail !</p>
         </div>
       {% elif task.status == 'rejected' or task.status == 'cancelled' or task.status == 'litige' %}
         <div class="ws-proof-box" style="text-align:center;padding:2rem;border-color:#DC2626;">
           <div style="font-size:3rem;margin-bottom:1rem;">❌</div>
-          <h3 style="margin:0 0 0.5rem;">Mission {{ task.get_status_display|lower }}</h3>
-          <p style="color:var(--sq-text-muted);">Cette mission n'a pas abouti.</p>
+          <h3 style="margin:0 0 0.5rem;">Task {{ task.get_status_display|lower }}</h3>
+          <p style="color:var(--sq-text-muted);">Cette task n'a pas été terminée.</p>
         </div>
       {% else %}
         <div class="ws-chat-empty" style="padding:3rem;border:1px dashed var(--sq-border);border-radius:14px;">
-          <p style="font-size:1rem;margin:0;">Le suivi de mission apparaîtra ici.</p>
+          <p style="font-size:1rem;margin:0;">Le suivi de la task apparaîtra ici.</p>
         </div>
       {% endif %}
     {% else %}
@@ -424,12 +424,12 @@
         <div class="ws-panel-grid">
           <div class="ws-proof-box" style="text-align:center;padding:2rem;">
             <div style="font-size:3rem;margin-bottom:1rem;">🚀</div>
-            <h3 style="margin:0 0 0.5rem;">Le tasker a terminé la mission</h3>
-            <p style="color:var(--sq-text-muted);max-width:400px;margin:0 auto 1.5rem;">{{ task.assigned_tasker.full_name }} a marqué cette mission comme terminée. Confirmez-vous que tout est en ordre ?</p>
+            <h3 style="margin:0 0 0.5rem;">Le tasker a terminé la task</h3>
+            <p style="color:var(--sq-text-muted);max-width:400px;margin:0 auto 1.5rem;">{{ task.assigned_tasker.full_name }} a marqué cette task comme terminée. Confirme que tout est en ordre ?</p>
           </div>
           <div class="ws-proof-box">
             <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M4 10V3h16v7"/><path d="M4 10v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1"/><path d="M12 3v13"/><path d="M8 22h8"/><path d="M12 22v-6"/></svg> Votre décision</h3>
-            <p class="ws-proof-meta">Confirmez la fin de mission ou ouvrez un litige.</p>
+            <p class="ws-proof-meta">Confirme la completion de la task ou ouvre un litige.</p>
             <form method="post" onsubmit="this.querySelector('button[type=submit]').disabled = true; this.querySelector('button[type=submit]').textContent = 'Traitement…';">
               {% csrf_token %}
               <input type="hidden" name="confirm_completion" value="1">
@@ -450,18 +450,18 @@
       {% elif task.status == 'validated' or task.status == 'evaluated' or task.status == 'closed' or task.status == 'resolved' %}
         <div class="ws-proof-box" style="text-align:center;padding:2rem;">
           <div style="font-size:3rem;margin-bottom:1rem;">✅</div>
-          <h3 style="margin:0 0 0.5rem;">Mission terminée !</h3>
-          <p style="color:var(--sq-text-muted);">Merci d'avoir confirmé la fin de cette mission.</p>
+          <h3 style="margin:0 0 0.5rem;">Task terminée !</h3>
+          <p style="color:var(--sq-text-muted);">Merci d'avoir confirmé la completion de cette task.</p>
         </div>
       {% elif task.status == 'litige' %}
         <div class="ws-proof-box" style="text-align:center;padding:2rem;border-color:#DC2626;">
           <div style="font-size:3rem;margin-bottom:1rem;">⚖️</div>
           <h3 style="margin:0 0 0.5rem;">Litige ouvert</h3>
-          <p style="color:var(--sq-text-muted);">Un litige est en cours pour cette mission.</p>
+          <p style="color:var(--sq-text-muted);">Un litige est en cours pour cette task.</p>
         </div>
       {% else %}
         <div class="ws-chat-empty" style="padding:3rem;border:1px dashed var(--sq-border);border-radius:14px;">
-          <p style="font-size:1rem;margin:0;">Le suivi de mission apparaîtra ici une fois le tasker en cours.</p>
+          <p style="font-size:1rem;margin:0;">Le suivi de la task apparaîtra ici quand le tasker sera en cours.</p>
         </div>
       {% endif %}
     {% endif %}
@@ -551,7 +551,7 @@
         </div>
       {% else %}
         <div class="ws-chat-empty" style="padding:3rem;border:1px dashed var(--sq-border);border-radius:14px;">
-          <p style="font-size:1rem;margin:0;">La preuve sera disponible ici une fois la mission démarrée.</p>
+          <p style="font-size:1rem;margin:0;">La preuve sera disponible ici une fois la task démarrée.</p>
         </div>
       {% endif %}
     {% else %}
@@ -705,7 +705,7 @@ document.addEventListener('DOMContentLoaded', function() {
       // Step 6 — Workspace Introduction
       {% if task.status == 'accepted' or task.status == 'in_progress' or task.status == 'awaiting_confirmation' %}
       if (!sessionStorage.getItem('sq_tip_step6')) {
-        guide.showTip('Voici ton espace de travail priv\u00e9 pour la mission. Utilise l\u2019onglet Chat pour communiquer avec le client et l\u2019onglet Preuve pour soumettre ton travail termin\u00e9. Toute la collaboration se fait ici.', { duration: 14000 });
+        guide.showTip('Voici ton espace de travail privé pour la task. Utilise l\'onglet Chat pour communiquer avec le client et l\'onglet Preuve pour soumettre ton travail terminé. Toute la collaboration se fait ici.', { duration: 14000 });
         sessionStorage.setItem('sq_tip_step6', '1');
       }
       {% endif %}
@@ -713,7 +713,7 @@ document.addEventListener('DOMContentLoaded', function() {
       // Step 7 — Completion System
       {% if task.status == 'validated' or task.status == 'evaluated' or task.status == 'closed' or task.status == 'resolved' %}
       if (!sessionStorage.getItem('sq_tip_step7')) {
-        guide.showTip('Mission termin\u00e9e ! Une fois que le client a valid\u00e9 ton travail et que vous vous \u00eates \u00e9valu\u00e9s, la mission se cl\u00f4ture. Tu gagnes de l\u2019XP, des r\u00e9compenses et tu b\u00e2tis ta r\u00e9putation \u00e0 chaque qu\u00eate r\u00e9ussie.', { duration: 14000 });
+        guide.showTip('Task terminée ! Une fois que le client a validé ton travail et que vous vous êtes évalués, la task est clôturée. Tu gagnes de l\'XP, des récompenses et tu construis ta réputation avec chaque task réussie.', { duration: 14000 });
         sessionStorage.setItem('sq_tip_step7', '1');
       }
       {% endif %}

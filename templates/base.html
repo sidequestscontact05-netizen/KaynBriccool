@@ -210,13 +210,13 @@ document.addEventListener('alpine:init', () => {
         faqSearch: '',
 
         faq: [
-            { name: 'Missions', questions: [
-                { q: 'Comment fonctionnent les missions ?', a: 'Les clients publient des missions et les taskers peuvent postuler ou accepter les t\u00e2ches disponibles.' },
-                { q: 'Que se passe-t-il apr\u00e8s avoir accept\u00e9 une mission ?', a: 'Un espace de travail priv\u00e9 est cr\u00e9\u00e9 entre le client et le tasker.' },
-                { q: 'Puis-je annuler une mission ?', a: 'Oui, selon le statut de la mission et les r\u00e8gles de la plateforme.' },
+            { name: 'Tasks', questions: [
+                { q: 'How do tasks work?', a: 'Clients publish tasks and taskers can apply or accept the available tasks.' },
+                { q: 'What happens after accepting a task?', a: 'A private workspace is created between the client and the tasker.' },
+                { q: 'Can I cancel a task?', a: 'Yes, depending on the task status and platform rules.' },
             ]},
             { name: 'XP & Rangs', questions: [
-                { q: 'Comment gagner de l\u2019XP ?', a: 'Tu gagnes de l\u2019XP en accomplissant des missions avec succ\u00e8s.' },
+                { q: 'Comment gagner de l\u2019XP ?', a: 'Tu gagnes de l\u2019XP en accomplissant des tasks avec succ\u00e8s.' },
                 { q: '\u00c0 quoi servent les rangs ?', a: 'Les rangs repr\u00e9sentent ta progression et ton activit\u00e9 sur SideQuest.' },
             ]},
             { name: 'Espace de travail', questions: [
@@ -224,16 +224,16 @@ document.addEventListener('alpine:init', () => {
                 { q: 'Comment soumettre une preuve ?', a: 'T\u00e9l\u00e9charge des fichiers, images ou messages dans l\u2019espace de travail et clique sur \u00ab\u00a0Soumettre comme termin\u00e9\u00a0\u00bb.' },
             ]},
             { name: 'Paiements & R\u00e9compenses', questions: [
-                { q: 'Comment fonctionnent les paiements ?', a: 'Les paiements sont trait\u00e9s apr\u00e8s l\u2019ach\u00e8vement de la mission et la validation par le client.' },
-                { q: 'Quelles r\u00e9compenses puis-je gagner ?', a: 'Les r\u00e9compenses sont d\u00e9finies par les clients et pay\u00e9es \u00e0 la fin de la mission.' },
+                { q: 'Comment fonctionnent les paiements ?', a: 'Les paiements sont trait\u00e9s apr\u00e8s l\u2019ach\u00e8vement de la task et la validation par le client.' },
+                { q: 'Quelles r\u00e9compenses puis-je gagner ?', a: 'Les r\u00e9compenses sont d\u00e9finies par les clients et pay\u00e9es \u00e0 la fin de la task.' },
             ]},
             { name: 'Syst\u00e8me Client', questions: [
-                { q: 'Comment publier une mission ?', a: 'Utilise le flux de cr\u00e9ation de mission et remplis toutes les informations requises.' },
-                { q: 'Comment valider une mission termin\u00e9e ?', a: 'Examine la preuve soumise et confirme l\u2019ach\u00e8vement ou demande des modifications.' },
+                { q: 'Comment publier une task ?', a: 'Utilise le flux de cr\u00e9ation de task et remplis toutes les informations requises.' },
+                { q: 'Comment valider une task termin\u00e9e ?', a: 'Examine la preuve soumise et confirme l\u2019ach\u00e8vement ou demande des modifications.' },
             ]},
             { name: 'Syst\u00e8me Tasker', questions: [
-                { q: 'Comment trouver des missions ?', a: 'Parcours l\u2019onglet Missions disponibles.' },
-                { q: 'Comment am\u00e9liorer ma r\u00e9putation ?', a: 'Accomplis des missions avec succ\u00e8s et re\u00e7ois des \u00e9valuations positives.' },
+                { q: 'Comment trouver des tasks ?', a: 'Parcours l\u2019onglet Tasks disponibles.' },
+                { q: 'Comment am\u00e9liorer ma r\u00e9putation ?', a: 'Accomplis des tasks avec succ\u00e8s et re\u00e7ois des \u00e9valuations positives.' },
             ]},
             { name: 'Compte & Profil', questions: [
                 { q: '\u00c0 quoi sert le badge v\u00e9rifi\u00e9 ?', a: 'Il est attribu\u00e9 aux utilisateurs ayant une forte activit\u00e9 et progression.' },
@@ -289,7 +289,7 @@ document.addEventListener('alpine:init', () => {
     <div style="font-size:2.5rem;margin-bottom:0.5rem;">&#11088;</div>
     <h3 style="margin:0 0 4px;font-size:1.1rem;font-weight:700;color:var(--sq-text);">Avis re&#231;u</h3>
     <p style="margin:0 0 12px;font-size:0.85rem;color:var(--sq-text-muted);">
-      Pour la mission <strong>{{ notif.related_task.title|truncatechars:30 }}</strong>
+      Pour la task <strong>{{ notif.related_task.title|truncatechars:30 }}</strong>
     </p>
 
     <div style="font-size:1.6rem;margin-bottom:10px;letter-spacing:3px;">

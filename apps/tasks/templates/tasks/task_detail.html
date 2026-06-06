@@ -11,7 +11,7 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
             Retour
         </a>
-        <span class="td-topbar-title">Détail mission</span>
+        <span class="td-topbar-title">Détails de la task</span>
         <span class="td-status {{ task.status }}">{{ task.get_status_display }}</span>
         {% if task.is_expired %}<span class="td-status cancelled" style="margin-left:6px;">Expirée</span>{% endif %}
     </div>
@@ -39,7 +39,7 @@
                     {% if task.client.profile.client_rating_avg %}
                         <span class="td-pub-rating"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> {{ task.client.profile.client_rating_avg }}</span>
                     {% endif %}
-                    <span>{{ task.client.profile.tasks_published|default:"0" }} missions publiées</span>
+                    <span>{{ task.client.profile.tasks_published|default:"0" }} tasks publiées</span>
                 </div>
             </div>
             <div class="td-pub-actions">
@@ -135,14 +135,14 @@
                     <textarea name="message" rows="2" placeholder="Ajouter un message au client (optionnel)…"></textarea>
                 </div>
                 <div class="td-actions-row">
-                    <button type="submit" class="td-btn td-btn-primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg> Accepter la mission</button>
+                    <button type="submit" class="td-btn td-btn-primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg> Accepter la task</button>
                     <a href="javascript:history.back()" class="td-btn td-btn-outline">Annuler</a>
                 </div>
             </form>
         </div>
         {% elif user.is_tasker and not can_apply %}
         <div class="td-already-applied">
-            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Vous avez déjà postulé à cette mission</span>
+            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Vous avez déjà postulé à cette task</span>
         </div>
         {% endif %}
     </div>
@@ -170,7 +170,7 @@
                         {% if app.tasker.profile.tasker_rating_avg %}
                             <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> {{ app.tasker.profile.tasker_rating_avg }}</span>
                         {% endif %}
-                        <span>{{ app.tasker.profile.tasks_completed }} missions</span>
+                        <span>{{ app.tasker.profile.tasks_completed }} tasks</span>
                         <span>il y a {{ app.created_at|timesince }}</span>
                     </div>
                     {% if app.message %}
@@ -747,7 +747,7 @@
       var guide = window.Alpine ? Alpine.store('guide') : null;
       if (guide) {
         clearInterval(wait);
-        guide.showTip('Lis attentivement les d\u00e9tails de la mission. La description, la r\u00e9compense, le lieu et la date limite t\u2019aident \u00e0 d\u00e9cider si cette t\u00e2che est faite pour toi. Quand tu es pr\u00eat, clique sur \u00ab\u00a0Accepter la mission\u00a0\u00bb pour continuer.', { duration: 12000 });
+        guide.showTip('Lis attentivement les détails de la task. La description, la récompense, le lieu et la date limite t\'aident à décider si cette task est faite pour toi. Quand tu es prêt, clique sur \u00ab\u00a0Accepter la task\u00a0\u00bb pour continuer.', { duration: 12000 });
         sessionStorage.setItem('sq_tip_step5', '1');
       }
     } catch(e) {}

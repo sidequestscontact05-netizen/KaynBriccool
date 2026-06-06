@@ -208,7 +208,7 @@
   {# ═══════ SECTION 1 — ACTIVE QUESTS ═══════ #}
   <h2 class="sq-section-title">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-    Mes quêtes actives
+    My active tasks
   </h2>
 
   <div class="sq-active-list">
@@ -248,7 +248,7 @@
     {% else %}
     <div class="sq-empty-active">
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      <p style="margin:4px 0 0;">Aucune quête en cours</p>
+      <p style="margin:4px 0 0;">No active tasks</p>
     </div>
     {% endif %}
   </div>
@@ -257,7 +257,7 @@
   <div class="sq-section-header">
     <h2 class="sq-section-title" style="margin:0;">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      Quêtes disponibles
+      Available tasks
     </h2>
     <span class="sq-section-count">{{ available_tasks|length }} dispo</span>
   </div>
@@ -280,14 +280,14 @@
     {% else %}
     <div class="sq-empty-active">
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <p style="margin:4px 0 0;">Aucune quête disponible pour le moment</p>
+      <p style="margin:4px 0 0;">No tasks available at the moment</p>
     </div>
     {% endif %}
   </div>
 
     {% if total_available > 2 %}
   <div style="text-align:center;margin-bottom:18px;">
-    <a href="{% url 'tasks:task_list' %}" style="font-size:13px;font-weight:600;color:var(--sq-primary);text-decoration:none;">Voir toutes les quêtes ({{ total_available }}) →</a>
+    <a href="{% url 'tasks:task_list' %}" style="font-size:13px;font-weight:600;color:var(--sq-primary);text-decoration:none;">See all tasks ({{ total_available }}) →</a>
   </div>
     {% endif %}
 
@@ -315,7 +315,7 @@
     <div class="sq-rep-stats">
       <div class="sq-rep-stat">
         <div class="sq-rep-stat-value">{{ profile.tasks_completed|default:"0" }}</div>
-        <div class="sq-rep-stat-label">Missions</div>
+        <div class="sq-rep-stat-label">Tasks</div>
       </div>
       <div class="sq-rep-stat">
         <div class="sq-rep-stat-value gold">{% if profile.tasker_rating_avg %}{{ profile.tasker_rating_avg|floatformat:1 }}{% else %}—{% endif %}</div>
@@ -356,7 +356,7 @@
   </a>
   <a href="{% url 'tasks:tasker_missions' %}">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-    Quêtes
+    Tasks
   </a>
   <a href="{% url 'messaging:conversation_list' %}">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>

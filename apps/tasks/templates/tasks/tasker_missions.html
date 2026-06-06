@@ -1,7 +1,7 @@
 {% extends 'base_tasker.html' %}
 {% load task_extras %}
 
-{% block title %}Mes Missions — SideQuest{% endblock %}
+{% block title %}My Tasks — SideQuest{% endblock %}
 
 {% block dashboard_content %}
 
@@ -36,10 +36,10 @@
 
 <div class="page-header">
     <a href="{% url 'tasks:tasker_dashboard' %}" class="btn-back" title="Retour">&#8592;</a>
-    <h1>Mes Missions</h1>
+    <h1>My Tasks</h1>
 </div>
 
-<div class="missions-count">{{ total_count }} mission{{ total_count|pluralize }} au total</div>
+<div class="missions-count">{{ total_count }} task{{ total_count|pluralize }} total</div>
 
 {% with base_url=request.path %}
 <div class="filter-tabs">
@@ -116,8 +116,8 @@
 </div>
 {% else %}
 <div class="mission-card-empty">
-    Pas de missions pour le moment
-    <strong>Commence à accepter des quêtes</strong>
+    No tasks at the moment
+    <strong>Start accepting tasks</strong>
 </div>
 {% endif %}
 

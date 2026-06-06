@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SideQuests — La plateforme de missions du quotidien au Maroc</title>
+  <title>SideQuests — La plateforme de tasks du quotidien au Maroc</title>
   <link rel="stylesheet" href="{% static 'css/theme.css' %}">
   <link rel="stylesheet" href="{% static 'css/landing.css' %}">
 </head>
@@ -41,15 +41,15 @@
             <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span><span>Made for Morocco</span>
           </div>
           <h1 class="lp-hero-title">
-            Besoin d'aide pour une <em>tâche</em> ?
+            Besoin d'aide pour une <em>task</em> ?
           </h1>
           <p class="lp-hero-subtitle">
             SideQuests connecte clients et taskers de confiance à travers le Maroc. 
-            Publie une mission en 30 secondes et trouve quelqu'un près de chez toi.
+            Publie une task en 30 secondes et trouve quelqu'un près de chez toi.
           </p>
           <div class="lp-hero-buttons">
             <a href="{% url 'accounts:register_client' %}" class="lp-hero-btn lp-hero-btn-primary">
-              Je publie une mission
+              Je publie une task
               <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
               </svg>
@@ -162,17 +162,17 @@
         <div class="lp-why-card lp-animate">
           <span class="lp-why-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
           <h3>Pas de jobs ponctuels locaux</h3>
-          <p>Les plateformes classiques sont faites pour le full-time. SideQuests est conçu pour les missions du quotidien.</p>
+          <p>Les plateformes classiques sont faites pour le full-time. SideQuests est conçu pour les tasks du quotidien.</p>
         </div>
         <div class="lp-why-card lp-animate lp-animate-delay-1">
           <span class="lp-why-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 17a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1Z"/><path d="M16 17a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1Z"/><path d="M4 8h16v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M4 8V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2"/><path d="M12 6v4"/></svg></span>
           <h3>Manque de confiance</h3>
-          <p>Fini les groupes Facebook anonymes. SideQuests vérifie profils et assure la traçabilité des missions.</p>
+          <p>Fini les groupes Facebook anonymes. SideQuests vérifie profils et assure la traçabilité des tasks.</p>
         </div>
         <div class="lp-why-card lp-animate lp-animate-delay-2">
           <span class="lp-why-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg></span>
           <h3>Plateformes trop compliquées</h3>
-          <p>Formulaires interminables et processus lourds. Sur SideQuests, publie une mission en 30 secondes.</p>
+          <p>Formulaires interminables et processus lourds. Sur SideQuests, publie une task en 30 secondes.</p>
         </div>
       </div>
     </div>
@@ -188,7 +188,7 @@
       <div class="lp-how-grid">
         <div class="lp-how-step">
           <div class="lp-how-number">1</div>
-          <h3>Publie une mission</h3>
+          <h3>Publie une task</h3>
           <p>Décris ton besoin, fixe ton budget et ta localisation en moins de 30 secondes.</p>
         </div>
         <div class="lp-how-step">
@@ -198,7 +198,7 @@
         </div>
         <div class="lp-how-step">
           <div class="lp-how-number">3</div>
-          <h3>Mission accomplie</h3>
+          <h3>Task accomplie</h3>
           <p>Valide le travail, libère le paiement en un clic et note ton tasker.</p>
         </div>
       </div>
@@ -209,8 +209,8 @@
   <section class="lp-section">
     <div class="lp-container">
       <div class="lp-section-header">
-        <h2 class="lp-section-title">Explore les missions près de chez toi</h2>
-        <p class="lp-section-subtitle">Des centaines de missions disponibles partout au Maroc</p>
+        <h2 class="lp-section-title">Explore les tasks près de chez toi</h2>
+        <p class="lp-section-subtitle">Des centaines de tasks disponibles partout au Maroc</p>
       </div>
       <div class="lp-feed-categories">
         <span class="lp-feed-cat active">Toutes</span>
@@ -338,17 +338,17 @@
         <div class="lp-trust-card lp-animate lp-animate-delay-1">
           <span class="lp-trust-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
           <h3>Système de notes</h3>
-          <p>Les avis après chaque mission permettent de choisir en toute confiance le bon tasker.</p>
+          <p>Les avis après chaque task permettent de choisir en toute confiance le bon tasker.</p>
         </div>
         <div class="lp-trust-card lp-animate lp-animate-delay-2">
           <span class="lp-trust-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></span>
-          <h3>Missions complétées</h3>
-          <p>Des centaines de missions réalisées avec succès partout au Maroc.</p>
+          <h3>Tasks complétées</h3>
+          <p>Des centaines de tasks réalisées avec succès partout au Maroc.</p>
         </div>
         <div class="lp-trust-card lp-animate lp-animate-delay-3">
           <span class="lp-trust-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
           <h3>Paiement sécurisé</h3>
-          <p>Le paiement est bloqué jusqu'à validation de la mission. Sécurité totale pour les deux parties.</p>
+          <p>Le paiement est bloqué jusqu'à validation de la task. Sécurité totale pour les deux parties.</p>
         </div>
       </div>
     </div>
@@ -360,7 +360,7 @@
       <div class="lp-audience-grid">
         <div class="lp-audience-card lp-animate">
           <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg> Besoin d'aide ?</h3>
-          <p style="color: var(--lp-text-light);">Trouve quelqu'un pour t'aider dans tes tâches quotidiennes</p>
+          <p style="color: var(--lp-text-light);">Trouve quelqu'un pour t'aider dans tes tasks quotidiennes</p>
           <div class="lp-audience-tags">
             <span class="lp-audience-tag">Étudiants</span>
             <span class="lp-audience-tag">Jeunes actifs</span>
@@ -368,7 +368,7 @@
             <span class="lp-audience-tag">Seniors</span>
           </div>
           <a href="{% url 'accounts:register_client' %}" class="lp-audience-btn lp-audience-btn-primary">
-            Publier une mission
+            Publier une task
             <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
             </svg>
@@ -401,7 +401,7 @@
       <p class="lp-cta-subtitle">Rejoins une communauté de clients et taskers de confiance à travers tout le Maroc.</p>
       <div class="lp-cta-buttons">
         <a href="{% url 'accounts:register_client' %}" class="lp-cta-btn lp-cta-btn-white">
-          Publier une mission
+          Publier une task
         </a>
         <a href="{% url 'accounts:register_tasker' %}" class="lp-cta-btn lp-cta-btn-outline">
           Devenir tasker
@@ -417,14 +417,14 @@
         <a href="{% url 'home' %}" class="lp-logo">
           <span class="lp-logo-side">Side</span><span class="lp-logo-quests">Quests</span>
         </a>
-        <p>SideQuests connecte clients et taskers de confiance à travers le Maroc. Des missions du quotidien, simples et sécurisées.</p>
+        <p>SideQuests connecte clients et taskers de confiance à travers le Maroc. Des tasks du quotidien, simples et sécurisées.</p>
       </div>
       <div>
         <h4>Plateforme</h4>
         <ul>
           <li><a href="#how-it-works">Fonctionnement</a></li>
           <li><a href="{% url 'accounts:register_tasker' %}">Devenir tasker</a></li>
-          <li><a href="{% url 'accounts:register_client' %}">Publier une mission</a></li>
+          <li><a href="{% url 'accounts:register_client' %}">Publier une task</a></li>
           <li><a href="#">Tarifs</a></li>
         </ul>
       </div>

@@ -43,7 +43,7 @@
     <div class="form-group">
         <label for="condition_type">Condition</label>
         <select id="condition_type" name="condition_type" class="form-input">
-            <option value="tasks_completed" {% if badge.condition_type == 'tasks_completed' %}selected{% endif %}>Tâches réalisées</option>
+            <option value="tasks_completed" {% if badge.condition_type == 'tasks_completed' %}selected{% endif %}>Tasks réalisées</option>
             <option value="avg_rating" {% if badge.condition_type == 'avg_rating' %}selected{% endif %}>Note moyenne</option>
             <option value="speed" {% if badge.condition_type == 'speed' %}selected{% endif %}>Rapidité</option>
             <option value="no_cancel" {% if badge.condition_type == 'no_cancel' %}selected{% endif %}>Aucune annulation</option>
