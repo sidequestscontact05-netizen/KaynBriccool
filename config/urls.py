@@ -11,6 +11,10 @@ def home_view(request):
     if request.user.is_authenticated:
         if request.user.acting_as_tasker():
             return redirect('tasks:tasker_dashboard')
+        if request.user.is_admin() or request.user.acting_as_client():
+            return redirect('tasks:client_dashboard')
+        if request.user.role == 'both':
+            return redirect('tasks:tasker_dashboard')
         return redirect('tasks:client_dashboard')
     from django.views.generic import TemplateView
     return TemplateView.as_view(template_name='home.html')(request)
