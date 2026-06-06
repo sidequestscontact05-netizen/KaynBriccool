@@ -9,9 +9,11 @@ def home_view(request):
     if request.method == 'POST':
         return redirect('home')
     if request.user.is_authenticated:
+        if request.user.is_admin():
+            return redirect('admin_sidequest:dashboard')
         if request.user.acting_as_tasker():
             return redirect('tasks:tasker_dashboard')
-        if request.user.is_admin() or request.user.acting_as_client():
+        if request.user.acting_as_client():
             return redirect('tasks:client_dashboard')
         if request.user.role == 'both':
             return redirect('tasks:tasker_dashboard')
