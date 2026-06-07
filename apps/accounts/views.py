@@ -11,9 +11,10 @@ from django.views.generic import UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.translation import gettext_lazy as _
 from django.views import View
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.utils.decorators import method_decorator
-from django.http import HttpResponseForbidden, JsonResponse
+from django.http import HttpResponseForbidden, JsonResponse, HttpResponseBadRequest
+from apps.accounts.firebase_auth import verify_firebase_token
 
 from apps.accounts.models import CustomUser, UserProfile, VerificationRecord
 from apps.accounts.forms import (
@@ -124,6 +125,55 @@ class CustomLoginView(LoginView):
 
     def get_success_url(self):
         return reverse('home')
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
+class FirebaseLoginView(View):
+    def post(self, request):
+        import json
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return HttpResponseBadRequest('Invalid JSON')
+
+        id_token = data.get('id_token')
+        if not id_token:
+            return HttpResponseBadRequest('Missing id_token')
+
+        decoded = verify_firebase_token(id_token)
+        if not decoded:
+            return JsonResponse({'error': 'Token invalide'}, status=401)
+
+        firebase_uid = decoded.get('uid')
+        email = decoded.get('email', '')
+        name = decoded.get('name', email.split('@')[0] if email else 'Utilisateur')
+
+        is_new = False
+        user = CustomUser.objects.filter(firebase_uid=firebase_uid).first()
+        if not user:
+            user = CustomUser.objects.filter(email=email).first()
+            if user:
+                user.firebase_uid = firebase_uid
+                user.save(update_fields=['firebase_uid'])
+            else:
+                user = CustomUser.objects.create_user(
+                    email=email,
+                    full_name=name,
+                    firebase_uid=firebase_uid,
+                )
+                user.email_verified = True
+                user.save(update_fields=['email_verified'])
+                is_new = True
+
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+
+        if is_new:
+            return JsonResponse({'redirect': reverse('accounts:social_complete')})
+
+        if user.is_admin():
+            return JsonResponse({'redirect': reverse('admin_sidequest:dashboard')})
+        return JsonResponse({'redirect': reverse('home')})
 
 
 class VerifyPhoneView(LoginRequiredMixin, View):

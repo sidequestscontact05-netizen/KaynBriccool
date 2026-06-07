@@ -31,7 +31,6 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
 
     'apps.accounts',
     'apps.tasks',
@@ -68,6 +67,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'apps.accounts.context_processors.review_notifications',
                 'apps.accounts.context_processors.unread_counts',
+                'apps.accounts.context_processors.firebase_settings',
             ],
         },
     },
@@ -84,18 +84,6 @@ AUTHENTICATION_BACKENDS = [
 
 ACCOUNT_ADAPTER = 'apps.accounts.adapters.AccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'apps.accounts.adapters.SocialAccountAdapter'
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'APP': {
-            'client_id': env('GOOGLE_CLIENT_ID', default=''),
-            'secret': env('GOOGLE_CLIENT_SECRET', default=''),
-            'key': '',
-        },
-        'SCOPE': ['profile', 'email'],
-        'AUTH_PARAMS': {'access_type': 'online'},
-        'VERIFIED_EMAIL': True,
-    },
-}
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = 'email'
 ACCOUNT_LOGIN_METHODS = {'email'}
@@ -104,6 +92,15 @@ ACCOUNT_SIGNUP_REDIRECT_URL = 'accounts:social_complete'
 SOCIALACCOUNT_LOGIN_ON_GET = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
+
+FIREBASE_APP_NAME = 'sidequest'
+FIREBASE_SERVICE_ACCOUNT_PATH = env('FIREBASE_SERVICE_ACCOUNT_PATH', default='')
+FIREBASE_API_KEY = env('FIREBASE_API_KEY', default='')
+FIREBASE_AUTH_DOMAIN = env('FIREBASE_AUTH_DOMAIN', default='')
+FIREBASE_PROJECT_ID = env('FIREBASE_PROJECT_ID', default='')
+FIREBASE_STORAGE_BUCKET = env('FIREBASE_STORAGE_BUCKET', default='')
+FIREBASE_MESSAGING_SENDER_ID = env('FIREBASE_MESSAGING_SENDER_ID', default='')
+FIREBASE_APP_ID = env('FIREBASE_APP_ID', default='')
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},

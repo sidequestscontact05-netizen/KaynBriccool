@@ -33,4 +33,5 @@ urlpatterns = [
     path('become-client/', views.become_client, name='become_client'),
     path('onboarding/done/', views.onboarding_done, name='onboarding_done'),
     path('social/complete/', views.social_complete, name='social_complete'),
+    path('firebase/login/', views.FirebaseLoginView.as_view(), name='firebase_login'),
 ]

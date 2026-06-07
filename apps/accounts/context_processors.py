@@ -1,3 +1,4 @@
+from django.conf import settings as django_settings
 from .models import Notification
 
 
@@ -54,4 +55,10 @@ def unread_counts(request):
     return {
         'unread_notifications_count': unread_notifs,
         'unread_messages_count': unread_msgs,
+    }
+
+
+def firebase_settings(request):
+    return {
+        'settings': django_settings,
     }

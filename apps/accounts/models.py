@@ -43,6 +43,7 @@ class CustomUser(AbstractUser):
         default=ActiveRoles.CLIENT,
     )
     is_verified = models.BooleanField(_('vérifié'), default=False)
+    firebase_uid = models.CharField(_('UID Firebase'), max_length=128, blank=True, null=True, unique=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['full_name']
