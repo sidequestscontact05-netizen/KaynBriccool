@@ -156,7 +156,6 @@ class FirebaseLoginView(View):
         email = decoded.get('email', '')
         name = decoded.get('name', email.split('@')[0] if email else 'Utilisateur')
 
-        is_new = False
         user = CustomUser.objects.filter(firebase_uid=firebase_uid).first()
         if not user:
             user = CustomUser.objects.filter(email=email).first()
@@ -171,12 +170,8 @@ class FirebaseLoginView(View):
                 )
                 user.email_verified = True
                 user.save(update_fields=['email_verified'])
-                is_new = True
 
         login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-
-        if is_new:
-            return JsonResponse({'redirect': reverse('accounts:social_complete')})
 
         if user.is_admin():
             return JsonResponse({'redirect': reverse('admin_sidequest:dashboard')})
@@ -403,7 +398,7 @@ def become_client(request):
         user.role = CustomUser.Roles.BOTH
         user.active_role = CustomUser.ActiveRoles.CLIENT
         user.save(update_fields=['role', 'active_role'])
-        messages.success(request, _('Vous êtes maintenant aussi Client. Vous pouvez créer des tâches !'))
+        messages.success(request, _('Vous êtes maintenant aussi Client. Vous pouvez créer des tasks !'))
     else:
         user.active_role = CustomUser.ActiveRoles.CLIENT
         user.save(update_fields=['active_role'])

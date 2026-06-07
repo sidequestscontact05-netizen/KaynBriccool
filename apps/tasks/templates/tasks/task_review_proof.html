@@ -8,7 +8,7 @@
     <h1>Réviser la preuve</h1>
 </div>
 <div class="proof-review-container">
-    <p class="text-muted">Mission : <strong>{{ task.title }}</strong></p>
+    <p class="text-muted">Task : <strong>{{ task.title }}</strong></p>
 
     <div class="tasker-card">
         <img src="{{ proof.tasker.profile.avatar_url|default:'/static/images/default-avatar.png' }}" alt="{{ proof.tasker.get_full_name }}" class="tasker-avatar">

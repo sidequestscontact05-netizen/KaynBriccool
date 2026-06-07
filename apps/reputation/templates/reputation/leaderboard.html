@@ -37,7 +37,7 @@
             </div>
             <div class="lb-user-rank-stat">
                 <span class="lb-user-rank-stat-value">{{ user_profile.tasks_completed }}</span>
-                <span class="lb-user-rank-stat-label">Missions</span>
+                <span class="lb-user-rank-stat-label">Tasks</span>
             </div>
             <div class="lb-user-rank-stat">
                 <span class="lb-user-rank-stat-value">{{ user_profile.tasker_rating_count }}</span>
@@ -75,7 +75,7 @@
         <div class="lb-podium-level">Niv. {{ profile.level }}</div>
         <div class="lb-podium-stars">{{ profile.tasker_rating_avg|stars }}</div>
         <div class="lb-podium-score">{{ profile.tasker_rating_avg|floatformat:1 }}</div>
-        <div class="lb-podium-meta">{{ profile.tasks_completed }} missions · {{ profile.xp }} XP</div>
+        <div class="lb-podium-meta">{{ profile.tasks_completed }} tasks · {{ profile.xp }} XP</div>
     </a>
     {% endif %}
     {% endfor %}
@@ -138,7 +138,7 @@
                 </div>
                 <div class="lbc-stat highlight">
                     <span class="lbc-stat-value">{{ profile.tasks_completed }}</span>
-                    <span class="lbc-stat-label">Missions</span>
+                    <span class="lbc-stat-label">Tasks</span>
                 </div>
                 <div class="lbc-stat highlight">
                     <span class="lbc-stat-value">{{ profile.xp }}</span>
@@ -157,7 +157,7 @@
 <div class="empty-state">
     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
     <h3>Aucun classement</h3>
-    <p>Commencez à compléter des missions pour apparaître dans le classement.</p>
+    <p>Commencez à compléter des tasks pour apparaître dans le classement.</p>
 </div>
 {% endif %}
 

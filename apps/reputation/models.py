@@ -21,7 +21,7 @@ class Review(models.Model):
         'tasks.Task',
         on_delete=models.CASCADE,
         related_name='reviews',
-        verbose_name=_('tâche'),
+        verbose_name=_('task'),
     )
     reviewer = models.ForeignKey(
         settings.AUTH_USER_MODEL,

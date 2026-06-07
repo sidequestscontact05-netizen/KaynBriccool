@@ -28,7 +28,7 @@
     <div class="profile-stats">
         <div class="stat-card">
             <span class="stat-value">{{ profile.tasks_completed }}</span>
-            <span class="stat-label">Missions terminées</span>
+            <span class="stat-label">Tasks terminées</span>
         </div>
         <div class="stat-card">
             <span class="stat-value">{% if profile.tasker_rating_avg %}{{ profile.tasker_rating_avg }}{% else %}—{% endif %}</span>
@@ -74,7 +74,7 @@
                     {% if review.comment %}
                         <p class="review-comment">{{ review.comment }}</p>
                     {% endif %}
-                    <span class="review-task">Mission : {{ review.task.title }}</span>
+                    <span class="review-task">Task : {{ review.task.title }}</span>
                 </div>
             {% endfor %}
         </div>

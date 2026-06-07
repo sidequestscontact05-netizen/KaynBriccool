@@ -26,6 +26,8 @@ urlpatterns = [
     path('', home_view, name='home'),
     path('admin-django/', admin.site.urls),
     path('admin-panel/', include('apps.accounts.admin_urls')),
+    path('accounts/login/', lambda request: redirect('accounts:login')),
+    path('accounts/signup/', lambda request: redirect('accounts:register')),
     path('accounts/', include('allauth.urls')),
     path('', include('apps.accounts.urls')),
     path('', include('apps.tasks.urls')),

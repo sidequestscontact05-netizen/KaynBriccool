@@ -198,9 +198,9 @@ class UserProfile(models.Model):
     )
     client_rating_count = models.IntegerField(_('nombre avis client'), default=0)
 
-    tasks_completed = models.IntegerField(_('tâches réalisées'), default=0)
-    tasks_published = models.IntegerField(_('tâches publiées'), default=0)
-    tasks_cancelled = models.IntegerField(_('tâches annulées'), default=0)
+    tasks_completed = models.IntegerField(_('tasks réalisées'), default=0)
+    tasks_published = models.IntegerField(_('tasks publiées'), default=0)
+    tasks_cancelled = models.IntegerField(_('tasks annulées'), default=0)
 
     xp = models.IntegerField(_('points d\'expérience'), default=0)
     level = models.IntegerField(_('niveau'), default=1)
@@ -235,10 +235,10 @@ class UserProfile(models.Model):
 
 class Notification(models.Model):
     class TypeChoices(models.TextChoices):
-        TASK_PUBLISHED = 'task_published', _('Nouvelle tâche publiée')
+        TASK_PUBLISHED = 'task_published', _('Nouvelle task publiée')
         NEW_APPLICATION = 'new_application', _('Nouvelle candidature')
-        TASK_ACCEPTED = 'task_accepted', _('Tâche acceptée')
-        TASK_COMPLETED = 'task_completed', _('Tâche terminée')
+        TASK_ACCEPTED = 'task_accepted', _('Task acceptée')
+        TASK_COMPLETED = 'task_completed', _('Task terminée')
         MESSAGE_RECEIVED = 'message_received', _('Nouveau message')
         REVIEW_RECEIVED = 'review_received', _('Nouvel avis')
         SYSTEM = 'system', _('Système')
@@ -264,7 +264,7 @@ class Notification(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        verbose_name=_('tâche liée'),
+        verbose_name=_('task liée'),
     )
     related_conversation = models.ForeignKey(
         'messaging.Conversation',
