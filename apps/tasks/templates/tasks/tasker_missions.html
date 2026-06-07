@@ -32,6 +32,7 @@
   cursor: pointer; transition: all 0.15s; white-space: nowrap;
 }
 .app-card-cancel:hover { border-color: #ef4444; color: #ef4444; }
+a.mission-card { text-decoration: none; color: inherit; display: flex; }
 </style>
 
 <div class="page-header">
@@ -48,6 +49,7 @@
     <a href="{{ base_url }}?status=completed" class="filter-tab {% if status_filter == 'completed' %}active{% endif %}">Terminées <span>({{ completed_count }})</span></a>
     <a href="{{ base_url }}?status=pending" class="filter-tab {% if status_filter == 'pending' %}active{% endif %}">En attente <span>({{ pending_count }})</span></a>
     <a href="{{ base_url }}?status=applications" class="filter-tab {% if status_filter == 'applications' %}active{% endif %}">Candidatures <span>({{ applications_count }})</span></a>
+    <a href="{{ base_url }}?status=saved" class="filter-tab {% if status_filter == 'saved' %}active{% endif %}">Enregistrées <span>({{ saved_count }})</span></a>
 </div>
 {% endwith %}
 
@@ -87,7 +89,7 @@
 <div class="missions-list">
     {% for task in missions %}
     {% with s=task.status %}
-    <div class="mission-card" data-status="{{ s }}">
+    <a href="{% url 'tasks:task_detail' task.id %}" class="mission-card" data-status="{{ s }}">
         <span class="mission-dot {% if s == 'accepted' or s == 'in_progress' or s == 'awaiting_confirmation' or s == 'completed' %}active{% elif s == 'published' or s == 'draft' %}pending{% elif s == 'validated' or s == 'evaluated' or s == 'closed' or s == 'resolved' %}completed{% else %}cancelled{% endif %}"></span>
         <div class="mission-body">
             <div class="mission-title">{{ task.title }}</div>
@@ -110,7 +112,7 @@
             {% endif %}
             {% endwith %}
         </div>
-    </div>
+    </a>
     {% endwith %}
     {% endfor %}
 </div>

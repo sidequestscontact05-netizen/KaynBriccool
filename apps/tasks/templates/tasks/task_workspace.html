@@ -111,18 +111,18 @@
   font-size: 0.75rem;
   font-weight: 600;
 }
-.ws-badge.published { background: rgba(82,183,136,0.12); color: #2D6A4F; }
+.ws-badge.published { background: rgba(82,183,136,0.12); color: #0e6b52; }
 .ws-badge.accepted { background: rgba(59,130,246,0.12); color: #1D4ED8; }
 .ws-badge.in_progress { background: rgba(245,158,11,0.12); color: #B45309; }
 .ws-badge.awaiting_confirmation { background: rgba(139,92,246,0.12); color: #6D28D9; }
 .ws-badge.validated,
 .ws-badge.evaluated,
-.ws-badge.closed { background: rgba(82,183,136,0.12); color: #2D6A4F; }
+.ws-badge.closed { background: rgba(82,183,136,0.12); color: #0e6b52; }
 .ws-badge.cancelled,
 .ws-badge.rejected { background: rgba(239,68,68,0.12); color: #DC2626; }
 .ws-badge.litige { background: rgba(239,68,68,0.12); color: #DC2626; }
 .ws-badge.resolved { background: rgba(107,114,128,0.12); color: #4B5563; }
-.ws-badge.completed { background: rgba(82,183,136,0.12); color: #2D6A4F; }
+.ws-badge.completed { background: rgba(82,183,136,0.12); color: #0e6b52; }
 .ws-badge.draft { background: rgba(156,163,175,0.12); color: #6B7280; }
 
 .btn-ws {
@@ -197,7 +197,7 @@
   cursor: pointer;
   transition: all 0.2s;
 }
-.ws-review-radio:checked + .ws-review-label[data-action="accept"] { border-color: #52B788; background: rgba(82,183,136,0.1); color: #2D6A4F; }
+.ws-review-radio:checked + .ws-review-label[data-action="accept"] { border-color: #52B788; background: rgba(82,183,136,0.1); color: #0e6b52; }
 .ws-review-radio:checked + .ws-review-label[data-action="revision"] { border-color: #F59E0B; background: rgba(245,158,11,0.1); color: #B45309; }
 .ws-review-radio:checked + .ws-review-label[data-action="reject"] { border-color: #EF4444; background: rgba(239,68,68,0.1); color: #DC2626; }
 .ws-review-radio:checked + .ws-review-label[data-action="litige"] { border-color: #EF4444; background: rgba(239,68,68,0.1); color: #DC2626; }
@@ -598,7 +598,7 @@
         <div class="ws-proof-box">
           <p>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> Décision :
-            {% if existing_proof.client_review == 'accepted' %}<strong style="color:#2D6A4F;">Acceptée</strong>
+            {% if existing_proof.client_review == 'accepted' %}<strong style="color:#0e6b52;">Acceptée</strong>
             {% elif existing_proof.client_review == 'revision' %}<strong style="color:#B45309;">Modification demandée</strong>
             {% elif existing_proof.client_review == 'rejected' %}<strong style="color:#DC2626;">Refusée</strong>
             {% elif existing_proof.client_review == 'pending' %}<strong style="color:#6D28D9;">En attente</strong>

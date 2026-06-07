@@ -208,6 +208,7 @@ class UserProfile(models.Model):
     onboarding_seen = models.BooleanField(_('guide vu'), default=False)
     current_streak = models.IntegerField(_('série actuelle'), default=0)
     last_streak_date = models.DateField(_('dernière activité'), blank=True, null=True)
+    saved_tasks = models.ManyToManyField('tasks.Task', blank=True, related_name='saved_by')
 
     created_at = models.DateTimeField(_('créé le'), auto_now_add=True)
     updated_at = models.DateTimeField(_('modifié le'), auto_now=True)

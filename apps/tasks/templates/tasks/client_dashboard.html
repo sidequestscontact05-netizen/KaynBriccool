@@ -18,7 +18,7 @@
   transition: all 0.2s ease;
 }
 .client-section-card:hover {
-  box-shadow: 0 4px 16px rgba(45,106,79,0.08);
+  box-shadow: 0 4px 16px rgba(14,107,82,0.08);
   border-color: var(--sq-border);
 }
 .client-section-card .card-body { flex: 1; min-width: 0; }
@@ -60,18 +60,18 @@
   font-weight: 600;
 }
 .card-badge.draft { background: rgba(156,163,175,0.12); color: #6B7280; }
-.card-badge.published { background: rgba(82,183,136,0.12); color: #2D6A4F; }
+.card-badge.published { background: rgba(82,183,136,0.12); color: #0e6b52; }
 .card-badge.accepted { background: rgba(59,130,246,0.12); color: #1D4ED8; }
 .card-badge.in_progress { background: rgba(245,158,11,0.12); color: #B45309; }
 .card-badge.awaiting_confirmation { background: rgba(139,92,246,0.12); color: #6D28D9; }
 .card-badge.validated,
 .card-badge.evaluated,
-.card-badge.closed { background: rgba(82,183,136,0.12); color: #2D6A4F; }
+.card-badge.closed { background: rgba(82,183,136,0.12); color: #0e6b52; }
 .card-badge.cancelled,
 .card-badge.rejected { background: rgba(239,68,68,0.12); color: #DC2626; }
 .card-badge.litige { background: rgba(239,68,68,0.12); color: #DC2626; }
 .card-badge.resolved { background: rgba(107,114,128,0.12); color: #4B5563; }
-.card-badge.completed { background: rgba(82,183,136,0.12); color: #2D6A4F; }
+.card-badge.completed { background: rgba(82,183,136,0.12); color: #0e6b52; }
 
 .card-action-link {
   font-size: 0.72rem;
@@ -139,6 +139,47 @@
 .dash-tab.active .dash-tab-count {
   background: rgba(255,255,255,0.25);
 }
+
+.pills-nav {
+  display: flex;
+  gap: 8px;
+  padding: 10px 0;
+  background: #ffffff;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.pills-nav::-webkit-scrollbar { display: none; }
+.pnav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  text-decoration: none;
+  border: 1.5px solid #e0e0e0;
+  background: #f5f5f0;
+  color: #555555;
+}
+.pnav.active {
+  background: #0e6b52;
+  color: #ffffff;
+  border-color: #0e6b52;
+}
+.pnav .pnav-badge {
+  background: #0e6b52;
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 1px 7px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.pnav.active .pnav-badge {
+  background: rgba(255,255,255,0.25);
+}
 </style>
 
 
@@ -161,6 +202,29 @@
         <span class="hero-stat-value gold">{% if user.profile.client_rating_avg and user.profile.client_rating_avg > 0 %}{{ user.profile.client_rating_avg|floatformat:1 }}{% else %}—{% endif %}</span>
         <span class="hero-stat-label">Note moy.</span>
     </div>
+</div>
+
+<div class="pills-nav">
+  <a href="{% url 'tasks:client_dashboard' %}" class="pnav active">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Accueil
+  </a>
+  <a href="{% url 'tasks:client_quests' %}" class="pnav">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    Missions
+    {% with active_count=accepted.count|add:in_progress.count %}
+    {% if active_count %}<span class="pnav-badge">{{ active_count }}</span>{% endif %}
+    {% endwith %}
+  </a>
+  <a href="{% url 'reputation:leaderboard' %}" class="pnav">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    Classement
+  </a>
+  <a href="{% url 'messaging:conversation_list' %}" class="pnav">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    Messages
+    {% if unread_messages_count %}<span class="pnav-badge">{{ unread_messages_count }}</span>{% endif %}
+  </a>
 </div>
 
 <div style="margin-top:28px;">

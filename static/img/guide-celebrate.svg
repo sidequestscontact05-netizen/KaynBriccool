@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 200" fill="none">
   <!-- Body -->
-  <path d="M60 120 L80 200 L100 120" fill="#2D6A4F" stroke="#1B4332" stroke-width="2"/>
+  <path d="M60 120 L80 200 L100 120" fill="#0e6b52" stroke="#1B4332" stroke-width="2"/>
   <!-- Belt -->
   <rect x="62" y="108" width="36" height="8" rx="4" fill="#1B4332"/>
   <circle cx="80" cy="112" r="4" fill="#F5F0EB" stroke="#1B4332" stroke-width="1"/>
@@ -16,9 +16,9 @@
   <text x="10" y="46" font-size="10" fill="#FFD93D">✦</text>
   <text x="140" y="50" font-size="10" fill="#FFD93D">✦</text>
   <!-- Head -->
-  <circle cx="80" cy="56" r="40" fill="#F5F0EB" stroke="#2D6A4F" stroke-width="2"/>
+  <circle cx="80" cy="56" r="40" fill="#F5F0EB" stroke="#0e6b52" stroke-width="2"/>
   <!-- Hat -->
-  <path d="M44 46 Q80 4 116 46" fill="#2D6A4F" stroke="#1B4332" stroke-width="1.5"/>
+  <path d="M44 46 Q80 4 116 46" fill="#0e6b52" stroke="#1B4332" stroke-width="1.5"/>
   <circle cx="80" cy="36" r="4" fill="#FFD93D"/>
   <!-- Eyes happy -->
   <path d="M64 52 Q68 46 72 52" stroke="#1a1a2e" stroke-width="2" fill="none" stroke-linecap="round"/>

@@ -5,6 +5,8 @@ from apps.accounts.decorators import client_required, tasker_required
 from django.contrib import messages
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.db import IntegrityError
+from django.core.exceptions import ValidationError
 from django.db.models import Q, Avg, Count, Prefetch, Sum
 from django.http import HttpResponseForbidden, JsonResponse
 from django.urls import reverse
@@ -208,6 +210,7 @@ def tasker_dashboard(request):
     ).select_related('client', 'category').order_by('-published_at')
 
     total_available = available_tasks.count()
+    categories = Category.objects.filter(is_active=True)
 
     top_taskers = UserProfile.objects.filter(
         user__role__in=['tasker', 'both'],
@@ -255,6 +258,7 @@ def tasker_dashboard(request):
         'earnings_week': earnings_week,
         'earnings_month': earnings_month,
         'total_available': total_available,
+        'categories': categories,
     }
     return render(request, 'tasks/tasker_dashboard.html', context)
 
@@ -323,8 +327,13 @@ def tasker_missions(request):
     category_filter = request.GET.get('category', '')
 
     show_applications = (status_filter == 'applications')
+    show_saved = (status_filter == 'saved')
 
-    if show_applications:
+    if show_saved:
+        saved_ids = request.user.profile.saved_tasks.values_list('id', flat=True)
+        base_qs = Task.objects.filter(id__in=saved_ids).select_related('category')
+        applications = TaskApplication.objects.none()
+    elif show_applications:
         applications = TaskApplication.objects.filter(
             tasker=request.user,
             status=TaskApplication.StatusChoices.PENDING,
@@ -415,9 +424,10 @@ def tasker_missions(request):
         tasker=request.user,
         status=TaskApplication.StatusChoices.PENDING,
     ).count()
+    saved_count = request.user.profile.saved_tasks.count()
 
     context = {
-        'missions': missions if not show_applications else [],
+        'missions': [] if show_applications else missions,
         'applications': applications,
         'categories': categories,
         'total_count': missions.count(),
@@ -425,6 +435,7 @@ def tasker_missions(request):
         'completed_count': completed_count,
         'pending_count': pending_count,
         'applications_count': applications_count,
+        'saved_count': saved_count,
         'status_filter': status_filter,
         'date_filter': date_filter,
         'price_sort': price_sort,
@@ -432,6 +443,20 @@ def tasker_missions(request):
         'category_filter': category_filter,
     }
     return render(request, 'tasks/tasker_missions.html', context)
+
+
+@login_required
+@tasker_required
+def task_toggle_save(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+    profile = request.user.profile
+    if profile.saved_tasks.filter(id=task_id).exists():
+        profile.saved_tasks.remove(task)
+        saved = False
+    else:
+        profile.saved_tasks.add(task)
+        saved = True
+    return JsonResponse({'saved': saved})
 
 
 @login_required
@@ -492,6 +517,9 @@ def task_cancel(request, task_id):
     if task.status == Task.StatusChoices.PUBLISHED:
         task.status = Task.StatusChoices.CANCELLED
         task.save()
+        profile = request.user.profile
+        profile.tasks_cancelled += 1
+        profile.save(update_fields=['tasks_cancelled'])
         messages.success(request, _('Tâche annulée.'))
     return redirect('tasks:client_dashboard')
 
@@ -590,11 +618,17 @@ def task_apply(request, task_id):
         return redirect('tasks:tasker_dashboard')
 
     message = request.POST.get('message', '')
-    application = TaskApplication.objects.create(
-        task=task,
-        tasker=request.user,
-        message=message,
-    )
+    try:
+        application = TaskApplication.objects.create(
+            task=task,
+            tasker=request.user,
+            message=message,
+        )
+    except IntegrityError:
+        messages.info(request, _('Vous avez déjà postulé à cette tâche.'))
+        if request.htmx:
+            return HttpResponse('<div style="display:none;" hx-swap-oob="true"></div>')
+        return redirect('tasks:tasker_dashboard')
 
     Conversation.objects.create(
         application=application,
@@ -623,18 +657,15 @@ def task_apply(request, task_id):
 @client_required
 def task_choose_tasker(request, task_id, application_id):
     task = get_object_or_404(Task, id=task_id, client=request.user)
+    application = get_object_or_404(TaskApplication, id=application_id, task=task)
 
-    if task.status != Task.StatusChoices.PUBLISHED:
+    try:
+        task.accept_tasker(application.tasker)
+    except ValidationError:
         messages.error(request, _('Cette tâche n\'est plus en attente de candidatures.'))
         return redirect('tasks:client_dashboard')
 
-    application = get_object_or_404(TaskApplication, id=application_id, task=task)
-
     application.accept()
-    task.accept_tasker(application.tasker)
-
-    for other_app in task.applications.exclude(id=application.id):
-        other_app.reject()
 
     create_notification(
         application.tasker,

@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
-  <circle cx="60" cy="60" r="56" fill="#F5F0EB" stroke="#2D6A4F" stroke-width="2.5"/>
+  <circle cx="60" cy="60" r="56" fill="#F5F0EB" stroke="#0e6b52" stroke-width="2.5"/>
   <!-- Hat -->
-  <path d="M32 50 Q60 10 88 50" fill="#2D6A4F" stroke="#1B4332" stroke-width="1.5"/>
+  <path d="M32 50 Q60 10 88 50" fill="#0e6b52" stroke="#1B4332" stroke-width="1.5"/>
   <circle cx="60" cy="42" r="4" fill="#95D5B2"/>
   <!-- Eyes -->
   <circle cx="46" cy="58" r="4" fill="#1a1a2e"/>

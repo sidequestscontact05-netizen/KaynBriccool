@@ -33,14 +33,14 @@
    Tasker Dashboard
    =========================== */
 .hero-card-tasker {
-  background: linear-gradient(135deg, #2D6A4F 0%, #40916C 40%, #52B788 100%);
+  background: linear-gradient(135deg, #0e6b52 0%, #40916C 40%, #52B788 100%);
   border-radius: 20px;
   padding: 28px 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  box-shadow: 0 8px 32px rgba(45, 106, 79, 0.25);
+  box-shadow: 0 8px 32px rgba(14, 107, 82, 0.25);
   margin-bottom: 28px;
   position: relative;
   overflow: hidden;
@@ -272,7 +272,7 @@
   font-weight: 600;
   text-transform: capitalize;
 }
-.mission-badge.active { background: rgba(82,183,136,0.12); color: #2D6A4F; }
+.mission-badge.active { background: rgba(82,183,136,0.12); color: #0e6b52; }
 .mission-badge.pending { background: rgba(245,158,11,0.12); color: #B45309; }
 .mission-badge.completed { background: rgba(107,114,128,0.12); color: #4B5563; }
 .mission-badge.cancelled { background: rgba(239,68,68,0.12); color: #DC2626; }

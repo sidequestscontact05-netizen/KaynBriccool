@@ -13,7 +13,9 @@ from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.utils.decorators import method_decorator
+from django.utils import timezone
 from django.http import HttpResponseForbidden, JsonResponse, HttpResponseBadRequest
+from datetime import timedelta
 
 from apps.accounts.models import CustomUser, UserProfile, VerificationRecord
 from apps.accounts.forms import (
@@ -123,6 +125,9 @@ class CustomLoginView(LoginView):
     redirect_authenticated_user = True
 
     def get_success_url(self):
+        next_url = self.request.POST.get('next') or self.request.GET.get('next')
+        if next_url:
+            return next_url
         return reverse('home')
 
 
@@ -255,6 +260,7 @@ class VerifyFaceIdView(LoginRequiredMixin, View):
                 user=request.user,
                 type=VerificationRecord.TypeChoices.FACE_ID,
                 face_status=VerificationRecord.FaceStatusChoices.PENDING,
+                expires_at=timezone.now() + timedelta(days=365),
             )
             form.save_m2m() if hasattr(form, 'save_m2m') else None
 
