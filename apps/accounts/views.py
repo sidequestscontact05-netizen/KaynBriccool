@@ -14,7 +14,6 @@ from django.views import View
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.utils.decorators import method_decorator
 from django.http import HttpResponseForbidden, JsonResponse, HttpResponseBadRequest
-from apps.accounts.firebase_auth import verify_firebase_token
 
 from apps.accounts.models import CustomUser, UserProfile, VerificationRecord
 from apps.accounts.forms import (
@@ -128,9 +127,12 @@ class CustomLoginView(LoginView):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-@method_decorator(csrf_exempt, name='dispatch')
 class FirebaseLoginView(View):
     def post(self, request):
+        try:
+            from apps.accounts.firebase_auth import verify_firebase_token
+        except ImportError:
+            return JsonResponse({'error': 'Firebase non configuré'}, status=501)
         import json
         try:
             data = json.loads(request.body)
