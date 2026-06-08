@@ -6,6 +6,11 @@
 
 {% block dashboard_content %}
 
+<style>
+.client-task-card-link { text-decoration:none;color:inherit;display:block; }
+.client-task-card-link:hover .client-task-card { box-shadow:0 4px 16px rgba(14,107,82,0.08);border-color:var(--sq-border); }
+</style>
+
 <div class="page-header">
     <a href="{% url 'tasks:client_dashboard' %}" class="btn-back" title="Retour">&#8592;</a>
     <h2>Historique de mes tasks</h2>
@@ -23,6 +28,7 @@
 {% if tasks.exists %}
     <div class="client-task-list">
         {% for task in tasks %}
+        <a href="{% url 'tasks:task_detail' task.id %}" class="client-task-card-link">
         <div class="client-task-card" data-status="{{ task.status }}">
             <div class="task-card-header">
                 <h4 class="task-card-title">{{ task.title }}</h4>
@@ -39,7 +45,7 @@
                     <span class="status-text">{{ task.get_status_display }}</span>
                 </div>
             </div>
-            <div class="client-task-actions">
+            <div class="client-task-actions" onclick="event.stopPropagation();">
                 {% if task.status == 'draft' %}
                     <a href="{% url 'tasks:task_edit' task.id %}" class="btn btn-sm">Modifier</a>
                     <a href="{% url 'tasks:task_publish' task.id %}" class="btn btn-sm btn-primary">Publier</a>
@@ -61,6 +67,7 @@
                 {% endif %}
             </div>
         </div>
+        </a>
         {% endfor %}
     </div>
 {% else %}
@@ -75,6 +82,7 @@
 {% if published.exists %}
     <div class="client-task-list">
         {% for task in published %}
+        <a href="{% url 'tasks:task_detail' task.id %}" class="client-task-card-link">
         <div class="client-task-card" data-status="{{ task.status }}">
             <div class="task-card-header">
                 <h4 class="task-card-title">{{ task.title }}</h4>
@@ -91,11 +99,12 @@
                     <span class="status-text">{{ task.get_status_display }}</span>
                 </div>
             </div>
-            <div class="client-task-actions">
+            <div class="client-task-actions" onclick="event.stopPropagation();">
                 <a href="{% url 'tasks:task_detail' task.id %}" class="btn btn-sm">Voir candidatures</a>
                 <a href="{% url 'tasks:task_cancel' task.id %}" class="btn btn-sm" onclick="return confirm('Annuler ?')">Annuler</a>
             </div>
         </div>
+        </a>
         {% endfor %}
     </div>
 {% else %}
@@ -107,6 +116,7 @@
 {% if in_progress.exists %}
     <div class="client-task-list">
         {% for task in in_progress %}
+        <a href="{% url 'tasks:task_detail' task.id %}" class="client-task-card-link">
         <div class="client-task-card" data-status="{{ task.status }}">
             <div class="task-card-header">
                 <h4 class="task-card-title">{{ task.title }}</h4>
@@ -124,7 +134,7 @@
                     <span class="status-text">{{ task.get_status_display }}</span>
                 </div>
             </div>
-            <div class="client-task-actions">
+            <div class="client-task-actions" onclick="event.stopPropagation();">
                 {% if task.status == 'awaiting_confirmation' %}
                     <a href="{% url 'tasks:task_review_proof' task.id %}" class="btn btn-sm btn-primary">Vérifier la preuve</a>
                 {% endif %}
@@ -137,6 +147,7 @@
                 {% endif %}
             </div>
         </div>
+        </a>
         {% endfor %}
     </div>
 {% else %}
@@ -148,6 +159,7 @@
 {% if finished.exists %}
     <div class="client-task-list">
         {% for task in finished %}
+        <a href="{% url 'tasks:task_detail' task.id %}" class="client-task-card-link">
         <div class="client-task-card" data-status="{{ task.status }}">
             <div class="task-card-header">
                 <h4 class="task-card-title">{{ task.title }}</h4>
@@ -164,7 +176,7 @@
                     <span class="status-text">{{ task.get_status_display }}</span>
                 </div>
             </div>
-            <div class="client-task-actions">
+            <div class="client-task-actions" onclick="event.stopPropagation();">
                 {% if task.status == 'validated' or task.status == 'resolved' %}
                     <a href="{% url 'tasks:task_evaluate' task.id %}" class="btn btn-sm" style="background:#FFD60A;color:white;">Évaluer</a>
                 {% elif task.status == 'evaluated' %}
@@ -181,6 +193,7 @@
                 {% endif %}
             </div>
         </div>
+        </a>
         {% endfor %}
     </div>
 {% else %}
@@ -192,6 +205,7 @@
 {% if drafts.exists %}
     <div class="client-task-list">
         {% for task in drafts %}
+        <a href="{% url 'tasks:task_detail' task.id %}" class="client-task-card-link">
         <div class="client-task-card" data-status="{{ task.status }}">
             <div class="task-card-header">
                 <h4 class="task-card-title">{{ task.title }}</h4>
@@ -209,12 +223,13 @@
                     <span class="status-text">Brouillon</span>
                 </div>
             </div>
-            <div class="client-task-actions">
+            <div class="client-task-actions" onclick="event.stopPropagation();">
                 <a href="{% url 'tasks:task_edit' task.id %}" class="btn btn-sm">Modifier</a>
                 <a href="{% url 'tasks:task_publish' task.id %}" class="btn btn-sm btn-primary">Publier</a>
                 <a href="{% url 'tasks:task_delete' task.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer ?')">Supprimer</a>
             </div>
         </div>
+        </a>
         {% endfor %}
     </div>
 {% else %}

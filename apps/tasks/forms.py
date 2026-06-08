@@ -9,7 +9,6 @@ class TaskCreateForm(forms.ModelForm):
         fields = [
             'category',
             'subcategory',
-            'title',
             'description',
             'reward',
             'arrival_address',
@@ -21,7 +20,6 @@ class TaskCreateForm(forms.ModelForm):
         labels = {
             'category': _('Catégorie'),
             'subcategory': _('Sous-catégorie'),
-            'title': _('Titre de la task'),
             'description': _('Description'),
             'reward': _('Rémunération (Dh)'),
             'has_route': _('Task avec trajet'),
@@ -33,8 +31,7 @@ class TaskCreateForm(forms.ModelForm):
         widgets = {
             'category': forms.Select(attrs={'class': 'form-input'}),
             'subcategory': forms.Select(attrs={'class': 'form-input'}),
-            'title': forms.TextInput(attrs={'placeholder': _('Ex: Livrer un colis au centre-ville'), 'class': 'form-input'}),
-            'description': forms.Textarea(attrs={'rows': 5, 'placeholder': _('Décrivez la task en détail...'), 'class': 'form-input'}),
+            'description': forms.Textarea(attrs={'rows': 3, 'placeholder': _('Ajouter une petite description...'), 'class': 'form-input'}),
             'reward': forms.NumberInput(attrs={'placeholder': '25.00', 'min': '1', 'step': '0.01', 'class': 'form-input'}),
             'has_route': forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
             'proof_required': forms.CheckboxInput(attrs={'class': 'form-checkbox'}),

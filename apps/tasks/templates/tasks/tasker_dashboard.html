@@ -388,7 +388,7 @@
         <div class="hero-bar-bg">
           <div class="hero-bar-fill" style="width:{% if progress_xp >= range_xp %}100{% else %}{% widthratio progress_xp range_xp 100 %}{% endif %}%;"></div>
         </div>
-        <div class="hero-bar-label">{{ progress_xp }} / {{ range_xp }} XP</div>
+        <div class="hero-bar-label">{{ progress_xp }} / {{ range_xp }} XP → Niveau {{ level|add:"1" }}</div>
       </div>
       <div class="hero-chips">
         <span class="hero-chip">

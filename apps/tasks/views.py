@@ -419,7 +419,6 @@ def tasker_missions(request):
         Task.StatusChoices.CLOSED, Task.StatusChoices.RESOLVED,
         Task.StatusChoices.REJECTED,
     ]).count()
-    pending_count = all_missions.filter(status=Task.StatusChoices.PUBLISHED).count()
     applications_count = TaskApplication.objects.filter(
         tasker=request.user,
         status=TaskApplication.StatusChoices.PENDING,
@@ -433,7 +432,6 @@ def tasker_missions(request):
         'total_count': missions.count(),
         'active_count': active_count,
         'completed_count': completed_count,
-        'pending_count': pending_count,
         'applications_count': applications_count,
         'saved_count': saved_count,
         'status_filter': status_filter,
@@ -467,6 +465,7 @@ def task_create(request):
         if form.is_valid():
             task = form.save(commit=False)
             task.client = request.user
+            task.title = task.subcategory.name
             action = request.POST.get('action')
             if action == 'publish':
                 task.status = Task.StatusChoices.PUBLISHED
@@ -474,6 +473,8 @@ def task_create(request):
                 task.status = Task.StatusChoices.DRAFT
             task.save()
             messages.success(request, _('Task créée avec succès.'))
+            if action == 'publish':
+                return redirect(reverse('tasks:client_dashboard') + '?published=1')
             return redirect('tasks:client_dashboard')
     else:
         form = TaskCreateForm()
@@ -488,6 +489,7 @@ def task_edit(request, task_id):
         form = TaskCreateForm(request.POST, instance=task)
         if form.is_valid():
             task = form.save(commit=False)
+            task.title = task.subcategory.name
             action = request.POST.get('action')
             if action == 'publish' and task.status == Task.StatusChoices.DRAFT:
                 task.status = Task.StatusChoices.PUBLISHED
