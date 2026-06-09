@@ -4,13 +4,22 @@ DEBUG = False
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 
-DATABASES = {
-    'default': env.db('DATABASE_URL'),
-}
+import os
 
-DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
-
-DATABASES['default']['CONN_MAX_AGE'] = 600
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL:
+    DATABASES = {
+        'default': env.db('DATABASE_URL'),
+    }
+    DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
+    DATABASES['default']['CONN_MAX_AGE'] = 600
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 try:
     CACHES = {
