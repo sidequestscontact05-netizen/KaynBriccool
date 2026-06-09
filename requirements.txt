@@ -9,3 +9,4 @@ django-allauth==65.17.0
 cloudinary==1.40.0
 django-cloudinary-storage==0.3.0
 firebase-admin==7.4.0
+requests>=2.32.0

@@ -1,3 +1,6 @@
+import uuid
+from urllib.parse import urlencode
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.views import LoginView, PasswordResetView, PasswordResetConfirmView
@@ -7,6 +10,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator
 from django.urls import reverse, reverse_lazy
+from django.conf import settings
 from django.views.generic import UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.translation import gettext_lazy as _
@@ -129,6 +133,83 @@ class CustomLoginView(LoginView):
         if next_url:
             return next_url
         return reverse('home')
+
+
+class GoogleLoginView(View):
+    def get(self, request):
+        if request.user.is_authenticated:
+            return redirect('home')
+        state = str(uuid.uuid4())
+        request.session['google_oauth_state'] = state
+        params = urlencode({
+            'client_id': settings.GOOGLE_CLIENT_ID,
+            'redirect_uri': request.build_absolute_uri(reverse('accounts:google_callback')),
+            'response_type': 'code',
+            'scope': 'openid email profile',
+            'state': state,
+        })
+        return redirect(f'https://accounts.google.com/o/oauth2/v2/auth?{params}')
+
+
+class GoogleCallbackView(View):
+    def get(self, request):
+        code = request.GET.get('code')
+        state = request.GET.get('state')
+        saved_state = request.session.pop('google_oauth_state', None)
+
+        if not code or not state or state != saved_state:
+            messages.error(request, 'Erreur de vérification OAuth. Veuillez réessayer.')
+            return redirect('accounts:login')
+
+        import requests
+        data = {
+            'code': code,
+            'client_id': settings.GOOGLE_CLIENT_ID,
+            'client_secret': settings.GOOGLE_CLIENT_SECRET,
+            'redirect_uri': request.build_absolute_uri(reverse('accounts:google_callback')),
+            'grant_type': 'authorization_code',
+        }
+        resp = requests.post('https://oauth2.googleapis.com/token', data=data, timeout=15)
+        if resp.status_code != 200:
+            messages.error(request, 'Échec de l\'échange du code Google.')
+            return redirect('accounts:login')
+
+        tokens = resp.json()
+        id_token = tokens.get('id_token')
+        if not id_token:
+            messages.error(request, 'Pas d\'id_token dans la réponse Google.')
+            return redirect('accounts:login')
+
+        from apps.accounts.firebase_auth import verify_firebase_token
+        decoded = verify_firebase_token(id_token)
+        if not decoded:
+            messages.error(request, 'Token Google invalide.')
+            return redirect('accounts:login')
+
+        firebase_uid = decoded.get('uid')
+        email = decoded.get('email', '')
+        name = decoded.get('name', email.split('@')[0] if email else 'Utilisateur')
+
+        user = CustomUser.objects.filter(firebase_uid=firebase_uid).first()
+        if not user:
+            user = CustomUser.objects.filter(email=email).first()
+            if user:
+                user.firebase_uid = firebase_uid
+                user.save(update_fields=['firebase_uid'])
+            else:
+                user = CustomUser.objects.create_user(
+                    email=email,
+                    full_name=name,
+                    firebase_uid=firebase_uid,
+                )
+                user.email_verified = True
+                user.save(update_fields=['email_verified'])
+
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+
+        if user.is_admin():
+            return redirect('admin_sidequest:dashboard')
+        return redirect('home')
 
 
 @method_decorator(csrf_exempt, name='dispatch')
