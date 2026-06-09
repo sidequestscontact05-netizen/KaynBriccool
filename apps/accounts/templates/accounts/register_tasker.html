@@ -331,16 +331,14 @@ document.getElementById('firebase-google-btn').addEventListener('click', functio
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.addScope('email');
     provider.addScope('profile');
-    firebase.auth().signInWithRedirect(provider).catch(handleFirebaseError);
+    firebase.auth().signInWithPopup(provider)
+        .then(result => {
+            if (result.user) {
+                return finishFirebaseLogin(result.user);
+            }
+        })
+        .catch(handleFirebaseError);
 });
-
-firebase.auth().getRedirectResult()
-    .then(result => {
-        if (result.user) {
-            return finishFirebaseLogin(result.user);
-        }
-    })
-    .catch(handleFirebaseError);
 
 firebase.auth().onAuthStateChanged(user => {
     if (user) {
