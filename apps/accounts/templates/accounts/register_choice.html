@@ -223,9 +223,22 @@ document.querySelectorAll('.firebase-google-btn').forEach(btn => {
                     return finishFirebaseLogin(result.user);
                 }
             })
-            .catch(handleFirebaseError);
+            .catch(err => {
+                if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/popup-blocked') {
+                    return firebase.auth().signInWithRedirect(provider).catch(handleFirebaseError);
+                }
+                handleFirebaseError(err);
+            });
     });
 });
+
+firebase.auth().getRedirectResult()
+    .then(result => {
+        if (result.user) {
+            return finishFirebaseLogin(result.user);
+        }
+    })
+    .catch(handleFirebaseError);
 
 firebase.auth().onAuthStateChanged(user => {
     if (user) {
