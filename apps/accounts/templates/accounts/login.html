@@ -71,93 +71,34 @@
 {% endblock %}
 
 {% block extra_js %}
-{% if settings.FIREBASE_API_KEY and settings.FIREBASE_PROJECT_ID %}
-<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
+{% if settings.GOOGLE_CLIENT_ID %}
+<script src="https://accounts.google.com/gsi/client"></script>
 <script>
-const firebaseConfig = {
-    apiKey: "{{ settings.FIREBASE_API_KEY }}",
-    authDomain: "{{ settings.FIREBASE_AUTH_DOMAIN }}",
-    projectId: "{{ settings.FIREBASE_PROJECT_ID }}",
-    storageBucket: "{{ settings.FIREBASE_STORAGE_BUCKET }}",
-    messagingSenderId: "{{ settings.FIREBASE_MESSAGING_SENDER_ID }}",
-    appId: "{{ settings.FIREBASE_APP_ID }}",
-};
-firebase.initializeApp(firebaseConfig);
-
 let firebaseLoginInProgress = false;
 
-function finishFirebaseLogin(user) {
-    if (firebaseLoginInProgress) return Promise.resolve();
-    firebaseLoginInProgress = true;
-    return user.getIdToken()
-        .then(idToken => {
-            return fetch('{% url "accounts:firebase_login" %}', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({id_token: idToken}),
-            });
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.redirect) {
-                window.location.href = data.redirect;
-            } else if (data.error) {
-                firebaseLoginInProgress = false;
-                alert(data.error);
-            }
-        })
-        .catch(err => {
-            firebaseLoginInProgress = false;
-            throw err;
-        });
-}
-
-function handleFirebaseError(err) {
-    console.error(err);
-    if (err.code === 'auth/unauthorized-domain') {
-        alert("Ce domaine n'est pas autorisé dans Firebase Authentication. Ajoutez " + window.location.hostname + " dans Firebase Console > Authentication > Settings > Authorized domains.");
-        return;
-    }
-    alert('Erreur de connexion: ' + err.message);
-}
-
 document.getElementById('firebase-google-btn').addEventListener('click', function() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    provider.addScope('email');
-    provider.addScope('profile');
-    firebase.auth().signInWithPopup(provider)
-        .then(result => {
-            if (result.user) {
-                return finishFirebaseLogin(result.user);
+    if (firebaseLoginInProgress) return;
+    google.accounts.id.initialize({
+        client_id: "{{ settings.GOOGLE_CLIENT_ID }}",
+        callback: function(response) {
+            if (response.credential) {
+                firebaseLoginInProgress = true;
+                fetch('{% url "accounts:firebase_login" %}', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({id_token: response.credential}),
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.redirect) window.location.href = data.redirect;
+                    else if (data.error) { firebaseLoginInProgress = false; alert(data.error); }
+                })
+                .catch(err => { firebaseLoginInProgress = false; alert('Erreur: ' + err.message); });
             }
-        })
-        .catch(err => {
-            if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/popup-blocked') {
-                return firebase.auth().signInWithRedirect(provider).catch(handleFirebaseError);
-            }
-            handleFirebaseError(err);
-        });
-});
-
-firebase.auth().getRedirectResult()
-    .then(result => {
-        if (result.user) {
-            return finishFirebaseLogin(result.user);
-        }
-    })
-    .catch(handleFirebaseError);
-
-firebase.auth().onAuthStateChanged(user => {
-    if (user) {
-        finishFirebaseLogin(user).catch(handleFirebaseError);
-    }
-});
-</script>
-{% else %}
-<script>
-document.getElementById('firebase-google-btn').addEventListener('click', function() {
-    alert("Firebase n'est pas configure cote serveur. Verifiez FIREBASE_API_KEY et FIREBASE_PROJECT_ID dans le .env charge par PythonAnywhere.");
+        },
+        auto_select: false,
+    });
+    google.accounts.id.prompt();
 });
 </script>
 {% endif %}
