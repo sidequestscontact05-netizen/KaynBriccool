@@ -88,7 +88,7 @@ a.mission-card { text-decoration: none; color: inherit; display: flex; }
 <div class="missions-list">
     {% for task in missions %}
     {% with s=task.status %}
-    <a href="{% url 'tasks:task_detail' task.id %}" class="mission-card" data-status="{{ s }}">
+    <a href="{% if task.assigned_tasker %}{% url 'tasks:task_workspace' task.id %}{% else %}{% url 'tasks:task_detail' task.id %}{% endif %}" class="mission-card" data-status="{{ s }}">
         <span class="mission-dot {% if s == 'accepted' or s == 'in_progress' or s == 'awaiting_confirmation' or s == 'completed' %}active{% elif s == 'published' or s == 'draft' %}pending{% elif s == 'validated' or s == 'evaluated' or s == 'closed' or s == 'resolved' %}completed{% else %}cancelled{% endif %}"></span>
         <div class="mission-body">
             <div class="mission-title">{{ task.title }}</div>

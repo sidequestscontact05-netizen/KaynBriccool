@@ -28,7 +28,7 @@
 {% if tasks.exists %}
     <div class="client-task-list">
         {% for task in tasks %}
-        <a href="{% url 'tasks:task_detail' task.id %}" class="client-task-card-link">
+        <a href="{% if task.assigned_tasker %}{% url 'tasks:task_workspace' task.id %}{% else %}{% url 'tasks:task_detail' task.id %}{% endif %}" class="client-task-card-link">
         <div class="client-task-card" data-status="{{ task.status }}">
             <div class="task-card-header">
                 <h4 class="task-card-title">{{ task.title }}</h4>
@@ -116,7 +116,7 @@
 {% if in_progress.exists %}
     <div class="client-task-list">
         {% for task in in_progress %}
-        <a href="{% url 'tasks:task_detail' task.id %}" class="client-task-card-link">
+        <a href="{% url 'tasks:task_workspace' task.id %}" class="client-task-card-link">
         <div class="client-task-card" data-status="{{ task.status }}">
             <div class="task-card-header">
                 <h4 class="task-card-title">{{ task.title }}</h4>
@@ -159,7 +159,7 @@
 {% if finished.exists %}
     <div class="client-task-list">
         {% for task in finished %}
-        <a href="{% url 'tasks:task_detail' task.id %}" class="client-task-card-link">
+        <a href="{% url 'tasks:task_workspace' task.id %}" class="client-task-card-link">
         <div class="client-task-card" data-status="{{ task.status }}">
             <div class="task-card-header">
                 <h4 class="task-card-title">{{ task.title }}</h4>
