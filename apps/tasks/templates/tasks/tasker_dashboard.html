@@ -16,7 +16,7 @@
 
 /* ── Header card ── */
 .hero-card-tasker {
-  background: #FFFFFF;
+  background: #1B4332;
   border-radius: 16px;
   padding-top: 12px !important;
   padding-bottom: 12px !important;
@@ -28,9 +28,10 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
   overflow: hidden;
   position: relative;
+  border: 1px solid rgba(255,255,255,0.15);
 }
 .hero-card-tasker * {
   flex-shrink: 1;
@@ -39,12 +40,12 @@
 .hero-greeting {
   font-size: 16px;
   font-weight: 500;
-  color: #1A1A1A;
+  color: #FFFFFF;
   margin: 0;
 }
 .hero-tagline {
   font-size: 11px;
-  color: #6B7280;
+  color: rgba(255,255,255,0.9);
   margin: 2px 0 4px !important;
 }
 .hero-rank-badge {
@@ -63,14 +64,14 @@
 .hero-bar-wrap { margin-top: 4px; }
 .hero-bar-bg {
   height: 5px;
-  background: #F3F4F6;
+  background: rgba(255,255,255,0.25);
   border-radius: 3px;
   overflow: hidden;
   position: relative;
 }
 .hero-bar-fill {
   height: 5px;
-  background: #1B4332;
+  background: #95D5B2;
   border-radius: 3px;
   transition: width 0.6s ease;
 }
@@ -78,7 +79,7 @@
 .hero-bar-next { display: none; }
 .hero-bar-label {
   font-size: 9px;
-  color: #6B7280;
+  color: rgba(255,255,255,0.9);
   margin-top: 4px;
 }
 .hero-chips {
@@ -139,15 +140,17 @@
   width: 280px;
   background: #fff;
   border: 0.5px solid #E5E5E0;
-  border-left: 3px solid #1B4332;
-  border-radius: 0 14px 14px 0;
+  border-radius: 18px;
   padding: 14px 16px;
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  transition: box-shadow 0.15s;
+  transition: all 0.25s ease;
 }
-.avail-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+.avail-card:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+}
 .avail-card-icon {
   width: 36px;
   height: 36px;
@@ -410,8 +413,8 @@
       </div>
     </div>
     <div class="hero-right">
-      <span style="background:rgba(254,44,85,0.12);color:#FE2C55;border-radius:999px;padding:3px 10px;font-size:10px;font-weight:600;display:inline-block;">{{ user.profile.current_streak|default:'0' }} streak</span>
-      <span style="background:rgba(27,67,50,0.12);color:#1B4332;border-radius:999px;padding:3px 10px;font-size:10px;font-weight:600;display:inline-block;">{{ user.profile.xp|default:'0' }} XP</span>
+      <span style="background:rgba(255,255,255,0.15);color:#FFFFFF;border-radius:999px;padding:3px 10px;font-size:10px;font-weight:600;display:inline-block;">{{ user.profile.current_streak|default:'0' }} streak</span>
+      <span style="background:rgba(255,255,255,0.15);color:#FFFFFF;border-radius:999px;padding:3px 10px;font-size:10px;font-weight:600;display:inline-block;">{{ user.profile.xp|default:'0' }} XP</span>
     </div>
   </div>
 

@@ -40,73 +40,71 @@ main.container {
 
 /* Hero card */
 .hero-card-client {
+    background: rgba(14, 107, 82, 0.06);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: 16px;
+    padding: 12px 18px;
+    margin-bottom: 12px;
     display: flex;
-    flex-direction: row;
     align-items: center;
-    gap: 0;
-    padding: 50px 40px;
-    background: linear-gradient(135deg, #F8FAF5 0%, #F0F7F3 100%);
-    border: 1px solid var(--sq-client-light);
-    border-radius: var(--radius-lg);
-    margin-bottom: 1rem;
-    box-shadow: 0 2px 8px rgba(14, 107, 82, 0.06);
+    gap: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    border: 1px solid rgba(14, 107, 82, 0.12);
 }
 .hero-card-client .hero-block-text {
-    flex: 2;
+    flex: 1;
     min-width: 0;
 }
 .hero-card-client .hero-block-text h1 {
-    font-size: 26px;
-    font-weight: 600;
-    color: var(--sq-text);
+    font-size: 16px;
+    font-weight: 500;
+    color: #1A1A1A;
     margin: 0;
 }
 .hero-card-client .hero-block-text p {
-    font-size: 16px;
-    color: var(--sq-text-muted);
-    margin: 8px 0 0;
+    font-size: 11px;
+    color: #6B7280;
+    margin: 2px 0 4px;
 }
 .hero-card-client .btn-hero {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    margin-top: 18px;
+    gap: 0.4rem;
     background: var(--sq-primary);
     color: white;
     border-radius: 9999px;
-    padding: 12px 26px;
-    font-size: 15px;
+    padding: 6px 16px;
+    font-size: 12px;
     font-weight: 600;
     text-decoration: none;
     border: none;
     transition: all var(--transition);
-    box-shadow: 0 4px 14px rgba(14, 107, 82, 0.3);
+    box-shadow: 0 2px 8px rgba(14, 107, 82, 0.25);
 }
 .hero-card-client .btn-hero:hover {
     background: var(--sq-primary-dark);
     transform: translateY(-1px);
-    box-shadow: 0 8px 24px rgba(14, 107, 82, 0.35);
+    box-shadow: 0 4px 12px rgba(14, 107, 82, 0.3);
 }
 .hero-card-client .hero-block-stat {
-    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 0 28px;
-    border-left: 1px solid var(--sq-client-light);
-    min-height: 120px;
+    padding: 0 16px;
+    border-left: 1px solid rgba(14, 107, 82, 0.12);
 }
 .hero-card-client .hero-stat-value {
-    font-size: 36px;
+    font-size: 18px;
     font-weight: 600;
-    line-height: 1;
+    line-height: 1.2;
 }
 .hero-card-client .hero-stat-label {
-    font-size: 14px;
-    color: var(--sq-text-muted);
-    margin-top: 4px;
+    font-size: 10px;
+    color: #6B7280;
+    margin-top: 2px;
 }
 .hero-block-stat .hero-stat-value.green { color: var(--sq-success); }
 .hero-block-stat .hero-stat-value.gold { color: var(--sq-warning); }
