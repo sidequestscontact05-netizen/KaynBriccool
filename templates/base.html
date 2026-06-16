@@ -382,14 +382,15 @@ document.addEventListener('keydown', function(e) {
 </style>
 <script>
 function dismissWelcomeModal() {
-  fetch('{% url 'accounts:dismiss_welcome_modal' %}', { method: 'POST', headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value } })
-    .then(function() {
-      var o = document.getElementById('welcome-sheet-overlay');
-      var s = document.getElementById('welcome-sheet');
-      if (o) o.remove();
-      if (s) s.remove();
-    });
+  var o = document.getElementById('welcome-sheet-overlay');
+  var s = document.getElementById('welcome-sheet');
+  if (o) o.remove();
+  if (s) s.remove();
+  navigator.sendBeacon('{% url 'accounts:dismiss_welcome_modal' %}', new URLSearchParams({csrfmiddlewaretoken: document.querySelector('[name=csrfmiddlewaretoken]').value}));
 }
+document.querySelectorAll('.ws-item').forEach(function(el) {
+  el.addEventListener('click', function() { dismissWelcomeModal(); });
+});
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') dismissWelcomeModal();
 });
