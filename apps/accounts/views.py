@@ -466,3 +466,115 @@ def dismiss_welcome_modal(request):
             del request.session['show_welcome_modal']
         return JsonResponse({'ok': True})
     return JsonResponse({'error': 'POST only'}, status=405)
+
+
+class GoogleLoginView(View):
+    def get(self, request):
+        from django.conf import settings
+        import secrets
+        state = secrets.token_urlsafe(32)
+        request.session['google_oauth_state'] = state
+        params = {
+            'client_id': settings.GOOGLE_CLIENT_ID,
+            'redirect_uri': settings.GOOGLE_REDIRECT_URI,
+            'response_type': 'code',
+            'scope': 'openid email profile',
+            'state': state,
+            'access_type': 'offline',
+            'prompt': 'select_account',
+        }
+        from urllib.parse import urlencode
+        url = 'https://accounts.google.com/o/oauth2/v2/auth?' + urlencode(params)
+        return redirect(url)
+
+
+class GoogleCallbackView(View):
+    def get(self, request):
+        from django.conf import settings
+        import requests
+        from google.oauth2 import id_token
+        from google.auth.transport import requests as google_requests
+
+        code = request.GET.get('code')
+        state = request.GET.get('state')
+        error = request.GET.get('error')
+
+        if error:
+            messages.error(request, _('Connexion Google annulée.'))
+            return redirect('accounts:login')
+
+        stored_state = request.session.pop('google_oauth_state', None)
+        if not state or not stored_state or state != stored_state:
+            messages.error(request, _('Erreur de sécurité. Veuillez réessayer.'))
+            return redirect('accounts:login')
+
+        if not code:
+            messages.error(request, _('Code d\'autorisation manquant.'))
+            return redirect('accounts:login')
+
+        token_url = 'https://oauth2.googleapis.com/token'
+        data = {
+            'code': code,
+            'client_id': settings.GOOGLE_CLIENT_ID,
+            'client_secret': settings.GOOGLE_CLIENT_SECRET,
+            'redirect_uri': settings.GOOGLE_REDIRECT_URI,
+            'grant_type': 'authorization_code',
+        }
+        resp = requests.post(token_url, data=data)
+        if resp.status_code != 200:
+            messages.error(request, _('Erreur d\'échange du token Google.'))
+            return redirect('accounts:login')
+
+        token_data = resp.json()
+        id_token_str = token_data.get('id_token')
+        if not id_token_str:
+            messages.error(request, _('Token ID manquant dans la réponse Google.'))
+            return redirect('accounts:login')
+
+        try:
+            info = id_token.verify_oauth2_token(
+                id_token_str,
+                google_requests.Request(),
+                settings.GOOGLE_CLIENT_ID,
+            )
+        except ValueError as e:
+            messages.error(request, _(f'Token Google invalide : {str(e)}'))
+            return redirect('accounts:login')
+
+        google_id = info.get('sub')
+        email = info.get('email', '')
+        name = info.get('name', email.split('@')[0] if email else 'Utilisateur')
+
+        is_new = False
+        user = CustomUser.objects.filter(firebase_uid=google_id).first()
+        if not user:
+            user = CustomUser.objects.filter(email=email).first()
+            if user:
+                user.firebase_uid = google_id
+                user.save(update_fields=['firebase_uid'])
+            else:
+                is_new = True
+                user = CustomUser.objects.create_user(
+                    email=email,
+                    password=None,
+                    role=CustomUser.Roles.CLIENT,
+                    active_role=CustomUser.ActiveRoles.CLIENT,
+                    firebase_uid=google_id,
+                )
+                user.set_unusable_password()
+                user.save()
+
+        if not user.email_verified:
+            user.email_verified = True
+            user.save(update_fields=['email_verified'])
+
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+
+        if is_new:
+            messages.success(request, _('Compte créé avec Google. Bienvenue !'))
+            return redirect('accounts:social_complete')
+        else:
+            messages.success(request, _('Connecté avec Google.'))
+            if user.acting_as_tasker():
+                return redirect('tasks:tasker_dashboard')
+            return redirect('tasks:client_dashboard')
