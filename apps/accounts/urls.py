@@ -35,4 +35,6 @@ urlpatterns = [
     path('welcome/dismiss/', views.dismiss_welcome_modal, name='dismiss_welcome_modal'),
     path('social/complete/', views.social_complete, name='social_complete'),
     path('firebase/login/', views.FirebaseLoginView.as_view(), name='firebase_login'),
+    path('google/login/', views.GoogleLoginView.as_view(), name='google_login'),
+    path('google/callback/', views.GoogleCallbackView.as_view(), name='google_callback'),
 ]
