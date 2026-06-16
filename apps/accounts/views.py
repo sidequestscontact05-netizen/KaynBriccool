@@ -1,6 +1,3 @@
-import uuid
-from urllib.parse import urlencode
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.views import LoginView, PasswordResetView, PasswordResetConfirmView
@@ -10,7 +7,6 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator
 from django.urls import reverse, reverse_lazy
-from django.conf import settings
 from django.views.generic import UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.translation import gettext_lazy as _
@@ -20,6 +16,7 @@ from django.utils.decorators import method_decorator
 from django.utils import timezone
 from django.http import HttpResponseForbidden, JsonResponse, HttpResponseBadRequest
 from datetime import timedelta
+from apps.accounts.firebase_auth import verify_firebase_token
 
 from apps.accounts.models import CustomUser, UserProfile, VerificationRecord
 from apps.accounts.forms import (
@@ -79,45 +76,12 @@ class TaskerRegisterView(View):
         return render(request, self.template_name, {'form': form})
 
     def post(self, request):
-        form = TaskerRegistrationForm(request.POST, request.FILES)
+        form = TaskerRegistrationForm(request.POST)
         if form.is_valid():
-            base64_fields = [
-                'face_photo_initial_data',
-                'face_photo_left_data',
-                'face_photo_right_data',
-                'face_photo_blink_data',
-            ]
-            face_data = [request.POST.get(f, '') for f in base64_fields]
-
-            if not all(face_data):
-                messages.error(request, _('Vérification faciale incomplète. Reprenez les 4 photos.'))
-                return render(request, self.template_name, {'form': form})
-
-            import base64
-            from django.core.files.base import ContentFile
-            from django.utils import timezone
-            from datetime import timedelta
-
             user = form.save()
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             create_email_verification(user)
             send_form_email(user)
-
-            verification = VerificationRecord.objects.create(
-                user=user,
-                type=VerificationRecord.TypeChoices.FACE_ID,
-                face_status=VerificationRecord.FaceStatusChoices.PENDING,
-                expires_at=timezone.now() + timedelta(days=365),
-            )
-
-            photo_names = ['face_photo_initial', 'face_photo_left', 'face_photo_right', 'face_photo_blink']
-            for i, data in enumerate(face_data):
-                if ',' in data:
-                    data = data.split(',')[1]
-                img_bytes = base64.b64decode(data)
-                getattr(verification, photo_names[i]).save(photo_names[i] + '.jpg', ContentFile(img_bytes), save=False)
-            verification.save()
-
             messages.success(request, _('Compte tasker créé !'))
             return redirect('home')
         return render(request, self.template_name, {'form': form})
@@ -135,94 +99,10 @@ class CustomLoginView(LoginView):
         return reverse('home')
 
 
-class GoogleLoginView(View):
-    def get(self, request):
-        if request.user.is_authenticated:
-            return redirect('home')
-        state = str(uuid.uuid4())
-        request.session['google_oauth_state'] = state
-        params = urlencode({
-            'client_id': settings.GOOGLE_CLIENT_ID,
-            'redirect_uri': request.build_absolute_uri(reverse('accounts:google_callback')),
-            'response_type': 'code',
-            'scope': 'openid email profile',
-            'state': state,
-        })
-        return redirect(f'https://accounts.google.com/o/oauth2/v2/auth?{params}')
-
-
-class GoogleCallbackView(View):
-    def get(self, request):
-        code = request.GET.get('code')
-        state = request.GET.get('state')
-        saved_state = request.session.pop('google_oauth_state', None)
-
-        if not code or not state or state != saved_state:
-            messages.error(request, 'Erreur de vérification OAuth. Veuillez réessayer.')
-            return redirect('accounts:login')
-
-        import requests
-        data = {
-            'code': code,
-            'client_id': settings.GOOGLE_CLIENT_ID,
-            'client_secret': settings.GOOGLE_CLIENT_SECRET,
-            'redirect_uri': request.build_absolute_uri(reverse('accounts:google_callback')),
-            'grant_type': 'authorization_code',
-        }
-        resp = requests.post('https://oauth2.googleapis.com/token', data=data, timeout=15)
-        if resp.status_code != 200:
-            messages.error(request, 'Échec de l\'échange du code Google.')
-            return redirect('accounts:login')
-
-        tokens = resp.json()
-        id_token = tokens.get('id_token')
-        if not id_token:
-            messages.error(request, 'Pas d\'id_token dans la réponse Google.')
-            return redirect('accounts:login')
-
-        from google.oauth2 import id_token as google_id_token
-        from google.auth.transport import requests as google_requests
-
-        request_obj = google_requests.Request()
-        try:
-            decoded = google_id_token.verify_oauth2_token(id_token, request_obj, settings.GOOGLE_CLIENT_ID)
-        except Exception:
-            messages.error(request, 'Token Google invalide.')
-            return redirect('accounts:login')
-
-        google_sub = decoded.get('sub')
-        email = decoded.get('email', '')
-        name = decoded.get('name', email.split('@')[0] if email else 'Utilisateur')
-
-        user = CustomUser.objects.filter(firebase_uid=google_sub).first()
-        if not user:
-            user = CustomUser.objects.filter(email=email).first()
-            if user:
-                user.firebase_uid = google_sub
-                user.save(update_fields=['firebase_uid'])
-            else:
-                user = CustomUser.objects.create_user(
-                    email=email,
-                    full_name=name,
-                    firebase_uid=google_sub,
-                )
-                user.email_verified = True
-                user.save(update_fields=['email_verified'])
-
-        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-
-        if user.is_admin():
-            return redirect('admin_sidequest:dashboard')
-        return redirect('home')
-
-
+@method_decorator(csrf_exempt, name='dispatch')
 @method_decorator(csrf_exempt, name='dispatch')
 class FirebaseLoginView(View):
     def post(self, request):
-        try:
-            from apps.accounts.firebase_auth import verify_firebase_token
-        except ImportError:
-            return JsonResponse({'error': 'Firebase non configuré'}, status=501)
         import json
         try:
             data = json.loads(request.body)
@@ -241,6 +121,7 @@ class FirebaseLoginView(View):
         email = decoded.get('email', '')
         name = decoded.get('name', email.split('@')[0] if email else 'Utilisateur')
 
+        is_new = False
         user = CustomUser.objects.filter(firebase_uid=firebase_uid).first()
         if not user:
             user = CustomUser.objects.filter(email=email).first()
@@ -255,8 +136,12 @@ class FirebaseLoginView(View):
                 )
                 user.email_verified = True
                 user.save(update_fields=['email_verified'])
+                is_new = True
 
         login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+
+        if is_new:
+            return JsonResponse({'redirect': reverse('accounts:social_complete')})
 
         if user.is_admin():
             return JsonResponse({'redirect': reverse('admin_sidequest:dashboard')})
@@ -483,7 +368,7 @@ def become_client(request):
         user.role = CustomUser.Roles.BOTH
         user.active_role = CustomUser.ActiveRoles.CLIENT
         user.save(update_fields=['role', 'active_role'])
-        messages.success(request, _('Vous êtes maintenant aussi Client. Vous pouvez créer des tasks !'))
+        messages.success(request, _('Vous êtes maintenant aussi Client. Vous pouvez créer des tâches !'))
     else:
         user.active_role = CustomUser.ActiveRoles.CLIENT
         user.save(update_fields=['active_role'])
@@ -567,5 +452,17 @@ def onboarding_done(request):
         profile = request.user.profile
         profile.onboarding_seen = True
         profile.save(update_fields=['onboarding_seen'])
+        return JsonResponse({'ok': True})
+    return JsonResponse({'error': 'POST only'}, status=405)
+
+
+@login_required
+def dismiss_welcome_modal(request):
+    if request.method == 'POST':
+        profile = request.user.profile
+        profile.welcome_modal_shown = True
+        profile.save(update_fields=['welcome_modal_shown'])
+        if 'show_welcome_modal' in request.session:
+            del request.session['show_welcome_modal']
         return JsonResponse({'ok': True})
     return JsonResponse({'error': 'POST only'}, status=405)

@@ -37,7 +37,7 @@ a.mission-card { text-decoration: none; color: inherit; display: flex; }
 
 <div class="page-header">
     <a href="{% url 'tasks:tasker_dashboard' %}" class="btn-back" title="Retour">&#8592;</a>
-    <h1>My Tasks</h1>
+    <h1>Mes Tasks</h1>
 </div>
 
 <div class="missions-count">{{ total_count }} task{{ total_count|pluralize }} total</div>
@@ -46,9 +46,8 @@ a.mission-card { text-decoration: none; color: inherit; display: flex; }
 <div class="filter-tabs">
     <a href="{{ base_url }}" class="filter-tab {% if not status_filter %}active{% endif %}">Toutes <span>({{ total_count }})</span></a>
     <a href="{{ base_url }}?status=in_progress" class="filter-tab {% if status_filter == 'in_progress' %}active{% endif %}">Actives <span>({{ active_count }})</span></a>
-    <a href="{{ base_url }}?status=completed" class="filter-tab {% if status_filter == 'completed' %}active{% endif %}">Terminées <span>({{ completed_count }})</span></a>
     <a href="{{ base_url }}?status=applications" class="filter-tab {% if status_filter == 'applications' %}active{% endif %}">Candidatures <span>({{ applications_count }})</span></a>
-    <a href="{{ base_url }}?status=saved" class="filter-tab {% if status_filter == 'saved' %}active{% endif %}">Enregistrées <span>({{ saved_count }})</span></a>
+    <a href="{{ base_url }}?status=completed" class="filter-tab {% if status_filter == 'completed' %}active{% endif %}">Terminées <span>({{ completed_count }})</span></a>
 </div>
 {% endwith %}
 
@@ -57,9 +56,7 @@ a.mission-card { text-decoration: none; color: inherit; display: flex; }
     {% for app in applications %}
     <div class="app-card">
       <a href="{% url 'tasks:task_detail' app.task.id %}" style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;text-decoration:none;color:inherit;">
-        <div class="app-card-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
-        </div>
+        <div class="app-card-icon"><i class="ti ti-{{ app.task.category|category_icon }}" style="font-size:20px;"></i></div>
         <div class="app-card-body">
           <div class="app-card-title">{{ app.task.title }}</div>
           <div class="app-card-meta">
@@ -88,7 +85,7 @@ a.mission-card { text-decoration: none; color: inherit; display: flex; }
 <div class="missions-list">
     {% for task in missions %}
     {% with s=task.status %}
-    <a href="{% if task.assigned_tasker %}{% url 'tasks:task_workspace' task.id %}{% else %}{% url 'tasks:task_detail' task.id %}{% endif %}" class="mission-card" data-status="{{ s }}">
+    <a href="{% url 'tasks:task_detail' task.id %}" class="mission-card" data-status="{{ s }}">
         <span class="mission-dot {% if s == 'accepted' or s == 'in_progress' or s == 'awaiting_confirmation' or s == 'completed' %}active{% elif s == 'published' or s == 'draft' %}pending{% elif s == 'validated' or s == 'evaluated' or s == 'closed' or s == 'resolved' %}completed{% else %}cancelled{% endif %}"></span>
         <div class="mission-body">
             <div class="mission-title">{{ task.title }}</div>
@@ -97,7 +94,7 @@ a.mission-card { text-decoration: none; color: inherit; display: flex; }
                 <span class="mission-meta-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> {{ task.updated_at|date:"d/m/Y" }}</span>
             </div>
             <div class="mission-tags">
-                <span class="mission-tag">{{ task.category.name }}</span>
+                <span class="mission-tag"><i class="ti ti-{{ task.category|category_icon }}" style="vertical-align:middle;margin-right:2px;"></i> {{ task.category.name }}</span>
             </div>
         </div>
         <div class="mission-right">

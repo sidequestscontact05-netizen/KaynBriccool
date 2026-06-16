@@ -2,6 +2,7 @@ from functools import wraps
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
+from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from apps.tasks.models import Category, SubCategory
 
@@ -32,9 +33,17 @@ def admin_create_category(request):
         name = request.POST.get('name')
         slug = request.POST.get('slug', '').strip()
         if not slug and name:
-            slug = name.lower().replace(' ', '-')
+            slug = slugify(name)
         icon = request.POST.get('icon', 'folder')
         if name and slug:
+            if Category.objects.filter(slug=slug).exists():
+                messages.error(request, _('Ce slug existe déjà. Choisis-en un autre.'))
+                return render(request, 'admin_sidequest/category_form.html', {
+                    'form_action': 'create',
+                    'name': name,
+                    'slug': slug,
+                    'icon': icon,
+                })
             Category.objects.create(name=name, slug=slug, icon=icon)
             messages.success(request, _('Catégorie créée.'))
             return redirect('admin_sidequest:categories')

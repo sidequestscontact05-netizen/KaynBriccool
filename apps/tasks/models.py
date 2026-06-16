@@ -79,7 +79,9 @@ class Task(models.Model):
     )
     category = models.ForeignKey(
         Category,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         related_name='tasks',
         verbose_name=_('catégorie'),
     )
@@ -143,8 +145,8 @@ class Task(models.Model):
     updated_at = models.DateTimeField(_('modifiée le'), auto_now=True)
 
     class Meta:
-        verbose_name = _('task')
-        verbose_name_plural = _('tasks')
+        verbose_name = _('tâche')
+        verbose_name_plural = _('tâches')
         ordering = ['-created_at']
         indexes = [
             models.Index(fields=['status', '-published_at']),
@@ -157,17 +159,18 @@ class Task(models.Model):
         with transaction.atomic():
             task = Task.objects.select_for_update().get(pk=self.pk)
             if task.status != self.StatusChoices.PUBLISHED:
-                raise ValidationError("La task n'est pas disponible ou déjà acceptée")
+                raise ValidationError("La mission n'est pas disponible ou déjà acceptée")
             task.status = self.StatusChoices.ACCEPTED
             task.assigned_tasker = tasker
             task.save()
-            task.applications.exclude(tasker=tasker).delete()
+            for app in task.applications.exclude(tasker=tasker):
+                app.reject()
 
     def notify_client_new_application(self, application):
         subject = f"Nouvelle candidature pour {self.title}"
         message = (
             f"Bonjour,\n\n"
-            f"{application.tasker.full_name} a postulé à votre task "
+            f"{application.tasker.full_name} a postulé à votre mission "
             f"'{self.title}'.\n\n"
             f"Connectez-vous pour voir les candidatures."
         )
@@ -241,7 +244,7 @@ class TaskApplication(models.Model):
         Task,
         on_delete=models.CASCADE,
         related_name='applications',
-        verbose_name=_('task'),
+        verbose_name=_('tâche'),
     )
     tasker = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -291,7 +294,7 @@ class TaskProof(models.Model):
         Task,
         on_delete=models.CASCADE,
         related_name='proof',
-        verbose_name=_('task'),
+        verbose_name=_('tâche'),
     )
     tasker = models.ForeignKey(
         settings.AUTH_USER_MODEL,

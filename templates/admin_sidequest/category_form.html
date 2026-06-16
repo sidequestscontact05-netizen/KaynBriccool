@@ -12,15 +12,15 @@
     {% csrf_token %}
     <div class="form-group">
         <label for="name">Nom</label>
-        <input type="text" id="name" name="name" value="{{ cat.name|default:'' }}" class="form-input" required>
+        <input type="text" id="name" name="name" value="{{ name|default:cat.name|default:'' }}" class="form-input" required>
     </div>
     <div class="form-group">
         <label for="slug">Slug (optionnel)</label>
-        <input type="text" id="slug" name="slug" value="{{ cat.slug|default:'' }}" class="form-input" placeholder="livraison">
+        <input type="text" id="slug" name="slug" value="{{ slug|default:cat.slug|default:'' }}" class="form-input" placeholder="livraison">
     </div>
     <div class="form-group">
         <label for="icon">Icône</label>
-        <input type="text" id="icon" name="icon" value="{{ cat.icon|default:'folder' }}" class="form-input">
+        <input type="text" id="icon" name="icon" value="{{ icon|default:cat.icon|default:'folder' }}" class="form-input">
     </div>
     <div class="form-actions">
         <button type="submit" class="btn btn-admin">Sauvegarder</button>

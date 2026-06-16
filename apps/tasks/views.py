@@ -419,6 +419,7 @@ def tasker_missions(request):
         Task.StatusChoices.CLOSED, Task.StatusChoices.RESOLVED,
         Task.StatusChoices.REJECTED,
     ]).count()
+    pending_count = all_missions.filter(status=Task.StatusChoices.PUBLISHED).count()
     applications_count = TaskApplication.objects.filter(
         tasker=request.user,
         status=TaskApplication.StatusChoices.PENDING,
@@ -432,6 +433,7 @@ def tasker_missions(request):
         'total_count': missions.count(),
         'active_count': active_count,
         'completed_count': completed_count,
+        'pending_count': pending_count,
         'applications_count': applications_count,
         'saved_count': saved_count,
         'status_filter': status_filter,
@@ -465,16 +467,14 @@ def task_create(request):
         if form.is_valid():
             task = form.save(commit=False)
             task.client = request.user
-            task.title = task.subcategory.name
             action = request.POST.get('action')
             if action == 'publish':
                 task.status = Task.StatusChoices.PUBLISHED
+                task.published_at = timezone.now()
             else:
                 task.status = Task.StatusChoices.DRAFT
             task.save()
-            messages.success(request, _('Task créée avec succès.'))
-            if action == 'publish':
-                return redirect(reverse('tasks:client_dashboard') + '?published=1')
+            messages.success(request, _('Tâche créée avec succès.'))
             return redirect('tasks:client_dashboard')
     else:
         form = TaskCreateForm()
@@ -489,12 +489,12 @@ def task_edit(request, task_id):
         form = TaskCreateForm(request.POST, instance=task)
         if form.is_valid():
             task = form.save(commit=False)
-            task.title = task.subcategory.name
             action = request.POST.get('action')
             if action == 'publish' and task.status == Task.StatusChoices.DRAFT:
                 task.status = Task.StatusChoices.PUBLISHED
+                task.published_at = timezone.now()
             task.save()
-            messages.success(request, _('Task mise à jour.'))
+            messages.success(request, _('Tâche mise à jour.'))
             return redirect('tasks:client_dashboard')
     else:
         form = TaskCreateForm(instance=task)
@@ -508,7 +508,7 @@ def task_publish(request, task_id):
     if task.status == Task.StatusChoices.DRAFT:
         task.status = Task.StatusChoices.PUBLISHED
         task.save()
-        messages.success(request, _('Task publiée avec succès.'))
+        messages.success(request, _('Tâche publiée avec succès.'))
     return redirect('tasks:client_dashboard')
 
 
@@ -522,7 +522,7 @@ def task_cancel(request, task_id):
         profile = request.user.profile
         profile.tasks_cancelled += 1
         profile.save(update_fields=['tasks_cancelled'])
-        messages.success(request, _('Task annulée.'))
+        messages.success(request, _('Tâche annulée.'))
     return redirect('tasks:client_dashboard')
 
 
@@ -532,7 +532,7 @@ def task_delete(request, task_id):
     task = get_object_or_404(Task, id=task_id, client=request.user)
     if task.status == Task.StatusChoices.DRAFT:
         task.delete()
-        messages.success(request, _('Task supprimée.'))
+        messages.success(request, _('Tâche supprimée.'))
     return redirect('tasks:client_dashboard')
 
 
@@ -587,8 +587,7 @@ def task_detail(request, task_id):
     if request.user == task.client:
         context['is_owner'] = True
         context['can_apply'] = False
-        if task.status == Task.StatusChoices.PUBLISHED:
-            context['applications'] = task.applications.filter(status=TaskApplication.StatusChoices.PENDING).select_related('conversation')
+        context['applications'] = task.applications.filter(status=TaskApplication.StatusChoices.PENDING).select_related('conversation')
     elif request.user.acting_as_tasker() and task.status == Task.StatusChoices.PUBLISHED and not task.is_expired:
         already_applied = TaskApplication.objects.filter(task=task, tasker=request.user).exists()
         context['can_apply'] = not already_applied
@@ -597,24 +596,47 @@ def task_detail(request, task_id):
 
 
 @login_required
+def task_candidatures(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+    if request.user != task.client:
+        messages.error(request, _('Accès refusé.'))
+        return redirect('tasks:task_detail', task_id=task.id)
+
+    applications = task.applications.filter(
+        status=TaskApplication.StatusChoices.PENDING
+    ).select_related('conversation')
+
+    return render(request, 'tasks/task_candidatures.html', {
+        'task': task,
+        'applications': applications,
+    })
+
+
+@login_required
 @tasker_required
 def task_apply(request, task_id):
     task = get_object_or_404(Task, id=task_id)
 
     if task.status != Task.StatusChoices.PUBLISHED or task.is_expired:
-        messages.error(request, _('Cette task n\'est plus disponible.'))
+        messages.error(request, _('Cette tâche n\'est plus disponible.'))
         if request.htmx:
             return HttpResponse('<div style="display:none;" hx-swap-oob="true"></div>')
         return redirect('tasks:task_list')
 
     if request.user == task.client:
-        messages.error(request, _('Vous ne pouvez pas postuler à votre propre task.'))
+        messages.error(request, _('Vous ne pouvez pas postuler à votre propre tâche.'))
         if request.htmx:
             return HttpResponse('<div style="display:none;" hx-swap-oob="true"></div>')
         return redirect('tasks:task_detail', task_id=task.id)
 
+    if not request.user.profile.is_face_verified():
+        messages.warning(request, _('Vérification du visage requise pour postuler. Complétez-la dans votre profil.'))
+        if request.htmx:
+            return HttpResponse('<div style="display:none;" hx-swap-oob="true"></div>')
+        return redirect('accounts:verify_face')
+
     if TaskApplication.objects.filter(task=task, tasker=request.user).exists():
-        messages.info(request, _('Vous avez déjà postulé à cette task.'))
+        messages.info(request, _('Vous avez déjà postulé à cette tâche.'))
         if request.htmx:
             return HttpResponse('<div style="display:none;" hx-swap-oob="true"></div>')
         return redirect('tasks:tasker_dashboard')
@@ -627,7 +649,7 @@ def task_apply(request, task_id):
             message=message,
         )
     except IntegrityError:
-        messages.info(request, _('Vous avez déjà postulé à cette task.'))
+        messages.info(request, _('Vous avez déjà postulé à cette tâche.'))
         if request.htmx:
             return HttpResponse('<div style="display:none;" hx-swap-oob="true"></div>')
         return redirect('tasks:tasker_dashboard')
@@ -664,18 +686,28 @@ def task_choose_tasker(request, task_id, application_id):
     try:
         task.accept_tasker(application.tasker)
     except ValidationError:
-        messages.error(request, _('Cette task n\'est plus en attente de candidatures.'))
+        messages.error(request, _('Cette tâche n\'est plus en attente de candidatures.'))
         return redirect('tasks:client_dashboard')
 
     application.accept()
 
     create_notification(
         application.tasker,
-        _('Task acceptée !'),
+        _('Mission acceptée !'),
         _(f'Votre candidature pour "{task.title}" a été acceptée par le client.'),
         Notification.TypeChoices.TASK_ACCEPTED,
         related_task=task,
     )
+
+    # Notify all rejected applicants
+    for app in TaskApplication.objects.filter(task=task, status=TaskApplication.StatusChoices.REJECTED):
+        create_notification(
+            app.tasker,
+            _('Candidature non retenue'),
+            _(f'Ton application pour "{task.title}" n\'a pas été retenue cette fois. Continue — chaque postulation compte ! 💪'),
+            Notification.TypeChoices.APPLICATION_REJECTED,
+            related_task=task,
+        )
 
     messages.success(request, _(f'Tasker {application.tasker.full_name} choisi !'))
     return redirect('tasks:client_dashboard')
@@ -688,6 +720,15 @@ def task_reject_application(request, task_id, application_id):
     application = get_object_or_404(TaskApplication, id=application_id, task=task)
 
     application.reject()
+
+    create_notification(
+        application.tasker,
+        _('Candidature non retenue'),
+        _(f'Ton application pour "{task.title}" n\'a pas été retenue cette fois. Continue — chaque postulation compte ! 💪'),
+        Notification.TypeChoices.APPLICATION_REJECTED,
+        related_task=task,
+    )
+
     messages.success(request, _('Candidature rejetée.'))
     return redirect('tasks:task_detail', task_id=task_id)
 
@@ -777,11 +818,11 @@ def task_workspace(request, task_id):
                 task.start()
             task.await_confirmation()
             create_notification(
-                task.client, _('Task terminée !'),
-                _(f'{request.user.full_name} a terminé "{task.title}". Confirmez la fin de la task.'),
+                task.client, _('Mission terminée !'),
+                _(f'{request.user.full_name} a terminé "{task.title}". Confirmez la fin de mission.'),
                 Notification.TypeChoices.TASK_COMPLETED, related_task=task,
             )
-            messages.success(request, _('Task marquée comme terminée !'))
+            messages.success(request, _('Mission marquée comme terminée !'))
             return redirect(reverse('tasks:task_workspace', kwargs={'task_id': task.id}) + '?tab=mission')
 
         # Tasker submits proof
@@ -829,7 +870,7 @@ def task_workspace(request, task_id):
                     )
                 else:
                     create_notification(
-                        task.client, _('Task terminée !'),
+                        task.client, _('Mission terminée !'),
                         _(f'Le tasker a terminé "{task.title}". Vérifiez la preuve.'),
                         Notification.TypeChoices.TASK_COMPLETED, related_task=task,
                     )
@@ -858,7 +899,7 @@ def task_workspace(request, task_id):
                 award_xp(task.assigned_tasker, 50)
                 check_and_award_badges(task.assigned_tasker)
                 create_notification(
-                    task.assigned_tasker, _('Task validée !'),
+                    task.assigned_tasker, _('Mission validée !'),
                     _(f'Le client a confirmé la fin de "{task.title}".'),
                     Notification.TypeChoices.TASK_COMPLETED, related_task=task,
                 )
@@ -868,7 +909,7 @@ def task_workspace(request, task_id):
                     related_task=task,
                     is_read=False,
                 ).update(is_read=True)
-                messages.success(request, _('Task confirmée ! Veuillez évaluer le tasker.'))
+                messages.success(request, _('Mission confirmée ! Veuillez évaluer le tasker.'))
                 return redirect(reverse('tasks:task_evaluate', kwargs={'task_id': task.id}))
 
             elif action == 'litige':
@@ -925,6 +966,14 @@ def task_workspace(request, task_id):
                         _(f'Le client a validé votre preuve pour "{task.title}".'),
                         Notification.TypeChoices.TASK_COMPLETED, related_task=task,
                     )
+                    # Mark related notifications as read
+                    Notification.objects.filter(
+                        user=request.user,
+                        type__in=[Notification.TypeChoices.TASK_COMPLETED, Notification.TypeChoices.SYSTEM],
+                        related_task=task,
+                        is_read=False,
+                    ).update(is_read=True)
+                    return redirect('tasks:task_evaluate', task_id=task.id)
 
                 elif action == 'revision':
                     proof.request_revision(notes)
@@ -933,20 +982,6 @@ def task_workspace(request, task_id):
                     create_notification(
                         task.assigned_tasker, _('Modification demandée'),
                         _(f'Le client demande des modifications pour "{task.title}" : {notes}'),
-                        Notification.TypeChoices.SYSTEM, related_task=task,
-                    )
-
-                elif action == 'reject':
-                    proof.client_review = TaskProof.ReviewChoices.REJECTED
-                    proof.revision_notes = notes
-                    proof.reviewed_at = timezone.now()
-                    proof.save()
-                    task.reject()
-                    if conversation:
-                        conversation.close()
-                    create_notification(
-                        task.assigned_tasker, _('Preuve refusée'),
-                        _(f'Le client a refusé votre preuve pour "{task.title}".'),
                         Notification.TypeChoices.SYSTEM, related_task=task,
                     )
 
@@ -1003,12 +1038,21 @@ def task_start(request, task_id):
     task = get_object_or_404(Task, id=task_id, assigned_tasker=request.user)
 
     if task.status != Task.StatusChoices.ACCEPTED:
-        messages.error(request, _('Vous ne pouvez pas démarrer cette task.'))
+        messages.error(request, _('Vous ne pouvez pas démarrer cette tâche.'))
         return redirect('tasks:tasker_dashboard')
 
     task.start()
-    messages.success(request, _('Task démarrée !'))
-    return redirect('tasks:tasker_dashboard')
+
+    create_notification(
+        task.client,
+        _('Mission démarrée !'),
+        _(f'{request.user.full_name} a commencé "{task.title}".'),
+        Notification.TypeChoices.SYSTEM,
+        related_task=task,
+    )
+
+    messages.success(request, _('Mission démarrée !'))
+    return redirect('tasks:task_workspace', task_id=task.id)
 
 
 
@@ -1020,7 +1064,7 @@ def task_review_proof(request, task_id):
     task = get_object_or_404(Task, id=task_id, client=request.user)
 
     if not task.proof_required:
-        messages.error(request, _('Cette task ne nécessite pas de preuve.'))
+        messages.error(request, _('Cette tâche ne nécessite pas de preuve.'))
         return redirect('tasks:client_dashboard')
 
     if not hasattr(task, 'proof'):
@@ -1064,7 +1108,7 @@ def task_review_proof(request, task_id):
                 award_xp(task.assigned_tasker, 50)
                 check_and_award_badges(task.assigned_tasker)
 
-                messages.success(request, _('Task validée !'))
+                messages.success(request, _('Tâche validée !'))
             elif action == 'revision':
                 proof.request_revision(notes)
                 task.status = Task.StatusChoices.IN_PROGRESS
@@ -1093,13 +1137,13 @@ def task_review_proof(request, task_id):
 
                 create_notification(
                     task.assigned_tasker,
-                    _('Task refusée'),
-                    _(f'Le client a refusé votre task "{task.title}".'),
+                    _('Mission refusée'),
+                    _(f'Le client a refusé votre mission "{task.title}".'),
                     Notification.TypeChoices.SYSTEM,
                     related_task=task,
                 )
 
-                messages.warning(request, _('Task refusée.'))
+                messages.warning(request, _('Tâche refusée.'))
             elif action == 'litige':
                 task.open_litige(notes or 'Litige signalé par le client')
 
@@ -1144,11 +1188,11 @@ def task_resolve_litige(request, task_id):
         return HttpResponseForbidden()
 
     if task.status != Task.StatusChoices.LITIGE:
-        messages.error(request, _('Cette task n\'est pas en litige.'))
+        messages.error(request, _('Cette tâche n\'est pas en litige.'))
         return redirect('tasks:client_dashboard')
 
     task.resolve_litige()
-    messages.success(request, _('Litige résolu. La task est en statut Résolue, les deux parties peuvent maintenant s\'évaluer.'))
+    messages.success(request, _('Litige résolu. La mission est en statut Résolue, les deux parties peuvent maintenant s\'évaluer.'))
     return redirect('admin_sidequest:dashboard')
 
 
@@ -1158,7 +1202,7 @@ def task_evaluate(request, task_id):
     task = get_object_or_404(Task, id=task_id, client=request.user)
 
     if task.status not in (Task.StatusChoices.VALIDATED, Task.StatusChoices.RESOLVED):
-        messages.error(request, _('Vous ne pouvez pas évaluer cette task.'))
+        messages.error(request, _('Vous ne pouvez pas évaluer cette tâche.'))
         return redirect('tasks:client_dashboard')
 
     existing_review = task.reviews.filter(
@@ -1167,7 +1211,7 @@ def task_evaluate(request, task_id):
         moderation_status=Review.ModerationStatusChoices.VALIDATED,
     ).first()
     if existing_review:
-        messages.info(request, _('Cette task a déjà été évaluée.'))
+        messages.info(request, _('Cette tâche a déjà été évaluée.'))
         return redirect('tasks:client_dashboard')
 
     if request.method == 'POST':
@@ -1208,7 +1252,7 @@ def task_evaluate(request, task_id):
         create_notification(
             task.assigned_tasker,
             _('Nouvel avis reçu'),
-            _(f'Le client a évalué votre task "{task.title}" avec {rating}/5.'),
+            _(f'Le client a évalué votre mission "{task.title}" avec {rating}/5.'),
             Notification.TypeChoices.REVIEW_RECEIVED,
             related_task=task,
             related_review=review,
@@ -1226,19 +1270,19 @@ def task_close(request, task_id):
     task = get_object_or_404(Task, id=task_id, client=request.user)
 
     if task.status not in (Task.StatusChoices.EVALUATED,):
-        messages.error(request, _('Cette task ne peut pas encore être clôturée.'))
+        messages.error(request, _('Cette tâche ne peut pas encore être clôturée.'))
         return redirect('tasks:client_dashboard')
 
     task.close()
     if task.assigned_tasker:
         create_notification(
             task.assigned_tasker,
-            _('Task clôturée'),
-            _(f'La task "{task.title}" a été clôturée.'),
+            _('Mission clôturée'),
+            _(f'La mission "{task.title}" a été clôturée.'),
             Notification.TypeChoices.SYSTEM,
             related_task=task,
         )
-    messages.success(request, _('Task clôturée.'))
+    messages.success(request, _('Mission clôturée.'))
     return redirect('tasks:client_dashboard')
 
 
@@ -1263,6 +1307,7 @@ def notifications_list(request):
     else:
         notif_types = [
             Notification.TypeChoices.TASK_ACCEPTED,
+            Notification.TypeChoices.APPLICATION_REJECTED,
             Notification.TypeChoices.TASK_PUBLISHED,
             Notification.TypeChoices.TASK_COMPLETED,
             Notification.TypeChoices.REVIEW_RECEIVED,

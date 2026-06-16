@@ -16,7 +16,7 @@
 
 /* ── Header card ── */
 .hero-card-tasker {
-  background: #1B4332;
+  background: #FFFFFF;
   border-radius: 16px;
   padding-top: 12px !important;
   padding-bottom: 12px !important;
@@ -28,10 +28,9 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   overflow: hidden;
   position: relative;
-  border: 1px solid rgba(255,255,255,0.15);
 }
 .hero-card-tasker * {
   flex-shrink: 1;
@@ -40,12 +39,12 @@
 .hero-greeting {
   font-size: 16px;
   font-weight: 500;
-  color: #FFFFFF;
+  color: #1A1A1A;
   margin: 0;
 }
 .hero-tagline {
   font-size: 11px;
-  color: rgba(255,255,255,0.9);
+  color: #6B7280;
   margin: 2px 0 4px !important;
 }
 .hero-rank-badge {
@@ -64,14 +63,14 @@
 .hero-bar-wrap { margin-top: 4px; }
 .hero-bar-bg {
   height: 5px;
-  background: rgba(255,255,255,0.25);
+  background: #F3F4F6;
   border-radius: 3px;
   overflow: hidden;
   position: relative;
 }
 .hero-bar-fill {
   height: 5px;
-  background: #95D5B2;
+  background: #1B4332;
   border-radius: 3px;
   transition: width 0.6s ease;
 }
@@ -79,7 +78,7 @@
 .hero-bar-next { display: none; }
 .hero-bar-label {
   font-size: 9px;
-  color: rgba(255,255,255,0.9);
+  color: #6B7280;
   margin-top: 4px;
 }
 .hero-chips {
@@ -116,45 +115,61 @@
   margin: 0 0 8px; display: flex; align-items: center; gap: 6px;
 }
 
+/* ── Active quests ── */
+.sq-active-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.sq-active-card {
+  background: var(--sq-surface); border: 1px solid var(--sq-border-light);
+  border-radius: 14px; padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px;
+  transition: all 0.15s; text-decoration: none; color: inherit;
+}
+.sq-active-card:hover { border-color: var(--sq-primary-light); box-shadow: 0 2px 10px rgba(14,107,82,0.06); }
+.sq-active-icon {
+  width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.sq-active-icon.orange { background: #FFEDD5; color: #EA580C; }
+.sq-active-icon.blue { background: #DBEAFE; color: #2563EB; }
+.sq-active-icon.green { background: #D1FAE5; color: #059669; }
+.sq-active-body { flex: 1; min-width: 0; }
+.sq-active-title { font-size: 13px; font-weight: 600; color: var(--sq-text); margin: 0 0 2px; }
+.sq-active-meta { font-size: 11px; color: var(--sq-text-muted); display: flex; gap: 4px 12px; flex-wrap: wrap; }
+.sq-active-meta span { display: inline-flex; align-items: center; gap: 3px; }
+.sq-active-bar {
+  width: 80px; height: 4px; background: var(--sq-bg); border-radius: 99px; overflow: hidden; flex-shrink: 0;
+}
+.sq-active-bar-fill { height: 100%; border-radius: 99px; background: var(--sq-primary); }
+.sq-active-arrow { color: var(--sq-text-muted); flex-shrink: 0; }
 
+.sq-empty-active {
+  border: 1px dashed var(--sq-border); border-radius: 14px; padding: 28px 20px;
+  text-align: center; color: var(--sq-text-muted); font-size: 13px; margin-bottom: 22px;
+}
+.sq-empty-active svg { color: var(--sq-text-lighter); margin-bottom: 4px; }
 
 /* ── Available cards ── */
 .avail-grid {
   display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  padding: 16px;
+  flex-direction: column;
+  gap: 10px;
   margin-bottom: 80px;
-  background: rgba(245, 240, 235, 0.5);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.35);
-  box-shadow: 0 4px 24px rgba(0,0,0,0.04);
 }
-.avail-grid::-webkit-scrollbar { display: none; }
 .avail-card {
-  flex-shrink: 0;
-  width: 280px;
   background: #fff;
   border: 0.5px solid #E5E5E0;
-  border-radius: 18px;
+  border-left: 3px solid #1B4332;
+  border-radius: 0 14px 14px 0;
   padding: 14px 16px;
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  transition: all 0.25s ease;
+  gap: 12px;
+  transition: box-shadow 0.15s;
 }
-.avail-card:hover {
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-  transform: translateY(-2px);
-}
+.avail-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
 .avail-card-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
   background: #D8F3DC;
   display: flex;
   align-items: center;
@@ -398,12 +413,12 @@
         {{ level|rank_name }} · Niveau {{ level }}
       </div>
       <h1 class="hero-greeting">Bonjour, {{ user.full_name|default:"Tasker" }}</h1>
-      <p class="hero-tagline">Prête pour ta prochaine task&nbsp;?</p>
+      <p class="hero-tagline">Prête pour ta prochaine quête&nbsp;?</p>
       <div class="hero-bar-wrap">
         <div class="hero-bar-bg">
           <div class="hero-bar-fill" style="width:{% if progress_xp >= range_xp %}100{% else %}{% widthratio progress_xp range_xp 100 %}{% endif %}%;"></div>
         </div>
-        <div class="hero-bar-label">{{ progress_xp }} / {{ range_xp }} XP → Niveau {{ level|add:"1" }}</div>
+        <div class="hero-bar-label">{{ progress_xp }} / {{ range_xp }} XP</div>
       </div>
       <div class="hero-chips">
         <span class="hero-chip">
@@ -413,10 +428,24 @@
       </div>
     </div>
     <div class="hero-right">
-      <span style="background:rgba(255,255,255,0.15);color:#FFFFFF;border-radius:999px;padding:3px 10px;font-size:10px;font-weight:600;display:inline-block;">{{ user.profile.current_streak|default:'0' }} streak</span>
-      <span style="background:rgba(255,255,255,0.15);color:#FFFFFF;border-radius:999px;padding:3px 10px;font-size:10px;font-weight:600;display:inline-block;">{{ user.profile.xp|default:'0' }} XP</span>
+      <span style="background:rgba(254,44,85,0.12);color:#FE2C55;border-radius:999px;padding:3px 10px;font-size:10px;font-weight:600;display:inline-block;">{{ user.profile.current_streak|default:'0' }} streak</span>
+      <span style="background:rgba(27,67,50,0.12);color:#1B4332;border-radius:999px;padding:3px 10px;font-size:10px;font-weight:600;display:inline-block;">{{ user.profile.xp|default:'0' }} XP</span>
     </div>
   </div>
+
+  {# ═══════ INCOMPLETE PROFILE BANNER ═══════ #}
+  {% with pct=user.profile.profile_completion_pct %}
+  {% if pct < 100 %}
+  <div id="profile-banner" style="display:flex;align-items:center;gap:0.6rem;padding:0.6rem 0.85rem;background:linear-gradient(135deg,#FFF7ED,#FFFBEB);border:1px solid #FDE68A;border-radius:10px;margin-bottom:12px;font-size:0.8rem;">
+    <span style="font-size:1.1rem;">✨</span>
+    <div style="flex:1;min-width:0;">
+      <span style="font-weight:500;color:#92400E;">Ton profil est incomplet — 80 XP t'attendent</span>
+    </div>
+    <a href="{% url 'accounts:profile' %}" style="font-weight:600;color:#D97706;text-decoration:none;white-space:nowrap;">Compléter</a>
+    <button onclick="document.getElementById('profile-banner').remove()" style="background:none;border:none;cursor:pointer;color:#92400E;padding:0.2rem;line-height:1;">&times;</button>
+  </div>
+  {% endif %}
+  {% endwith %}
 
   {# ═══════ CATEGORY FILTERS ═══════ #}
   <div style="display:flex;gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px;margin-bottom:16px;" id="cat-filters">
@@ -430,27 +459,55 @@
     {% for cat in categories %}
     <div onclick="filterCat('{{ cat.slug }}')" id="cat-{{ cat.slug }}"
       style="display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;flex-shrink:0;">
-      <div style="width:52px;height:52px;border-radius:14px;background:#F3F4F6;border:0.5px solid #E5E5E0;display:flex;align-items:center;justify-content:center;">
-        {% if cat.slug == 'maintenance' %}
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="1.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-        {% elif cat.slug == 'nettoyage' %}
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="1.5"><path d="M12 22V12m0 0C12 7 7 5 7 5s1 5 5 7zm0 0c0-5 5-7 5-7s-1 5-5 7"/></svg>
-        {% elif cat.slug == 'garde' %}
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        {% elif cat.slug == 'livraison' %}
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-        {% elif cat.slug == 'courses' %}
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-        {% else %}
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        {% endif %}
+      <div style="width:52px;height:52px;border-radius:14px;background:#F3F4F6;border:0.5px solid #E5E5E0;display:flex;align-items:center;justify-content:center;color:#6B7280;">
+        <i class="ti ti-{{ cat|category_icon }}" style="font-size:22px;"></i>
       </div>
       <span style="font-size:10px;font-weight:500;color:#6B7280;">{{ cat.name }}</span>
     </div>
     {% endfor %}
   </div>
 
+  {# ═══════ SECTION 1 — ACTIVE QUESTS ═══════ #}
+  {% if active_tasks %}
+  <h2 class="sq-section-title" style="margin:0 0 10px;">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    My active tasks
+  </h2>
 
+  <div class="sq-active-list">
+      {% for task in active_tasks %}
+      <a href="{% url 'tasks:task_workspace' task.id %}" class="sq-active-card">
+        <div class="sq-active-icon {% if task.status == 'in_progress' %}blue{% elif task.status == 'awaiting_confirmation' %}green{% else %}orange{% endif %}">
+          {% if task.status == 'in_progress' %}
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          {% elif task.status == 'awaiting_confirmation' %}
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="20 6 9 17 4 12"/></svg>
+          {% else %}
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+          {% endif %}
+        </div>
+        <div class="sq-active-body">
+          <div class="sq-active-title">{{ task.title }}</div>
+          <div class="sq-active-meta">
+            <span>
+              {% if task.status == 'accepted' %}Acceptée
+              {% elif task.status == 'in_progress' %}En cours
+              {% elif task.status == 'awaiting_confirmation' %}En attente
+              {% endif %}
+            </span>
+            {% if task.deadline %}
+            <span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> {{ task.deadline|date:"d/m" }}</span>
+            {% endif %}
+            <span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> {{ task.reward }} DH</span>
+          </div>
+        </div>
+        <div class="sq-active-bar">
+          <div class="sq-active-bar-fill" style="width:{% if task.status == 'accepted' %}25{% elif task.status == 'in_progress' %}55{% elif task.status == 'awaiting_confirmation' %}85{% else %}100{% endif %}%;"></div>
+        </div>
+        <svg class="sq-active-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+      {% endfor %}
+    {% endif %}
   </div>
 
   {# ═══════ SECTION 2 — AVAILABLE QUESTS ═══════ #}
@@ -459,21 +516,7 @@
     {% if available_tasks %}
       {% for task in available_tasks|slice:":50" %}
       <div class="avail-card" id="avail-{{ task.id }}" data-href="{% url 'tasks:task_detail' task.id %}" style="cursor:pointer;" data-cat="{{ task.category.slug }}" data-category="{{ task.category_id }}" data-reward="{{ task.reward }}" data-proof="{{ task.proof_required|lower }}" data-lat="{{ task.arrival_lat|default:'' }}" data-lng="{{ task.arrival_lng|default:'' }}">
-        <div class="avail-card-icon">
-          {% if task.category.slug == 'livraison' or task.category.name|lower == 'livraison' %}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-          {% elif task.category.slug == 'maintenance' or task.category.name|lower == 'maintenance' %}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-          {% elif task.category.slug == 'nettoyage' or task.category.name|lower == 'nettoyage' %}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 0 0 6.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 0 0 6.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
-          {% elif task.category.slug == 'garde' or task.category.name|lower == 'garde' %}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-          {% elif task.category.slug == 'courses' or task.category.name|lower == 'courses' %}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-          {% else %}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          {% endif %}
-        </div>
+        <div class="avail-card-icon"><i class="ti ti-{{ task.category|category_icon }}" style="font-size:18px;"></i></div>
         <div class="avail-card-body">
           <div class="avail-card-category">{{ task.category.name }}</div>
           <h4 class="avail-card-title">{{ task.title }}</h4>
@@ -508,7 +551,7 @@
     {% else %}
     <div style="text-align:center;padding:2rem 1rem;background:#F9FAFB;border-radius:14px;">
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5" style="margin-bottom:10px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <div style="font-size:13px;font-weight:500;color:#1A1A1A;margin-bottom:4px;">Aucune task disponible</div>
+      <div style="font-size:13px;font-weight:500;color:#1A1A1A;margin-bottom:4px;">Aucune mission disponible</div>
       <div style="font-size:11px;color:#6B7280;">Reviens plus tard ou explore d'autres catégories</div>
     </div>
     {% endif %}
@@ -522,116 +565,6 @@
 {% endwith %}
 {% endwith %}
 
-<div class="sq-bottom-nav">
-  <a href="{% url 'tasks:tasker_dashboard' %}" class="active">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-    Accueil
-  </a>
-  <a href="{% url 'tasks:tasker_missions' %}">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-    Tasks
-  </a>
-  <a href="{% url 'messaging:conversation_list' %}">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-    Messages
-    {% if unread_messages_count %}<span style="font-size:10px;color:#EF4444;font-weight:700;">{{ unread_messages_count }}</span>{% endif %}
-  </a>
-  <a href="{% url 'accounts:profile' %}">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    Profil
-  </a>
-</div>
-
-<script>
-function filterCat(slug) {
-  document.querySelectorAll('#cat-filters > div').forEach(function(el) {
-    var box = el.querySelector('div');
-    var label = el.querySelector('span');
-    box.style.background = '#F3F4F6';
-    box.style.border = '0.5px solid #E5E5E0';
-    box.querySelectorAll('svg').forEach(function(s){ s.setAttribute('stroke','#6B7280'); });
-    if(label) label.style.color = '#6B7280';
-  });
-  var active = slug === '' ? document.getElementById('cat-all') : document.getElementById('cat-' + slug);
-  if(active) {
-    var box = active.querySelector('div');
-    var label = active.querySelector('span');
-    box.style.background = '#1B4332';
-    box.style.border = 'none';
-    box.querySelectorAll('svg').forEach(function(s){ s.setAttribute('stroke','white'); });
-    if(label) label.style.color = '#1B4332';
-  }
-  document.querySelectorAll('.avail-card').forEach(function(card) {
-    if(slug === '' || card.dataset.cat === slug) {
-      card.style.display = '';
-    } else {
-      card.style.display = 'none';
-    }
-  });
-}
-filterCat('');
-
-document.querySelector('.avail-grid').addEventListener('click', function(e) {
-  var t = e.target.closest('[data-href]');
-  if(t && !e.target.closest('button') && !e.target.closest('.btn-accept')) {
-    window.location.href = t.getAttribute('data-href');
-    return;
-  }
-  var saveBtn = e.target.closest('[data-save]');
-  if(saveBtn) {
-    e.stopPropagation();
-    var id = saveBtn.getAttribute('data-save');
-    fetch('/tasks/' + id + '/save/', {
-      method: 'POST',
-      headers: {'X-CSRFToken': '{{ csrf_token }}'},
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      var svg = saveBtn.querySelector('svg');
-      if(data.saved) {
-        svg.setAttribute('stroke', '#1B4332');
-        svg.setAttribute('fill', '#1B4332');
-      } else {
-        svg.setAttribute('stroke', 'currentColor');
-        svg.setAttribute('fill', 'none');
-      }
-    });
-    return;
-  }
-  var shareBtn = e.target.closest('[data-share]');
-  if(shareBtn) {
-    e.stopPropagation();
-    var title = shareBtn.getAttribute('data-title');
-    var reward = shareBtn.getAttribute('data-reward');
-    var url = shareBtn.getAttribute('data-url');
-    var fullUrl = window.location.origin + url;
-    var text = title + ' — ' + reward + ' DH sur SideQuest';
-    if(navigator.share) {
-      navigator.share({ title: title, text: text, url: fullUrl }).catch(function(){});
-    } else if(navigator.clipboard) {
-      navigator.clipboard.writeText(fullUrl).then(function() {
-        var orig = shareBtn.innerHTML;
-        shareBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1B4332" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
-        setTimeout(function() { shareBtn.innerHTML = orig; }, 1500);
-      }).catch(function() { copyFallback(fullUrl, shareBtn); });
-    } else {
-      copyFallback(fullUrl, shareBtn);
-    }
-  }
-});
-function copyFallback(text, btn) {
-  var ta = document.createElement('textarea');
-  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-  document.body.appendChild(ta); ta.select();
-  try {
-    document.execCommand('copy');
-    var orig = btn.innerHTML;
-    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1B4332" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
-    setTimeout(function() { btn.innerHTML = orig; }, 1500);
-  } catch(e) {}
-  document.body.removeChild(ta);
-}
-</script>
 {% endblock %}
 
 {% block dashboard_right %}{% endblock %}

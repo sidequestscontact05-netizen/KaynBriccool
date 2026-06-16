@@ -5,6 +5,24 @@ register = template.Library()
 
 RANKS = ['Beginner', 'Explorer', 'Challenger', 'Adventurer', 'Elite', 'Legend']
 
+CATEGORY_ICONS = {
+    'administration & juridique': 'file-text',
+    'aide personnelle': 'heart-handshake',
+    'animaux': 'paw',
+    'autres': 'dots-circle-horizontal',
+    'beauté & bien-être': 'sparkles',
+    'bricolage & jardinage': 'tools',
+    'courses & achats': 'shopping-cart',
+    'cuisine & traiteur': 'chef-hat',
+    'informatique & digital': 'device-laptop',
+    'livraison': 'package',
+    'libvraison': 'package',
+    'maintenance': 'settings',
+    'ménage': 'home',
+    'photo & vidéo': 'camera',
+    'événementiel': 'calendar-event',
+}
+
 
 @register.filter
 def get_item(dictionary, key):
@@ -81,3 +99,10 @@ def stars(value):
     for _ in range(empty):
         stars_html += '<svg class="lbc-star" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>'
     return mark_safe(stars_html)
+
+
+@register.filter
+def category_icon(cat):
+    name = (getattr(cat, 'name', '') or '').strip().lower()
+    slug = (getattr(cat, 'slug', '') or '').strip().lower()
+    return CATEGORY_ICONS.get(name) or CATEGORY_ICONS.get(slug) or 'category'

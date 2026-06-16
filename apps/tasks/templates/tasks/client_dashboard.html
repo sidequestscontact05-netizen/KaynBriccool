@@ -204,29 +204,6 @@
     </div>
 </div>
 
-<div class="pills-nav">
-  <a href="{% url 'tasks:client_dashboard' %}" class="pnav active">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    Accueil
-  </a>
-  <a href="{% url 'tasks:client_quests' %}" class="pnav">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-    Tasks
-    {% with active_count=accepted.count|add:in_progress.count %}
-    {% if active_count %}<span class="pnav-badge">{{ active_count }}</span>{% endif %}
-    {% endwith %}
-  </a>
-  <a href="{% url 'reputation:leaderboard' %}" class="pnav">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-    Classement
-  </a>
-  <a href="{% url 'messaging:conversation_list' %}" class="pnav">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-    Messages
-    {% if unread_messages_count %}<span class="pnav-badge">{{ unread_messages_count }}</span>{% endif %}
-  </a>
-</div>
-
 <div style="margin-top:28px;">
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;">
     <a href="{% url 'tasks:client_quests' %}?status=drafts" class="client-section-card" style="text-decoration:none;color:inherit;flex-direction:column;text-align:center;padding:20px 12px;">
@@ -340,28 +317,6 @@ document.addEventListener('alpine:init', () => {
     </div>
   </div>
 </div>
-
-{% if request.GET.published == '1' %}
-<div id="successModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;">
-  <div style="background:white;border-radius:20px;padding:40px 48px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.15);max-width:360px;animation:fadeIn 0.3s ease;">
-    <style>
-      @keyframes fadeIn { from { opacity:0;transform:scale(0.9); } to { opacity:1;transform:scale(1); } }
-      @keyframes checkDraw { to { stroke-dashoffset:0; } }
-      .check-circle { width:64px;height:64px;border-radius:50%;background:#e8f5e9;display:flex;align-items:center;justify-content:center;margin:0 auto 16px; }
-      .check-circle svg { width:32px;height:32px;stroke:#2e7d32;stroke-width:3;fill:none;stroke-dasharray:48;stroke-dashoffset:48;animation:checkDraw 0.4s ease forwards 0.2s; }
-    </style>
-    <div class="check-circle">
-      <svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg>
-    </div>
-    <div style="font-size:20px;font-weight:700;color:#1a1a2e;margin-bottom:8px;">Task publiée avec succès !</div>
-    <div style="font-size:12px;color:#666;margin-bottom:20px;">Un tasker va bientôt la repérer.</div>
-    <div style="font-size:48px;margin-bottom:20px;line-height:1;">😊</div>
-    <button onclick="document.getElementById('successModal').style.display='none'" style="background:var(--sq-primary);color:white;border:none;padding:10px 28px;border-radius:30px;font-size:14px;font-weight:600;cursor:pointer;">Super !</button>
-  </div>
-</div>
-<script>setTimeout(function(){var m=document.getElementById('successModal');if(m)m.style.display='none';},5000);</script>
-{% endif %}
-
 {% endblock %}
 
 {% block dashboard_right %}

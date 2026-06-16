@@ -198,14 +198,16 @@ class UserProfile(models.Model):
     )
     client_rating_count = models.IntegerField(_('nombre avis client'), default=0)
 
-    tasks_completed = models.IntegerField(_('tasks réalisées'), default=0)
-    tasks_published = models.IntegerField(_('tasks publiées'), default=0)
-    tasks_cancelled = models.IntegerField(_('tasks annulées'), default=0)
+    tasks_completed = models.IntegerField(_('tâches réalisées'), default=0)
+    tasks_published = models.IntegerField(_('tâches publiées'), default=0)
+    tasks_cancelled = models.IntegerField(_('tâches annulées'), default=0)
 
     xp = models.IntegerField(_('points d\'expérience'), default=0)
     level = models.IntegerField(_('niveau'), default=1)
 
     onboarding_seen = models.BooleanField(_('guide vu'), default=False)
+    welcome_modal_shown = models.BooleanField(_('modal bienvenue vue'), default=False)
+    profile_reminder_sent = models.BooleanField(_('rappel profil envoyé'), default=False)
     current_streak = models.IntegerField(_('série actuelle'), default=0)
     last_streak_date = models.DateField(_('dernière activité'), blank=True, null=True)
     saved_tasks = models.ManyToManyField('tasks.Task', blank=True, related_name='saved_by')
@@ -232,13 +234,35 @@ class UserProfile(models.Model):
     def __str__(self):
         return f'Profil de {self.user.full_name}'
 
+    def is_face_verified(self):
+        return self.user.verifications.filter(
+            type=VerificationRecord.TypeChoices.FACE_ID,
+            face_status=VerificationRecord.FaceStatusChoices.APPROVED,
+        ).exists()
+
+    def has_avatar(self):
+        return bool(self.user.avatar)
+
+    def profile_completion_pct(self):
+        pct = 0
+        if self.has_avatar():
+            pct += 25
+        if self.is_face_verified():
+            pct += 25
+        if self.bio:
+            pct += 25
+        if self.city:
+            pct += 25
+        return pct
+
 
 class Notification(models.Model):
     class TypeChoices(models.TextChoices):
-        TASK_PUBLISHED = 'task_published', _('Nouvelle task publiée')
+        TASK_PUBLISHED = 'task_published', _('Nouvelle tâche publiée')
         NEW_APPLICATION = 'new_application', _('Nouvelle candidature')
-        TASK_ACCEPTED = 'task_accepted', _('Task acceptée')
-        TASK_COMPLETED = 'task_completed', _('Task terminée')
+        TASK_ACCEPTED = 'task_accepted', _('Tâche acceptée')
+        APPLICATION_REJECTED = 'application_rejected', _('Candidature non retenue')
+        TASK_COMPLETED = 'task_completed', _('Tâche terminée')
         MESSAGE_RECEIVED = 'message_received', _('Nouveau message')
         REVIEW_RECEIVED = 'review_received', _('Nouvel avis')
         SYSTEM = 'system', _('Système')
@@ -264,7 +288,7 @@ class Notification(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        verbose_name=_('task liée'),
+        verbose_name=_('tâche liée'),
     )
     related_conversation = models.ForeignKey(
         'messaging.Conversation',

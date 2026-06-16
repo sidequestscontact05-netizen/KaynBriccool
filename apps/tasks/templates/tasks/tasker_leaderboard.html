@@ -9,7 +9,7 @@
     <a href="{% url 'tasks:tasker_dashboard' %}" class="btn-back" title="Retour">&#8592;</a>
     <h1 class="lb-full-title">Classement des Taskers</h1>
 </div>
-<p class="lb-full-sub">Top taskers classés par note et tasks complétées</p>
+<p class="lb-full-sub">Top taskers classés par note et missions complétées</p>
 
 {% if user_rank %}
 <div class="lb-user-rank">
@@ -39,7 +39,7 @@
             </div>
             <div class="lb-user-rank-stat">
                 <span class="lb-user-rank-stat-value">{{ user_profile.tasks_completed }}</span>
-                <span class="lb-user-rank-stat-label">Tasks</span>
+                <span class="lb-user-rank-stat-label">Missions</span>
             </div>
             <div class="lb-user-rank-stat">
                 <span class="lb-user-rank-stat-value">{{ user_profile.tasker_rating_count }}</span>
@@ -77,7 +77,7 @@
         <div class="lb-podium-level">Niv. {{ t.level }}</div>
         <div class="lb-podium-stars">{{ t.tasker_rating_avg|stars }}</div>
         <div class="lb-podium-score">{{ t.tasker_rating_avg|floatformat:1 }}</div>
-        <div class="lb-podium-meta">{{ t.tasks_completed }} tasks · {{ t.xp }} XP</div>
+        <div class="lb-podium-meta">{{ t.tasks_completed }} missions · {{ t.xp }} XP</div>
     </a>
     {% endif %}
     {% endfor %}
@@ -85,13 +85,13 @@
 {% endif %}
 
 <!-- SEARCH + LIST -->
-<div x-data="{ search: '', activeTab: 'all' }">
+<div x-data="leaderboard()">
     <div class="lb-toolbar">
         <div class="lb-tabs">
-            <button class="lb-tab" :class="{ active: activeTab === 'all' }" @click="activeTab = 'all'">Tous</button>
-            <button class="lb-tab" :class="{ active: activeTab === 'rating' }" @click="activeTab = 'rating'">Meilleure note</button>
-            <button class="lb-tab" :class="{ active: activeTab === 'missions' }" @click="activeTab = 'missions'">Plus de tasks</button>
-            <button class="lb-tab" :class="{ active: activeTab === 'xp' }" @click="activeTab = 'xp'">Plus d'XP</button>
+            <button class="lb-tab" :class="{ active: tab === 'all' }" @click="setTab('all')">Tous</button>
+            <button class="lb-tab" :class="{ active: tab === 'rating' }" @click="setTab('rating')">Meilleure note</button>
+            <button class="lb-tab" :class="{ active: tab === 'missions' }" @click="setTab('missions')">Plus de missions</button>
+            <button class="lb-tab" :class="{ active: tab === 'xp' }" @click="setTab('xp')">Plus d'XP</button>
         </div>
         <div class="lb-search-wrap">
             <svg class="lb-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -100,10 +100,14 @@
     </div>
 
     {% if top_taskers %}
-    <div class="lbc-grid">
+    <div class="lbc-grid" id="lbc-grid">
         {% for t in top_taskers %}
         <a href="{% url 'accounts:tasker_profile' t.user.id %}"
            class="lbc-card {% if t.user == request.user %}is-me{% endif %}"
+           data-rating="{{ t.tasker_rating_avg }}"
+           data-missions="{{ t.tasks_completed }}"
+           data-xp="{{ t.xp }}"
+           data-name="{{ t.user.full_name|escapejs }}"
            x-show="!search || '{{ t.user.full_name|escapejs }}'.toLowerCase().includes(search.toLowerCase())"
            x-transition.duration.300ms>
             <span class="lbc-rank {% if forloop.counter == 1 %}gold{% elif forloop.counter == 2 %}silver{% elif forloop.counter == 3 %}bronze{% endif %}">
@@ -148,7 +152,7 @@
                 </div>
                 <div class="lbc-stat highlight">
                     <span class="lbc-stat-value">{{ t.tasks_completed }}</span>
-                    <span class="lbc-stat-label">Tasks</span>
+                    <span class="lbc-stat-label">Missions</span>
                 </div>
                 <div class="lbc-stat highlight">
                     <span class="lbc-stat-value">{{ t.xp }}</span>
@@ -172,10 +176,40 @@
     <div class="empty-state">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         <h3>Aucun classement</h3>
-        <p>Commencez à compléter des tasks pour apparaître dans le classement.</p>
+        <p>Commencez à compléter des missions pour apparaître dans le classement.</p>
     </div>
     {% endif %}
 </div>
+
+<script>
+function leaderboard() {
+    return {
+        search: '',
+        tab: 'all',
+        sortFn: null,
+        init() {
+            this.sortGrid();
+        },
+        setTab(t) {
+            this.tab = t;
+            this.sortGrid();
+        },
+        sortGrid() {
+            var grid = document.getElementById('lbc-grid');
+            if (!grid) return;
+            var cards = Array.from(grid.children);
+            var self = this;
+            cards.sort(function(a, b) {
+                if (self.tab === 'all') return 0;
+                var va = parseFloat(a.dataset[self.tab === 'rating' ? 'rating' : self.tab === 'missions' ? 'missions' : 'xp']);
+                var vb = parseFloat(b.dataset[self.tab === 'rating' ? 'rating' : self.tab === 'missions' ? 'missions' : 'xp']);
+                return vb - va;
+            });
+            cards.forEach(function(c) { grid.appendChild(c); });
+        }
+    };
+}
+</script>
 
 <style>
 /* ===== USER RANK BAR ===== */

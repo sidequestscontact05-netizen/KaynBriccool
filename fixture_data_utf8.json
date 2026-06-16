@@ -1,0 +1,2742 @@
+[
+{
+  "model": "sessions.session",
+  "pk": "8jmwm9e1ujcrmrah8gjy0t8t5xf76mbl",
+  "fields": {
+    "session_data": ".eJxVjL0OwjAQg98lM4quzT8je58hulxSUkCJ1LQT4t1JpQ6w2JI_22_mcd-y31ta_RLZlTl2-c0C0jOVA8QHlnvlVMu2LoEfFX7Sxqca0-t2dv8OMrbc16QMaBzmJBIFB7a704LU6GaKSnSxMAZKJMFYLSGCMYMBkoiCAhD7fAH7gDhb:1wT6cp:y3FySkusLHhNK6uVRO2M5MNFAYxyR4UXShN3D6zeHQ0",
+    "expire_date": "2026-06-12T23:28:23.822Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "b215vbykofia3xfzqb4xqg8khavl00xr",
+  "fields": {
+    "session_data": ".eJxVjMsOwiAQAP9lz4ZQWAR69N5vaJZlkaqhSR8n47-bJj3odWYybxhp3-q4r7KMU4YeLFx-WSJ-SjtEflC7z4rnti1TUkeiTruqYc7yup3t36DSWqGHyN5IKaGg9k6XK5rATlywkggTRY0mJmIfnROMGNii7rIlH6hjoz18vuL5N38:1wTK9I:kTFOFWHDbGo87-SmqSirL4LNM88um1FdcIJrzV3efaA",
+    "expire_date": "2026-06-13T13:54:48.834Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "dar9t9b8o0tttnbaafmp97kdyvdg26wa",
+  "fields": {
+    "session_data": ".eJxVjMsOgjAUBf-la9NAoRfq0j3fQO6rFjUlobAy_rtpwkK3Z2bO28x47Gk-im7zIuZqvLn8boT81FyBPDDfV8tr3reFbFXsSYudVtHX7XT_DhKWVOsBhh6cgOcIgZHAa3Sg0TkfGhBV3wpCoGbEkVvGzssQlQL1At3I5vMF9mA4rQ:1wTLGV:BX3qC29krAFx_hQEi8LBFc7TOL3ktuRuiWvGK1Sciog",
+    "expire_date": "2026-06-13T15:06:19.752Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "f82xg41if141q5cx3godifa0r2161zsp",
+  "fields": {
+    "session_data": ".eJxVjEsOwiAUAO_y1oYAj_Lp0r1nIMADqRpISrsy3t006UK3M5N5gw_7Vv0-8uoXghkQLr8shvTM7RD0CO3eWeptW5fIjoSddrBbp_y6nu3foIZRYYYJc9BccakLFUdKWqGM5dZlkgllKTZPpAUZwsKNwOQMSZSCCxGxoILPF86GNxE:1wTJx5:UyYx_lD2bTiMOveJdbB32ix1-CpW7ld0jtr44ydocAo",
+    "expire_date": "2026-06-13T13:42:11.237Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "j9swe92zd5enl7sn50ye300hmgxqv62c",
+  "fields": {
+    "session_data": ".eJxVjLsOgzAMAP_FcxVhnAdh7N5viGwSF9oKJAJT1X-vkBja9e50b0i8b2Paa1nTlKGHDi6_THh4lvkQ-cHzfTHDMm_rJOZIzGmruS25vK5n-zcYuY7QQ-liI4LqbNuoeuvRsTpCnzFaphB9QSWJLTkXYot28CSkGhiDl-Dg8wXLizb1:1wTLGJ:rM6awz99YpnhYryckQTF0oOx-ZyxuSv7l6Q9zclsGZs",
+    "expire_date": "2026-06-13T15:06:07.337Z"
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$720000$gCmm9bDUJnykHUGlgxuSMB$j1smgCkmG2G1Kh6cNshS6M/f2pI4/Uzhqbym2oUtxjg=",
+    "last_login": "2026-05-28T20:36:58.670Z",
+    "is_superuser": false,
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-05-25T08:24:11.331Z",
+    "email": "imanebahri098@gmail.com",
+    "full_name": "imanebahri",
+    "phone_number": "+212 694280858",
+    "phone_verified": false,
+    "email_verified": true,
+    "avatar": "",
+    "role": "both",
+    "active_role": "client",
+    "is_verified": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$720000$zqzVyKZXVbVtTquo10qVR8$1Hwh/B5r60nrp3ZqbZHBuyhX8VW7RZdo8fOTB8DdVdY=",
+    "last_login": "2026-05-28T20:04:05.935Z",
+    "is_superuser": false,
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-05-25T08:29:39.036Z",
+    "email": "imanebahri056@gmail.com",
+    "full_name": "marwa",
+    "phone_number": "0697980406",
+    "phone_verified": false,
+    "email_verified": true,
+    "avatar": "avatars/Capture_dÚcran_2026-04-18_124053.png",
+    "role": "tasker",
+    "active_role": "tasker",
+    "is_verified": true,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$720000$KNoZPcRzu2s7pA93Rw0U3j$PEZlmNML+QwOmiKSdgoq48UoGmCLR9NDEKbH933M1qw=",
+    "last_login": "2026-05-30T13:54:48.811Z",
+    "is_superuser": true,
+    "first_name": "",
+    "last_name": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-05-25T08:36:21.260Z",
+    "email": "sidequests.contact05@gmail.com",
+    "full_name": "Admin",
+    "phone_number": null,
+    "phone_verified": false,
+    "email_verified": false,
+    "avatar": "",
+    "role": "admin",
+    "active_role": "admin",
+    "is_verified": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 5,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$DdWwxvtyTU1WOPvNxCKMnx$KQacTEChYU3ZPqhXKbdYrS6p4ct6jg1U//5PlKPtvtM=",
+    "last_login": "2026-05-30T15:06:19.734Z",
+    "is_superuser": false,
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-05-25T21:39:55.305Z",
+    "email": "alaminrdsamia87@gmail.com",
+    "full_name": "samia tasker",
+    "phone_number": "+212697980406",
+    "phone_verified": false,
+    "email_verified": false,
+    "avatar": "",
+    "role": "both",
+    "active_role": "client",
+    "is_verified": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 7,
+  "fields": {
+    "password": "pbkdf2_sha256$720000$jeYKWRLClk9ObUswf4oey4$LI3QLEbhUI2AHE2r1Zo2to6VMkZb9Wy7QbKjD20jUNA=",
+    "last_login": "2026-05-29T21:53:45.155Z",
+    "is_superuser": false,
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-05-26T09:40:16.384Z",
+    "email": "s.alami0605@uca.ac.ma",
+    "full_name": "Samia Alami",
+    "phone_number": "+212697980406",
+    "phone_verified": false,
+    "email_verified": false,
+    "avatar": "",
+    "role": "client",
+    "active_role": "client",
+    "is_verified": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 8,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$DeIg3LGn2TO0JR8MzNcFxw$Hr4gpIN1LeIj9uMxj3AUs/3P/5niSVkZEL0Lu/8Rxg0=",
+    "last_login": "2026-05-30T15:06:07.308Z",
+    "is_superuser": false,
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-05-27T18:21:40.198Z",
+    "email": "farahloube74@gmail.com",
+    "full_name": "farah loube",
+    "phone_number": "+212697980406",
+    "phone_verified": false,
+    "email_verified": false,
+    "avatar": "",
+    "role": "both",
+    "active_role": "tasker",
+    "is_verified": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 9,
+  "fields": {
+    "password": "pbkdf2_sha256$720000$PyVwe7F144Z3U4uSZbXUZh$6Z2w8e8GnLG1FfU7MLzDIV9cpy3gQlyFE59sKkrv+78=",
+    "last_login": "2026-05-29T23:28:23.804Z",
+    "is_superuser": false,
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-05-29T23:02:14.043Z",
+    "email": "yahyalnrd@gmail.com",
+    "full_name": "amina",
+    "phone_number": "000",
+    "phone_verified": false,
+    "email_verified": false,
+    "avatar": "avatars/wavy-black-white-background.jpg",
+    "role": "both",
+    "active_role": "client",
+    "is_verified": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.verificationrecord",
+  "pk": "0e3d66c6-ddb2-4cd7-a909-c6cd8c20eae8",
+  "fields": {
+    "user": 9,
+    "type": "email",
+    "code": "451692",
+    "expires_at": "2026-05-29T23:12:15.294Z",
+    "is_used": false,
+    "face_photo_initial": "",
+    "face_photo_left": "",
+    "face_photo_right": "",
+    "face_photo_blink": "",
+    "face_status": "pending",
+    "admin_notes": null,
+    "created_at": "2026-05-29T23:02:15.299Z",
+    "updated_at": "2026-05-29T23:02:15.299Z"
+  }
+},
+{
+  "model": "accounts.verificationrecord",
+  "pk": "0fafaf39-1ac1-40e4-8210-f5d82fa2b230",
+  "fields": {
+    "user": 8,
+    "type": "email",
+    "code": "235032",
+    "expires_at": "2026-05-27T18:31:41.134Z",
+    "is_used": false,
+    "face_photo_initial": "",
+    "face_photo_left": "",
+    "face_photo_right": "",
+    "face_photo_blink": "",
+    "face_status": "pending",
+    "admin_notes": null,
+    "created_at": "2026-05-27T18:21:41.139Z",
+    "updated_at": "2026-05-27T18:21:41.139Z"
+  }
+},
+{
+  "model": "accounts.verificationrecord",
+  "pk": "1ba74c22-bddc-4033-8e11-31b5f5054213",
+  "fields": {
+    "user": 5,
+    "type": "face_id",
+    "code": null,
+    "expires_at": "2027-05-26T10:13:27.119Z",
+    "is_used": false,
+    "face_photo_initial": "face-id/face_photo_initial_UNv9jGE.jpg",
+    "face_photo_left": "face-id/face_photo_left_V2Y9NdH.jpg",
+    "face_photo_right": "face-id/face_photo_right_sLEsv9j.jpg",
+    "face_photo_blink": "face-id/face_photo_blink_T7HjUUv.jpg",
+    "face_status": "pending",
+    "admin_notes": null,
+    "created_at": "2026-05-26T10:13:27.121Z",
+    "updated_at": "2026-05-26T10:13:27.217Z"
+  }
+},
+{
+  "model": "accounts.verificationrecord",
+  "pk": "1f2e450e-58d5-4c96-87c1-a8b83f2a4c2f",
+  "fields": {
+    "user": 5,
+    "type": "email",
+    "code": "998740",
+    "expires_at": "2026-05-25T21:49:56.240Z",
+    "is_used": false,
+    "face_photo_initial": "",
+    "face_photo_left": "",
+    "face_photo_right": "",
+    "face_photo_blink": "",
+    "face_status": "pending",
+    "admin_notes": null,
+    "created_at": "2026-05-25T21:39:56.243Z",
+    "updated_at": "2026-05-25T21:39:56.243Z"
+  }
+},
+{
+  "model": "accounts.verificationrecord",
+  "pk": "3b08cd34-ca95-400b-ba8d-fd44ad66fc27",
+  "fields": {
+    "user": 1,
+    "type": "email",
+    "code": "713179",
+    "expires_at": "2026-05-25T08:34:12.032Z",
+    "is_used": true,
+    "face_photo_initial": "",
+    "face_photo_left": "",
+    "face_photo_right": "",
+    "face_photo_blink": "",
+    "face_status": "pending",
+    "admin_notes": null,
+    "created_at": "2026-05-25T08:24:12.034Z",
+    "updated_at": "2026-05-25T08:24:12.034Z"
+  }
+},
+{
+  "model": "accounts.verificationrecord",
+  "pk": "4d6fe8c5-c19f-4a21-9b97-bbb969abc02a",
+  "fields": {
+    "user": 1,
+    "type": "face_id",
+    "code": null,
+    "expires_at": "2027-05-28T09:56:40.542Z",
+    "is_used": false,
+    "face_photo_initial": "face-id/face_photo_initial_y8OpcLJ.jpg",
+    "face_photo_left": "face-id/face_photo_left_nv6peGv.jpg",
+    "face_photo_right": "face-id/face_photo_right_jfv6Czl.jpg",
+    "face_photo_blink": "face-id/face_photo_blink_ZPueu8Y.jpg",
+    "face_status": "pending",
+    "admin_notes": null,
+    "created_at": "2026-05-28T09:56:40.543Z",
+    "updated_at": "2026-05-28T09:56:40.563Z"
+  }
+},
+{
+  "model": "accounts.verificationrecord",
+  "pk": "57017ec3-21ad-4171-a88d-2fb7887a5e0f",
+  "fields": {
+    "user": 2,
+    "type": "email",
+    "code": "651692",
+    "expires_at": "2026-05-25T08:39:40.163Z",
+    "is_used": true,
+    "face_photo_initial": "",
+    "face_photo_left": "",
+    "face_photo_right": "",
+    "face_photo_blink": "",
+    "face_status": "pending",
+    "admin_notes": null,
+    "created_at": "2026-05-25T08:29:40.166Z",
+    "updated_at": "2026-05-25T08:29:40.166Z"
+  }
+},
+{
+  "model": "accounts.verificationrecord",
+  "pk": "575beec1-e8b9-48d6-a5e4-94aa74271d21",
+  "fields": {
+    "user": 8,
+    "type": "face_id",
+    "code": null,
+    "expires_at": "2027-05-27T18:22:57.260Z",
+    "is_used": false,
+    "face_photo_initial": "face-id/face_photo_initial_j0FIBdU.jpg",
+    "face_photo_left": "face-id/face_photo_left_lWf2o9u.jpg",
+    "face_photo_right": "face-id/face_photo_right_HDNwj69.jpg",
+    "face_photo_blink": "face-id/face_photo_blink_kMcSHRR.jpg",
+    "face_status": "pending",
+    "admin_notes": null,
+    "created_at": "2026-05-27T18:22:57.262Z",
+    "updated_at": "2026-05-27T18:22:57.321Z"
+  }
+},
+{
+  "model": "accounts.verificationrecord",
+  "pk": "b50f0b98-2060-40ac-a0e9-9e7fd29d9e61",
+  "fields": {
+    "user": 9,
+    "type": "face_id",
+    "code": null,
+    "expires_at": "2027-05-29T23:02:21.109Z",
+    "is_used": false,
+    "face_photo_initial": "face-id/face_photo_initial_92tKUeM.jpg",
+    "face_photo_left": "face-id/face_photo_left_eYCJ59P.jpg",
+    "face_photo_right": "face-id/face_photo_right_9aLtUma.jpg",
+    "face_photo_blink": "face-id/face_photo_blink_BZiy4I7.jpg",
+    "face_status": "pending",
+    "admin_notes": null,
+    "created_at": "2026-05-29T23:02:21.109Z",
+    "updated_at": "2026-05-29T23:02:21.197Z"
+  }
+},
+{
+  "model": "accounts.verificationrecord",
+  "pk": "ffdcd4db-4a61-494f-be36-406e85895b23",
+  "fields": {
+    "user": 7,
+    "type": "email",
+    "code": "448895",
+    "expires_at": "2026-05-26T09:50:17.302Z",
+    "is_used": false,
+    "face_photo_initial": "",
+    "face_photo_left": "",
+    "face_photo_right": "",
+    "face_photo_blink": "",
+    "face_status": "pending",
+    "admin_notes": null,
+    "created_at": "2026-05-26T09:40:17.306Z",
+    "updated_at": "2026-05-26T09:40:17.306Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": "1043c975-3ff4-4a28-a921-5d62589558f8",
+  "fields": {
+    "user": 8,
+    "bio": null,
+    "city": null,
+    "latitude": null,
+    "longitude": null,
+    "tasker_rating_avg": "2.00",
+    "tasker_rating_count": 1,
+    "client_rating_avg": "0.00",
+    "client_rating_count": 0,
+    "tasks_completed": 0,
+    "tasks_published": 0,
+    "tasks_cancelled": 0,
+    "xp": 0,
+    "level": 1,
+    "onboarding_seen": true,
+    "current_streak": 1,
+    "last_streak_date": "2026-05-30",
+    "created_at": "2026-05-27T18:21:41.114Z",
+    "updated_at": "2026-05-30T15:06:07.320Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": "1581d991-cf1a-45b2-a3cc-30e8b1170f81",
+  "fields": {
+    "user": 7,
+    "bio": null,
+    "city": null,
+    "latitude": null,
+    "longitude": null,
+    "tasker_rating_avg": "0.00",
+    "tasker_rating_count": 0,
+    "client_rating_avg": "0.00",
+    "client_rating_count": 0,
+    "tasks_completed": 0,
+    "tasks_published": 3,
+    "tasks_cancelled": 0,
+    "xp": 0,
+    "level": 1,
+    "onboarding_seen": true,
+    "current_streak": 1,
+    "last_streak_date": "2026-05-29",
+    "created_at": "2026-05-26T09:40:17.270Z",
+    "updated_at": "2026-05-29T21:53:45.183Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": "1688151e-c701-4cf5-b371-6a22d5e1b01c",
+  "fields": {
+    "user": 3,
+    "bio": null,
+    "city": null,
+    "latitude": null,
+    "longitude": null,
+    "tasker_rating_avg": "0.00",
+    "tasker_rating_count": 0,
+    "client_rating_avg": "0.00",
+    "client_rating_count": 0,
+    "tasks_completed": 0,
+    "tasks_published": 0,
+    "tasks_cancelled": 0,
+    "xp": 0,
+    "level": 1,
+    "onboarding_seen": true,
+    "current_streak": 1,
+    "last_streak_date": "2026-05-30",
+    "created_at": "2026-05-25T08:36:22.002Z",
+    "updated_at": "2026-05-30T13:54:48.824Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": "3b865209-7d98-478c-8c01-fb15aa46d7fe",
+  "fields": {
+    "user": 2,
+    "bio": null,
+    "city": null,
+    "latitude": null,
+    "longitude": null,
+    "tasker_rating_avg": "3.00",
+    "tasker_rating_count": 2,
+    "client_rating_avg": "0.00",
+    "client_rating_count": 0,
+    "tasks_completed": 3,
+    "tasks_published": 0,
+    "tasks_cancelled": 0,
+    "xp": 100,
+    "level": 2,
+    "onboarding_seen": true,
+    "current_streak": 1,
+    "last_streak_date": "2026-05-28",
+    "created_at": "2026-05-25T08:29:40.133Z",
+    "updated_at": "2026-05-28T20:04:05.954Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": "3d5abe86-791e-4d8d-b8ce-48c6832a4df1",
+  "fields": {
+    "user": 5,
+    "bio": null,
+    "city": null,
+    "latitude": null,
+    "longitude": null,
+    "tasker_rating_avg": "4.33",
+    "tasker_rating_count": 3,
+    "client_rating_avg": "0.00",
+    "client_rating_count": 0,
+    "tasks_completed": 4,
+    "tasks_published": 3,
+    "tasks_cancelled": 0,
+    "xp": 150,
+    "level": 2,
+    "onboarding_seen": true,
+    "current_streak": 2,
+    "last_streak_date": "2026-05-30",
+    "created_at": "2026-05-25T21:39:56.212Z",
+    "updated_at": "2026-05-30T15:06:48.457Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": "7af675cb-4972-4083-bc51-e429570a9f89",
+  "fields": {
+    "user": 1,
+    "bio": null,
+    "city": null,
+    "latitude": null,
+    "longitude": null,
+    "tasker_rating_avg": "0.00",
+    "tasker_rating_count": 0,
+    "client_rating_avg": "0.00",
+    "client_rating_count": 0,
+    "tasks_completed": 0,
+    "tasks_published": 4,
+    "tasks_cancelled": 0,
+    "xp": 0,
+    "level": 1,
+    "onboarding_seen": true,
+    "current_streak": 1,
+    "last_streak_date": "2026-05-28",
+    "created_at": "2026-05-25T08:24:12.019Z",
+    "updated_at": "2026-05-28T20:36:58.690Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": "c02a50ac-28d4-42ba-89a3-250c16440cf1",
+  "fields": {
+    "user": 9,
+    "bio": null,
+    "city": null,
+    "latitude": null,
+    "longitude": null,
+    "tasker_rating_avg": "4.00",
+    "tasker_rating_count": 1,
+    "client_rating_avg": "0.00",
+    "client_rating_count": 0,
+    "tasks_completed": 1,
+    "tasks_published": 0,
+    "tasks_cancelled": 0,
+    "xp": 50,
+    "level": 1,
+    "onboarding_seen": true,
+    "current_streak": 1,
+    "last_streak_date": "2026-05-30",
+    "created_at": "2026-05-29T23:02:15.220Z",
+    "updated_at": "2026-05-29T23:43:00.161Z"
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "04c829e6-fd6d-45f3-b426-f9dc75cfebf5",
+  "fields": {
+    "user": 5,
+    "type": "review_received",
+    "title": "Nouvel avis reþu",
+    "message": "Le tasker a ÚvaluÚ votre mission \"ipo\" avec 3/5.",
+    "is_read": true,
+    "is_opened": true,
+    "related_task": "8d058058-5d7a-486d-bc42-e36518ae6b89",
+    "related_conversation": null,
+    "related_review": "487fb84e-7231-4c8b-bcef-2a010c9b9133",
+    "created_at": "2026-05-29T23:35:42.466Z",
+    "read_at": "2026-05-30T12:54:21.545Z",
+    "opened_at": "2026-05-30T12:54:21.558Z"
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "0d487205-48ac-4b94-ab73-06ae9284ed70",
+  "fields": {
+    "user": 1,
+    "type": "new_application",
+    "title": "Nouvelle candidature",
+    "message": "marwa a postulÚ Ó \"livrer\".",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "8ab975a5-c1a7-4f18-bcc1-2fdfd28ae5b6",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-28T10:23:07.640Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "0ffd3250-34a8-4701-b008-7d94659de59d",
+  "fields": {
+    "user": 1,
+    "type": "new_application",
+    "title": "Nouvelle candidature",
+    "message": "marwa a postulÚ Ó \"maintenance mm\".",
+    "is_read": true,
+    "is_opened": true,
+    "related_task": "9a95ab3d-fa70-497e-a3bc-824b20ce19d2",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-28T10:13:57.141Z",
+    "read_at": "2026-05-28T10:14:30.986Z",
+    "opened_at": "2026-05-28T10:14:30.992Z"
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "11bf162f-9f39-4237-b74c-151764b386dc",
+  "fields": {
+    "user": 5,
+    "type": "task_completed",
+    "title": "Modification demandÚe",
+    "message": "Le client demande des modifications pour \"Titre\" : swri mn jiha lkhra",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "c5774a1b-adf0-41cf-b37d-ad97867e0f86",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-26T12:19:01.444Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "12d292c1-57ec-438e-b10a-2d86be3c8c0a",
+  "fields": {
+    "user": 2,
+    "type": "task_accepted",
+    "title": "Mission acceptÚe !",
+    "message": "Votre candidature pour \"Maintenancehbb\" a ÚtÚ acceptÚe par le client.",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "ad64d2b1-b469-4a6f-a6e1-0eda5a24b328",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-25T09:28:23.680Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "19be0f70-4bb0-48c1-852c-2365fe837e04",
+  "fields": {
+    "user": 2,
+    "type": "task_completed",
+    "title": "Preuve validÚe !",
+    "message": "Le client a validÚ votre preuve pour \"livrer\".",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "8ab975a5-c1a7-4f18-bcc1-2fdfd28ae5b6",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-28T11:52:52.358Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "1ea6c404-5e57-4f29-b3ab-fc663f277bf3",
+  "fields": {
+    "user": 8,
+    "type": "task_accepted",
+    "title": "Mission acceptÚe !",
+    "message": "Votre candidature pour \"Titre\" a ÚtÚ acceptÚe par le client.",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "3b56c604-50b8-4b73-9ccb-4ed6061309dd",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-27T19:22:32.134Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "266d3b6c-2800-4b72-8905-9d12bf94fbd7",
+  "fields": {
+    "user": 2,
+    "type": "task_accepted",
+    "title": "Mission acceptÚe !",
+    "message": "Votre candidature pour \"livrer\" a ÚtÚ acceptÚe par le client.",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "8ab975a5-c1a7-4f18-bcc1-2fdfd28ae5b6",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-28T10:23:37.880Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "2f1e6c9c-759c-4b9f-91ad-ff863a1a3be2",
+  "fields": {
+    "user": 2,
+    "type": "message_received",
+    "title": "Nouveau message",
+    "message": "Vous avez reþu un nouveau message de la part de imanebahri au sujet de ½ maintenance mm ╗",
+    "is_read": true,
+    "is_opened": false,
+    "related_task": null,
+    "related_conversation": "870307a3-6ed3-40c8-8d33-70c2e7a8d71a",
+    "related_review": null,
+    "created_at": "2026-05-28T10:18:09.131Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "32482207-d465-4dd7-bbb3-f7e3bcff2706",
+  "fields": {
+    "user": 5,
+    "type": "new_application",
+    "title": "Nouvelle candidature",
+    "message": "Samia Alami a postulÚ Ó \"Titre\".",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "3b56c604-50b8-4b73-9ccb-4ed6061309dd",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-26T10:19:10.195Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "3e46d7c9-430f-4876-9fa9-5b4a07d36ae0",
+  "fields": {
+    "user": 1,
+    "type": "new_application",
+    "title": "Nouvelle candidature",
+    "message": "marwa a postulÚ Ó \"livrer un document\".",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "1457fdde-1f81-4218-adc6-bcd6101bed53",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-25T08:40:24.854Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "3ecbf0ae-8cce-4e48-958a-c0fc98dd2a40",
+  "fields": {
+    "user": 9,
+    "type": "task_accepted",
+    "title": "Mission acceptÚe !",
+    "message": "Votre candidature pour \"ipo\" a ÚtÚ acceptÚe par le client.",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "8d058058-5d7a-486d-bc42-e36518ae6b89",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-29T23:14:01.380Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "42823208-404d-40c1-af19-69f21ba9ae5b",
+  "fields": {
+    "user": 9,
+    "type": "system",
+    "title": "Modification demandÚe",
+    "message": "Le client demande des modifications pour \"ipo\" : whaat",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "8d058058-5d7a-486d-bc42-e36518ae6b89",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-29T23:22:40.022Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "455b8cc3-21f7-4ed1-8895-93dc1290a10f",
+  "fields": {
+    "user": 5,
+    "type": "task_completed",
+    "title": "Preuve validÚe !",
+    "message": "Le client a validÚ votre preuve pour \"Titre\".",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "c5774a1b-adf0-41cf-b37d-ad97867e0f86",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-26T12:35:01.483Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "4d77e6ce-673f-4757-845f-33e9ac137b42",
+  "fields": {
+    "user": 5,
+    "type": "task_completed",
+    "title": "Preuve validÚe !",
+    "message": "Le client a validÚ votre preuve pour \"livrer\".",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "cff10117-833d-4322-ac4c-e2289b663b9f",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-26T11:14:04.342Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "55b06703-8c7b-47a4-a0a3-4b6621b81602",
+  "fields": {
+    "user": 7,
+    "type": "new_application",
+    "title": "Nouvelle candidature",
+    "message": "samia tasker a postulÚ Ó \"Titre\".",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "c5774a1b-adf0-41cf-b37d-ad97867e0f86",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-26T11:38:57.642Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "57976884-d1b8-47af-a404-da6c6c9f50d1",
+  "fields": {
+    "user": 2,
+    "type": "review_received",
+    "title": "Nouvel avis reþu",
+    "message": "Le client a ÚvaluÚ votre mission \"livrer un document\" avec 3/5.",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "1457fdde-1f81-4218-adc6-bcd6101bed53",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-25T08:42:11.879Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "5ded16e0-1944-49dd-97f1-6d7c8469dd6f",
+  "fields": {
+    "user": 7,
+    "type": "task_completed",
+    "title": "Mission terminÚe !",
+    "message": "Le tasker a terminÚ \"Titre\". VÚrifiez la preuve.",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "c5774a1b-adf0-41cf-b37d-ad97867e0f86",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-26T12:16:33.410Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "5f034a3a-33a0-415f-9a54-b815b0dcc77c",
+  "fields": {
+    "user": 2,
+    "type": "review_received",
+    "title": "Nouvel avis reþu",
+    "message": "Le client a ÚvaluÚ votre mission \"livrer\" avec 3/5.",
+    "is_read": true,
+    "is_opened": true,
+    "related_task": "8ab975a5-c1a7-4f18-bcc1-2fdfd28ae5b6",
+    "related_conversation": null,
+    "related_review": "ea03d721-a756-4b41-98e0-7373deade6c0",
+    "created_at": "2026-05-28T11:54:47.069Z",
+    "read_at": "2026-05-28T12:08:53.143Z",
+    "opened_at": "2026-05-28T12:08:53.157Z"
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "5ff81d5d-d2f7-40ed-85e8-5101fdb32440",
+  "fields": {
+    "user": 5,
+    "type": "new_application",
+    "title": "Nouvelle candidature",
+    "message": "farah loube a postulÚ Ó \"nkn\".",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "5cf26667-4cab-4326-933d-cb765f6afbdd",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-30T15:07:04.812Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "60059cb9-2b25-4927-9d5b-fc0b98366795",
+  "fields": {
+    "user": 7,
+    "type": "new_application",
+    "title": "Nouvelle candidature",
+    "message": "Samia Alami a postulÚ Ó \"livrer\".",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "cff10117-833d-4322-ac4c-e2289b663b9f",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-26T10:26:55.694Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "61347d65-25cc-46c8-b7cb-3ec5a0cba389",
+  "fields": {
+    "user": 2,
+    "type": "message_received",
+    "title": "Nouveau message",
+    "message": "Vous avez reþu un nouveau message de la part de imanebahri au sujet de ½ maintenance mm ╗",
+    "is_read": true,
+    "is_opened": false,
+    "related_task": null,
+    "related_conversation": "870307a3-6ed3-40c8-8d33-70c2e7a8d71a",
+    "related_review": null,
+    "created_at": "2026-05-28T10:15:42.626Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "6625483b-fc4c-4d70-ab37-49fd55ad0275",
+  "fields": {
+    "user": 5,
+    "type": "new_application",
+    "title": "Nouvelle candidature",
+    "message": "farah loube a postulÚ Ó \"Titre\".",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "3b56c604-50b8-4b73-9ccb-4ed6061309dd",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-27T18:32:46.095Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "66a035d1-9f39-4889-b22f-019919ece34d",
+  "fields": {
+    "user": 5,
+    "type": "task_completed",
+    "title": "Preuve validÚe !",
+    "message": "Le client a validÚ votre preuve pour \"mission\".",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "d81b3e32-7c4c-430a-af11-28f89b8df3e6",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-26T15:24:48.912Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "6ad85a53-4a11-4c3e-a60a-5b3824d087af",
+  "fields": {
+    "user": 2,
+    "type": "task_accepted",
+    "title": "Mission acceptÚe !",
+    "message": "Votre candidature pour \"livrer un document\" a ÚtÚ acceptÚe par le client.",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "1457fdde-1f81-4218-adc6-bcd6101bed53",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-25T08:40:45.557Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "6b1810f4-4519-4d33-8f83-a0813ed5f72c",
+  "fields": {
+    "user": 8,
+    "type": "system",
+    "title": "Litige ouvert",
+    "message": "Un litige a ÚtÚ ouvert pour \"Titre\". Motif : nope",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "3b56c604-50b8-4b73-9ccb-4ed6061309dd",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-30T13:39:36.645Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "726906ae-47a5-4887-80b5-b834d0254c7f",
+  "fields": {
+    "user": 9,
+    "type": "task_completed",
+    "title": "Preuve validÚe !",
+    "message": "Le client a validÚ votre preuve pour \"ipo\".",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "8d058058-5d7a-486d-bc42-e36518ae6b89",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-29T23:24:04.199Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "74ed5efa-6cd2-4645-838d-a70f3d7a83c8",
+  "fields": {
+    "user": 8,
+    "type": "message_received",
+    "title": "Nouveau message",
+    "message": "Vous avez reþu un nouveau message de la part de samia tasker au sujet de ½ Titre ╗",
+    "is_read": true,
+    "is_opened": false,
+    "related_task": null,
+    "related_conversation": "a9403f24-7a33-44ea-8347-2be359ca7d6f",
+    "related_review": null,
+    "created_at": "2026-05-27T19:14:36.313Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "7ebefa06-4356-4e56-b4a5-b0603a520ede",
+  "fields": {
+    "user": 5,
+    "type": "new_application",
+    "title": "Nouvelle candidature",
+    "message": "amina a postulÚ Ó \"ipo\".",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "8d058058-5d7a-486d-bc42-e36518ae6b89",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-29T23:03:02.346Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "7f75b56a-c2d2-47d7-af76-f1084952c8ad",
+  "fields": {
+    "user": 5,
+    "type": "task_accepted",
+    "title": "Mission acceptÚe !",
+    "message": "Votre candidature pour \"livrer\" a ÚtÚ acceptÚe par le client.",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "cff10117-833d-4322-ac4c-e2289b663b9f",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-26T10:28:41.926Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "821a5c08-3c0a-453c-bcae-520df20e1ac2",
+  "fields": {
+    "user": 7,
+    "type": "task_completed",
+    "title": "Mission terminÚe !",
+    "message": "Le tasker a terminÚ \"livrer\". VÚrifiez la preuve.",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "cff10117-833d-4322-ac4c-e2289b663b9f",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-26T11:13:23.217Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "84b35c6a-337c-4e05-a985-9783498b152f",
+  "fields": {
+    "user": 1,
+    "type": "task_completed",
+    "title": "Mission terminÚe !",
+    "message": "Le tasker a terminÚ \"livrer\". VÚrifiez la preuve.",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "8ab975a5-c1a7-4f18-bcc1-2fdfd28ae5b6",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-28T11:52:30.746Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "84f97e1d-1185-4855-8b51-7aaf5e5d32e3",
+  "fields": {
+    "user": 1,
+    "type": "message_received",
+    "title": "Nouveau message",
+    "message": "Vous avez reþu un nouveau message de la part de marwa au sujet de ½ maintenance mm ╗",
+    "is_read": true,
+    "is_opened": false,
+    "related_task": null,
+    "related_conversation": "870307a3-6ed3-40c8-8d33-70c2e7a8d71a",
+    "related_review": null,
+    "created_at": "2026-05-28T10:15:16.084Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "968da8eb-a0d8-4ee9-8fa5-e671d4e96b47",
+  "fields": {
+    "user": 8,
+    "type": "system",
+    "title": "Mission cl¶turÚe",
+    "message": "La mission \"Titre\" a ÚtÚ cl¶turÚe.",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "3b56c604-50b8-4b73-9ccb-4ed6061309dd",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-30T14:17:13.436Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "999ce859-c4da-446a-b1a8-11b21ed890e9",
+  "fields": {
+    "user": 9,
+    "type": "message_received",
+    "title": "Nouveau message",
+    "message": "Vous avez reþu un nouveau message de la part de samia tasker au sujet de ½ ipo ╗",
+    "is_read": true,
+    "is_opened": false,
+    "related_task": null,
+    "related_conversation": "8ffc544f-55c4-4b9e-90c6-73ebff517ad5",
+    "related_review": null,
+    "created_at": "2026-05-29T23:14:16.437Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "9f7beea0-624d-4d86-9045-d27f922b3da2",
+  "fields": {
+    "user": 5,
+    "type": "task_accepted",
+    "title": "Mission acceptÚe !",
+    "message": "Votre candidature pour \"Titre\" a ÚtÚ acceptÚe par le client.",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "c5774a1b-adf0-41cf-b37d-ad97867e0f86",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-26T12:09:54.578Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "a761a6dc-f395-4c39-a9b6-bfd345894deb",
+  "fields": {
+    "user": 5,
+    "type": "review_received",
+    "title": "Nouvel avis reþu",
+    "message": "Le client a ÚvaluÚ votre mission \"Titre\" avec 4/5.",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "c5774a1b-adf0-41cf-b37d-ad97867e0f86",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-26T12:35:22.024Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "a96c66ef-a8d8-4640-afb0-be5a7e098b92",
+  "fields": {
+    "user": 5,
+    "type": "review_received",
+    "title": "Nouvel avis reþu",
+    "message": "Le client a ÚvaluÚ votre mission \"mission\" avec 4/5.",
+    "is_read": true,
+    "is_opened": true,
+    "related_task": "d81b3e32-7c4c-430a-af11-28f89b8df3e6",
+    "related_conversation": null,
+    "related_review": "a1783c28-b0a3-4c21-9596-b0b405ef61cd",
+    "created_at": "2026-05-26T15:24:58.889Z",
+    "read_at": "2026-05-26T15:25:08.032Z",
+    "opened_at": "2026-05-26T15:25:08.055Z"
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "adfe83db-5485-44d7-ad6b-613f510abfb7",
+  "fields": {
+    "user": 2,
+    "type": "message_received",
+    "title": "Nouveau message",
+    "message": "Vous avez reþu un nouveau message de la part de imanebahri au sujet de ½ maintenance mm ╗",
+    "is_read": true,
+    "is_opened": false,
+    "related_task": null,
+    "related_conversation": "870307a3-6ed3-40c8-8d33-70c2e7a8d71a",
+    "related_review": null,
+    "created_at": "2026-05-28T10:15:49.435Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "ae66519b-934e-4efc-8c53-684a0eec872c",
+  "fields": {
+    "user": 5,
+    "type": "task_accepted",
+    "title": "Mission acceptÚe !",
+    "message": "Votre candidature pour \"mission\" a ÚtÚ acceptÚe par le client.",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "d81b3e32-7c4c-430a-af11-28f89b8df3e6",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-26T15:19:05.014Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "b4b6988a-b868-4817-9e07-d2bf4ad3b70b",
+  "fields": {
+    "user": 7,
+    "type": "new_application",
+    "title": "Nouvelle candidature",
+    "message": "samia tasker a postulÚ Ó \"mission\".",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "d81b3e32-7c4c-430a-af11-28f89b8df3e6",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-26T15:18:42.081Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "ba179624-6a65-4212-8f8b-dc5641dc55aa",
+  "fields": {
+    "user": 2,
+    "type": "task_accepted",
+    "title": "Mission acceptÚe !",
+    "message": "Votre candidature pour \"maintenance mm\" a ÚtÚ acceptÚe par le client.",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "9a95ab3d-fa70-497e-a3bc-824b20ce19d2",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-28T10:14:36.427Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "bd24c7f8-bdb9-4a4a-a3b0-ff6f66835197",
+  "fields": {
+    "user": 5,
+    "type": "review_received",
+    "title": "Nouvel avis reþu",
+    "message": "Le tasker a ÚvaluÚ votre mission \"Titre\" avec 3/5.",
+    "is_read": true,
+    "is_opened": true,
+    "related_task": "3b56c604-50b8-4b73-9ccb-4ed6061309dd",
+    "related_conversation": null,
+    "related_review": "18da98a1-a2a0-4c5e-9726-c248295d9527",
+    "created_at": "2026-05-30T14:17:05.392Z",
+    "read_at": "2026-05-30T14:17:15.203Z",
+    "opened_at": "2026-05-30T14:17:15.222Z"
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "c2f771ff-7b6e-47d8-9729-af71149d190e",
+  "fields": {
+    "user": 9,
+    "type": "review_received",
+    "title": "Nouvel avis reþu",
+    "message": "Le client a ÚvaluÚ votre mission \"ipo\" avec 4/5.",
+    "is_read": true,
+    "is_opened": true,
+    "related_task": "8d058058-5d7a-486d-bc42-e36518ae6b89",
+    "related_conversation": null,
+    "related_review": "8c074584-bed3-40da-ae1e-b420cfbf98c8",
+    "created_at": "2026-05-29T23:27:56.690Z",
+    "read_at": "2026-05-29T23:28:26.753Z",
+    "opened_at": "2026-05-29T23:28:26.822Z"
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "c78f4c39-963b-443d-83fe-49d42a8836ba",
+  "fields": {
+    "user": 5,
+    "type": "review_received",
+    "title": "Nouvel avis reþu",
+    "message": "Le client a ÚvaluÚ votre mission \"livrer\" avec 5/5.",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "cff10117-833d-4322-ac4c-e2289b663b9f",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-26T11:19:45.802Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "cf688209-236e-4429-b9a2-178179a1fa29",
+  "fields": {
+    "user": 1,
+    "type": "task_completed",
+    "title": "Mission terminÚe !",
+    "message": "Le tasker a terminÚ \"livrer\". VÚrifiez la preuve.",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "8ab975a5-c1a7-4f18-bcc1-2fdfd28ae5b6",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-28T10:46:24.403Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "d204e640-767b-4d32-a368-57515afaf551",
+  "fields": {
+    "user": 1,
+    "type": "new_application",
+    "title": "Nouvelle candidature",
+    "message": "marwa a postulÚ Ó \"Maintenancehbb\".",
+    "is_read": true,
+    "is_opened": true,
+    "related_task": "ad64d2b1-b469-4a6f-a6e1-0eda5a24b328",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-25T09:28:13.802Z",
+    "read_at": "2026-05-28T10:12:00.583Z",
+    "opened_at": "2026-05-28T10:12:00.590Z"
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "d4e38364-9dbc-48d9-bcfa-7149f158de21",
+  "fields": {
+    "user": 7,
+    "type": "task_completed",
+    "title": "Mission terminÚe !",
+    "message": "Le tasker a terminÚ \"mission\". VÚrifiez la preuve.",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "d81b3e32-7c4c-430a-af11-28f89b8df3e6",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-26T15:24:16.227Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "d5c8cc2a-68af-45eb-943f-66970961ea75",
+  "fields": {
+    "user": 2,
+    "type": "system",
+    "title": "Modification demandÚe",
+    "message": "Le client demande des modifications pour \"livrer\" : je veux le doc et la photocopie du doc",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "8ab975a5-c1a7-4f18-bcc1-2fdfd28ae5b6",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-28T10:50:41.902Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "d9922338-df2e-4f3e-a098-59c2d572d6f3",
+  "fields": {
+    "user": 5,
+    "type": "system",
+    "title": "Mission cl¶turÚe",
+    "message": "La mission \"Titre\" a ÚtÚ cl¶turÚe.",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "c5774a1b-adf0-41cf-b37d-ad97867e0f86",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-26T15:26:38.488Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "deb4d159-1c74-4c15-8b90-be6eeb6d725d",
+  "fields": {
+    "user": 5,
+    "type": "system",
+    "title": "Mission cl¶turÚe",
+    "message": "La mission \"livrer\" a ÚtÚ cl¶turÚe.",
+    "is_read": true,
+    "is_opened": true,
+    "related_task": "cff10117-833d-4322-ac4c-e2289b663b9f",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-26T15:26:43.420Z",
+    "read_at": "2026-05-26T15:38:24.637Z",
+    "opened_at": "2026-05-26T15:38:24.647Z"
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "e4edeaf9-9aba-4003-8da9-758a80347195",
+  "fields": {
+    "user": 5,
+    "type": "system",
+    "title": "Mission cl¶turÚe",
+    "message": "La mission \"mission\" a ÚtÚ cl¶turÚe.",
+    "is_read": true,
+    "is_opened": true,
+    "related_task": "d81b3e32-7c4c-430a-af11-28f89b8df3e6",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-26T15:26:47.311Z",
+    "read_at": "2026-05-26T15:38:14.400Z",
+    "opened_at": "2026-05-26T15:38:14.431Z"
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "e8ab13cc-825a-41a1-bdde-55959e539009",
+  "fields": {
+    "user": 9,
+    "type": "system",
+    "title": "Mission cl¶turÚe",
+    "message": "La mission \"ipo\" a ÚtÚ cl¶turÚe.",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "8d058058-5d7a-486d-bc42-e36518ae6b89",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-30T14:17:18.303Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "e8df626d-2ae4-4c6c-b8f3-6a3ab9940e68",
+  "fields": {
+    "user": 5,
+    "type": "task_completed",
+    "title": "Mission terminÚe !",
+    "message": "Le tasker a terminÚ \"ipo\". VÚrifiez la preuve.",
+    "is_read": true,
+    "is_opened": false,
+    "related_task": "8d058058-5d7a-486d-bc42-e36518ae6b89",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-29T23:21:45.686Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "eb1a16ec-63b8-45fb-bc7c-063fdd77b6b1",
+  "fields": {
+    "user": 5,
+    "type": "system",
+    "title": "Preuve corrigÚe soumise",
+    "message": "Le tasker a soumis une preuve corrigÚe pour \"ipo\". VÚrifiez la modification.",
+    "is_read": true,
+    "is_opened": false,
+    "related_task": "8d058058-5d7a-486d-bc42-e36518ae6b89",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-29T23:23:36.619Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "ec7880be-42db-4fe2-99fb-be2295fe4199",
+  "fields": {
+    "user": 8,
+    "type": "review_received",
+    "title": "Nouvel avis reþu",
+    "message": "Le client a ÚvaluÚ votre mission \"Titre\" avec 2/5.",
+    "is_read": true,
+    "is_opened": true,
+    "related_task": "3b56c604-50b8-4b73-9ccb-4ed6061309dd",
+    "related_conversation": null,
+    "related_review": "6f74052b-35b0-47c9-a9ab-c7d330281365",
+    "created_at": "2026-05-30T14:16:51.121Z",
+    "read_at": "2026-05-30T14:16:58.118Z",
+    "opened_at": "2026-05-30T14:16:58.125Z"
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "f455fcb6-cc26-483d-a672-b7af25e75e00",
+  "fields": {
+    "user": 1,
+    "type": "message_received",
+    "title": "Nouveau message",
+    "message": "Vous avez reþu un nouveau message de la part de marwa au sujet de ½ livrer ╗",
+    "is_read": true,
+    "is_opened": false,
+    "related_task": null,
+    "related_conversation": "13e8b5e0-3957-460d-9e96-e1affbd83a37",
+    "related_review": null,
+    "created_at": "2026-05-28T10:24:06.394Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "fdd2e851-d7e0-40c0-b877-382b8cd2b07d",
+  "fields": {
+    "user": 1,
+    "type": "task_completed",
+    "title": "Mission terminÚe !",
+    "message": "Le tasker a terminÚ \"livrer un document\". VÚrifiez la preuve.",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "1457fdde-1f81-4218-adc6-bcd6101bed53",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-25T08:41:47.283Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "fdf04ff6-a9f9-4be6-b4a6-e107293584a8",
+  "fields": {
+    "user": 1,
+    "type": "task_completed",
+    "title": "Mission terminÚe !",
+    "message": "Le tasker a terminÚ \"maintenance mm\". VÚrifiez la preuve.",
+    "is_read": false,
+    "is_opened": false,
+    "related_task": "9a95ab3d-fa70-497e-a3bc-824b20ce19d2",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-28T10:15:24.318Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "accounts.notification",
+  "pk": "ff185e15-c85d-4971-8417-2c4d3addcd93",
+  "fields": {
+    "user": 5,
+    "type": "task_completed",
+    "title": "Mission terminÚe !",
+    "message": "farah loube a terminÚ \"Titre\". Confirmez la fin de mission.",
+    "is_read": true,
+    "is_opened": false,
+    "related_task": "3b56c604-50b8-4b73-9ccb-4ed6061309dd",
+    "related_conversation": null,
+    "related_review": null,
+    "created_at": "2026-05-30T13:39:18.378Z",
+    "read_at": null,
+    "opened_at": null
+  }
+},
+{
+  "model": "tasks.category",
+  "pk": "88bdf60e-5325-41d7-98c5-f1f81a6d062d",
+  "fields": {
+    "name": "Maintenance",
+    "slug": "maintenance",
+    "description": null,
+    "icon": "",
+    "is_active": true,
+    "created_at": "2026-05-25T09:25:38.287Z"
+  }
+},
+{
+  "model": "tasks.category",
+  "pk": "f09dc2f2-0a21-4776-9c27-8c93e2c17c35",
+  "fields": {
+    "name": "livraison",
+    "slug": "livraison",
+    "description": null,
+    "icon": "folder",
+    "is_active": true,
+    "created_at": "2026-05-25T08:38:01.244Z"
+  }
+},
+{
+  "model": "tasks.subcategory",
+  "pk": "b110f224-41a5-4a95-b9fa-5b1e19eb9a49",
+  "fields": {
+    "category": "f09dc2f2-0a21-4776-9c27-8c93e2c17c35",
+    "name": "livraison du doc",
+    "slug": "livraison-du-doc",
+    "description": null,
+    "is_active": true
+  }
+},
+{
+  "model": "tasks.subcategory",
+  "pk": "cd967f1a-044e-45bc-be69-4c0a4e205aef",
+  "fields": {
+    "category": "88bdf60e-5325-41d7-98c5-f1f81a6d062d",
+    "name": "Maintenance maison",
+    "slug": "maintenance-maison",
+    "description": null,
+    "is_active": true
+  }
+},
+{
+  "model": "tasks.task",
+  "pk": "1457fdde-1f81-4218-adc6-bcd6101bed53",
+  "fields": {
+    "client": 1,
+    "category": "f09dc2f2-0a21-4776-9c27-8c93e2c17c35",
+    "subcategory": "b110f224-41a5-4a95-b9fa-5b1e19eb9a49",
+    "title": "livrer un document",
+    "description": "livrer un document",
+    "reward": "54.99",
+    "status": "evaluated",
+    "has_route": false,
+    "proof_required": false,
+    "departure_lat": null,
+    "departure_lng": null,
+    "arrival_lat": null,
+    "arrival_lng": null,
+    "departure_address": null,
+    "arrival_address": "Avenue Essaouira, SaÔda, ca´dat de Saada, cercle de Saada, PrÚfecture de Marrakech, Marrakech-Safi, 40005, Maroc",
+    "assigned_tasker": 2,
+    "photos": [],
+    "files": [],
+    "published_at": "2026-05-25T08:39:35.401Z",
+    "deadline": "2026-05-25T10:39:00Z",
+    "closed_at": null,
+    "created_at": "2026-05-25T08:39:22.419Z",
+    "updated_at": "2026-05-25T08:42:11.856Z"
+  }
+},
+{
+  "model": "tasks.task",
+  "pk": "3b56c604-50b8-4b73-9ccb-4ed6061309dd",
+  "fields": {
+    "client": 5,
+    "category": "88bdf60e-5325-41d7-98c5-f1f81a6d062d",
+    "subcategory": "cd967f1a-044e-45bc-be69-4c0a4e205aef",
+    "title": "Titre",
+    "description": "Description",
+    "reward": "50.00",
+    "status": "closed",
+    "has_route": false,
+    "proof_required": false,
+    "departure_lat": null,
+    "departure_lng": null,
+    "arrival_lat": null,
+    "arrival_lng": null,
+    "departure_address": null,
+    "arrival_address": "Avenue Omar Khayyam, M'hamid, Arrondissement de MÚnara, Marrakech, PrÚfecture de Marrakech, Marrakech-Safi, 40160, Maroc",
+    "assigned_tasker": 8,
+    "photos": [],
+    "files": [],
+    "published_at": null,
+    "deadline": "2026-05-25T00:25:00Z",
+    "closed_at": "2026-05-30T14:17:13.407Z",
+    "created_at": "2026-05-25T22:24:57.504Z",
+    "updated_at": "2026-05-30T14:17:13.407Z"
+  }
+},
+{
+  "model": "tasks.task",
+  "pk": "5cf26667-4cab-4326-933d-cb765f6afbdd",
+  "fields": {
+    "client": 5,
+    "category": "88bdf60e-5325-41d7-98c5-f1f81a6d062d",
+    "subcategory": "cd967f1a-044e-45bc-be69-4c0a4e205aef",
+    "title": "nkn",
+    "description": "ghk;b",
+    "reward": "70.00",
+    "status": "published",
+    "has_route": false,
+    "proof_required": true,
+    "departure_lat": null,
+    "departure_lng": null,
+    "arrival_lat": null,
+    "arrival_lng": null,
+    "departure_address": null,
+    "arrival_address": "Avenue Omar Khayyam, M'hamid, Arrondissement de MÚnara, Marrakech, PrÚfecture de Marrakech, Marrakech-Safi, 40160, Maroc",
+    "assigned_tasker": null,
+    "photos": [],
+    "files": [],
+    "published_at": null,
+    "deadline": "2026-05-30T20:06:00Z",
+    "closed_at": null,
+    "created_at": "2026-05-30T15:06:48.440Z",
+    "updated_at": "2026-05-30T15:06:48.440Z"
+  }
+},
+{
+  "model": "tasks.task",
+  "pk": "8ab975a5-c1a7-4f18-bcc1-2fdfd28ae5b6",
+  "fields": {
+    "client": 1,
+    "category": "f09dc2f2-0a21-4776-9c27-8c93e2c17c35",
+    "subcategory": "b110f224-41a5-4a95-b9fa-5b1e19eb9a49",
+    "title": "livrer",
+    "description": "bchsb",
+    "reward": "50.00",
+    "status": "evaluated",
+    "has_route": true,
+    "proof_required": true,
+    "departure_lat": null,
+    "departure_lng": null,
+    "arrival_lat": null,
+    "arrival_lng": null,
+    "departure_address": "Arrondissement d'Annakhil, Marrakech, PrÚfecture de Marrakech, Marrakech-Safi, 03759, Maroc",
+    "arrival_address": "Rue Bin Jradi, Inara, Menara, Arrondissement de MÚnara, Marrakech, PrÚfecture de Marrakech, Marrakech-Safi, 40140, Maroc",
+    "assigned_tasker": 2,
+    "photos": [],
+    "files": [],
+    "published_at": null,
+    "deadline": "2026-05-28T15:21:00Z",
+    "closed_at": null,
+    "created_at": "2026-05-28T10:21:26.326Z",
+    "updated_at": "2026-05-28T11:54:47.043Z"
+  }
+},
+{
+  "model": "tasks.task",
+  "pk": "8d058058-5d7a-486d-bc42-e36518ae6b89",
+  "fields": {
+    "client": 5,
+    "category": "88bdf60e-5325-41d7-98c5-f1f81a6d062d",
+    "subcategory": "cd967f1a-044e-45bc-be69-4c0a4e205aef",
+    "title": "ipo",
+    "description": "ipotop",
+    "reward": "45.97",
+    "status": "closed",
+    "has_route": false,
+    "proof_required": true,
+    "departure_lat": null,
+    "departure_lng": null,
+    "arrival_lat": null,
+    "arrival_lng": null,
+    "departure_address": null,
+    "arrival_address": "Arrondissement d'Annakhil, Marrakech, PrÚfecture de Marrakech, Marrakech-Safi, 40012, Maroc",
+    "assigned_tasker": 9,
+    "photos": [],
+    "files": [],
+    "published_at": null,
+    "deadline": "2026-06-05T21:37:00Z",
+    "closed_at": "2026-05-30T14:17:18.271Z",
+    "created_at": "2026-05-27T20:37:40.764Z",
+    "updated_at": "2026-05-30T14:17:18.271Z"
+  }
+},
+{
+  "model": "tasks.task",
+  "pk": "9a95ab3d-fa70-497e-a3bc-824b20ce19d2",
+  "fields": {
+    "client": 1,
+    "category": "88bdf60e-5325-41d7-98c5-f1f81a6d062d",
+    "subcategory": "cd967f1a-044e-45bc-be69-4c0a4e205aef",
+    "title": "maintenance mm",
+    "description": "ijjfjwen",
+    "reward": "34.00",
+    "status": "awaiting_confirmation",
+    "has_route": false,
+    "proof_required": true,
+    "departure_lat": null,
+    "departure_lng": null,
+    "arrival_lat": null,
+    "arrival_lng": null,
+    "departure_address": null,
+    "arrival_address": "Ait Zitoun, Ijoukak, Ca´dat de Talat N'Yaaqoub, Cercle d'Asni, Province d'Al Haouz, Marrakech-Safi, Maroc",
+    "assigned_tasker": 2,
+    "photos": [],
+    "files": [],
+    "published_at": null,
+    "deadline": "2026-05-28T12:23:00Z",
+    "closed_at": null,
+    "created_at": "2026-05-28T09:24:03.794Z",
+    "updated_at": "2026-05-28T10:15:24.310Z"
+  }
+},
+{
+  "model": "tasks.task",
+  "pk": "ad64d2b1-b469-4a6f-a6e1-0eda5a24b328",
+  "fields": {
+    "client": 1,
+    "category": "88bdf60e-5325-41d7-98c5-f1f81a6d062d",
+    "subcategory": "cd967f1a-044e-45bc-be69-4c0a4e205aef",
+    "title": "Maintenancehbb",
+    "description": "bdjnwedn",
+    "reward": "33.99",
+    "status": "accepted",
+    "has_route": false,
+    "proof_required": false,
+    "departure_lat": null,
+    "departure_lng": null,
+    "arrival_lat": null,
+    "arrival_lng": null,
+    "departure_address": null,
+    "arrival_address": "Rue du Draa, GuÚliz, Arrondissement de Gueliz, Marrakech, PrÚfecture de Marrakech, Marrakech-Safi, 40010, Maroc",
+    "assigned_tasker": 2,
+    "photos": [],
+    "files": [],
+    "published_at": "2026-05-25T09:27:51.829Z",
+    "deadline": "2026-05-25T12:27:00Z",
+    "closed_at": null,
+    "created_at": "2026-05-25T09:27:42.400Z",
+    "updated_at": "2026-05-25T09:28:23.649Z"
+  }
+},
+{
+  "model": "tasks.task",
+  "pk": "c5774a1b-adf0-41cf-b37d-ad97867e0f86",
+  "fields": {
+    "client": 7,
+    "category": "f09dc2f2-0a21-4776-9c27-8c93e2c17c35",
+    "subcategory": "b110f224-41a5-4a95-b9fa-5b1e19eb9a49",
+    "title": "Titre",
+    "description": "Description",
+    "reward": "50.00",
+    "status": "closed",
+    "has_route": false,
+    "proof_required": false,
+    "departure_lat": null,
+    "departure_lng": null,
+    "arrival_lat": null,
+    "arrival_lng": null,
+    "departure_address": null,
+    "arrival_address": "Avenue Omar Khayyam, M'hamid, Arrondissement de MÚnara, Marrakech, PrÚfecture de Marrakech, Marrakech-Safi, 40160, Maroc",
+    "assigned_tasker": 5,
+    "photos": [],
+    "files": [],
+    "published_at": null,
+    "deadline": null,
+    "closed_at": "2026-05-26T15:26:38.460Z",
+    "created_at": "2026-05-26T09:57:33.622Z",
+    "updated_at": "2026-05-26T15:26:38.461Z"
+  }
+},
+{
+  "model": "tasks.task",
+  "pk": "cff10117-833d-4322-ac4c-e2289b663b9f",
+  "fields": {
+    "client": 7,
+    "category": "f09dc2f2-0a21-4776-9c27-8c93e2c17c35",
+    "subcategory": "b110f224-41a5-4a95-b9fa-5b1e19eb9a49",
+    "title": "livrer",
+    "description": "livrer",
+    "reward": "50.00",
+    "status": "closed",
+    "has_route": true,
+    "proof_required": false,
+    "departure_lat": null,
+    "departure_lng": null,
+    "arrival_lat": null,
+    "arrival_lng": null,
+    "departure_address": "Arrondissement d'Annakhil, Marrakech, PrÚfecture de Marrakech, Marrakech-Safi, 40012, Maroc",
+    "arrival_address": "Avenue Omar Khayyam, M'hamid, Arrondissement de MÚnara, Marrakech, PrÚfecture de Marrakech, Marrakech-Safi, 40160, Maroc",
+    "assigned_tasker": 5,
+    "photos": [],
+    "files": [],
+    "published_at": null,
+    "deadline": "2026-05-29T11:26:00Z",
+    "closed_at": "2026-05-26T15:26:43.395Z",
+    "created_at": "2026-05-26T10:26:29.001Z",
+    "updated_at": "2026-05-26T15:26:43.395Z"
+  }
+},
+{
+  "model": "tasks.task",
+  "pk": "d81b3e32-7c4c-430a-af11-28f89b8df3e6",
+  "fields": {
+    "client": 7,
+    "category": "88bdf60e-5325-41d7-98c5-f1f81a6d062d",
+    "subcategory": "cd967f1a-044e-45bc-be69-4c0a4e205aef",
+    "title": "mission",
+    "description": "lavage",
+    "reward": "33.00",
+    "status": "closed",
+    "has_route": false,
+    "proof_required": false,
+    "departure_lat": null,
+    "departure_lng": null,
+    "arrival_lat": null,
+    "arrival_lng": null,
+    "departure_address": null,
+    "arrival_address": "Avenue Omar Khayyam, M'hamid, Arrondissement de MÚnara, Marrakech, PrÚfecture de Marrakech, Marrakech-Safi, 40160, Maroc",
+    "assigned_tasker": 5,
+    "photos": [],
+    "files": [],
+    "published_at": null,
+    "deadline": "2026-05-26T18:12:00Z",
+    "closed_at": "2026-05-26T15:26:47.278Z",
+    "created_at": "2026-05-26T15:13:04.192Z",
+    "updated_at": "2026-05-26T15:26:47.278Z"
+  }
+},
+{
+  "model": "tasks.taskapplication",
+  "pk": "52c948e2-a1e1-4c95-a6af-a04f92f72777",
+  "fields": {
+    "task": "8d058058-5d7a-486d-bc42-e36518ae6b89",
+    "tasker": 9,
+    "message": "",
+    "status": "accepted",
+    "created_at": "2026-05-29T23:03:02.265Z",
+    "updated_at": "2026-05-29T23:14:01.333Z"
+  }
+},
+{
+  "model": "tasks.taskapplication",
+  "pk": "5a36648b-4443-4d71-9651-bda0161f4673",
+  "fields": {
+    "task": "3b56c604-50b8-4b73-9ccb-4ed6061309dd",
+    "tasker": 8,
+    "message": "hi",
+    "status": "accepted",
+    "created_at": "2026-05-27T18:32:46.043Z",
+    "updated_at": "2026-05-27T19:22:32.081Z"
+  }
+},
+{
+  "model": "tasks.taskapplication",
+  "pk": "6ef56850-8f4e-4683-ab23-6709dc2c4336",
+  "fields": {
+    "task": "c5774a1b-adf0-41cf-b37d-ad97867e0f86",
+    "tasker": 5,
+    "message": "",
+    "status": "accepted",
+    "created_at": "2026-05-26T11:38:57.617Z",
+    "updated_at": "2026-05-26T12:09:54.524Z"
+  }
+},
+{
+  "model": "tasks.taskapplication",
+  "pk": "8b35262f-d2cc-42c3-8a3e-e83e3869dae0",
+  "fields": {
+    "task": "ad64d2b1-b469-4a6f-a6e1-0eda5a24b328",
+    "tasker": 2,
+    "message": "",
+    "status": "accepted",
+    "created_at": "2026-05-25T09:28:13.786Z",
+    "updated_at": "2026-05-25T09:28:23.640Z"
+  }
+},
+{
+  "model": "tasks.taskapplication",
+  "pk": "90c27f40-9132-455b-9ecb-42b839b67735",
+  "fields": {
+    "task": "3b56c604-50b8-4b73-9ccb-4ed6061309dd",
+    "tasker": 5,
+    "message": "hola",
+    "status": "rejected",
+    "created_at": "2026-05-26T10:19:10.148Z",
+    "updated_at": "2026-05-27T19:22:32.124Z"
+  }
+},
+{
+  "model": "tasks.taskapplication",
+  "pk": "bea45d2d-d090-404e-92d3-010c1429a3db",
+  "fields": {
+    "task": "8ab975a5-c1a7-4f18-bcc1-2fdfd28ae5b6",
+    "tasker": 2,
+    "message": "je peux livrer ce document en 20 minutes ",
+    "status": "accepted",
+    "created_at": "2026-05-28T10:23:07.625Z",
+    "updated_at": "2026-05-28T10:23:37.856Z"
+  }
+},
+{
+  "model": "tasks.taskapplication",
+  "pk": "c2ee8559-4e49-4cec-9a1d-862b2c0ff535",
+  "fields": {
+    "task": "1457fdde-1f81-4218-adc6-bcd6101bed53",
+    "tasker": 2,
+    "message": "",
+    "status": "accepted",
+    "created_at": "2026-05-25T08:40:24.830Z",
+    "updated_at": "2026-05-25T08:40:45.533Z"
+  }
+},
+{
+  "model": "tasks.taskapplication",
+  "pk": "c5d0db2c-2402-40d2-9df0-15fc18610a4c",
+  "fields": {
+    "task": "9a95ab3d-fa70-497e-a3bc-824b20ce19d2",
+    "tasker": 2,
+    "message": "",
+    "status": "accepted",
+    "created_at": "2026-05-28T10:13:57.125Z",
+    "updated_at": "2026-05-28T10:14:36.399Z"
+  }
+},
+{
+  "model": "tasks.taskapplication",
+  "pk": "c82aefe9-df3d-4538-9d04-ee098c0cf8a1",
+  "fields": {
+    "task": "cff10117-833d-4322-ac4c-e2289b663b9f",
+    "tasker": 5,
+    "message": "",
+    "status": "accepted",
+    "created_at": "2026-05-26T10:26:55.663Z",
+    "updated_at": "2026-05-26T10:28:41.855Z"
+  }
+},
+{
+  "model": "tasks.taskapplication",
+  "pk": "ea63c4f2-ae80-4dc0-a299-6346005132cc",
+  "fields": {
+    "task": "d81b3e32-7c4c-430a-af11-28f89b8df3e6",
+    "tasker": 5,
+    "message": "",
+    "status": "accepted",
+    "created_at": "2026-05-26T15:18:42.051Z",
+    "updated_at": "2026-05-26T15:19:04.965Z"
+  }
+},
+{
+  "model": "tasks.taskproof",
+  "pk": "169767b2-cdd9-4c77-9503-310431b183a4",
+  "fields": {
+    "task": "8d058058-5d7a-486d-bc42-e36518ae6b89",
+    "tasker": 9,
+    "description": "here damn",
+    "photos": [
+      "/media/task_proofs/wavy-black-white-background_m9MZVMT.jpg"
+    ],
+    "submitted_at": "2026-05-29T23:21:45.602Z",
+    "client_review": "accepted",
+    "revision_notes": "",
+    "reviewed_at": "2026-05-29T23:24:04.024Z"
+  }
+},
+{
+  "model": "tasks.taskproof",
+  "pk": "62fde662-026f-4a95-87ee-794e4077fc8e",
+  "fields": {
+    "task": "8ab975a5-c1a7-4f18-bcc1-2fdfd28ae5b6",
+    "tasker": 2,
+    "description": "wdnkxd",
+    "photos": [
+      "/media/task_proofs/44b51696-bab0-4789-9501-81848bd95f26.png"
+    ],
+    "submitted_at": "2026-05-28T10:46:24.373Z",
+    "client_review": "accepted",
+    "revision_notes": "",
+    "reviewed_at": "2026-05-28T11:52:52.281Z"
+  }
+},
+{
+  "model": "tasks.taskproof",
+  "pk": "656472b4-2907-4a0f-8bd4-4d979688588c",
+  "fields": {
+    "task": "cff10117-833d-4322-ac4c-e2289b663b9f",
+    "tasker": 5,
+    "description": "terminÚ",
+    "photos": [
+      "/media/task_proofs/_Green%20Vintage%20Forest%20December%20Calendar%20Desktop%20Wallpaper%20(2).png"
+    ],
+    "submitted_at": "2026-05-26T11:13:23.187Z",
+    "client_review": "accepted",
+    "revision_notes": null,
+    "reviewed_at": "2026-05-26T11:14:04.212Z"
+  }
+},
+{
+  "model": "tasks.taskproof",
+  "pk": "8f6313f7-9f6d-4836-bef8-da828edb398e",
+  "fields": {
+    "task": "1457fdde-1f81-4218-adc6-bcd6101bed53",
+    "tasker": 2,
+    "description": "j ai livrer le doc",
+    "photos": [
+      "/media/task_proofs/Capture%20d'%C3%A9cran%202026-04-18%20124053.png"
+    ],
+    "submitted_at": "2026-05-25T08:41:47.267Z",
+    "client_review": "accepted",
+    "revision_notes": null,
+    "reviewed_at": "2026-05-25T08:42:05.257Z"
+  }
+},
+{
+  "model": "tasks.taskproof",
+  "pk": "a828e19b-f63f-49b4-8467-a2472d9f7c10",
+  "fields": {
+    "task": "9a95ab3d-fa70-497e-a3bc-824b20ce19d2",
+    "tasker": 2,
+    "description": "kcmksmc",
+    "photos": [],
+    "submitted_at": "2026-05-28T10:15:24.302Z",
+    "client_review": "pending",
+    "revision_notes": null,
+    "reviewed_at": null
+  }
+},
+{
+  "model": "tasks.taskproof",
+  "pk": "ad4c50ab-2c3a-4409-9fcf-1f4b62d024c6",
+  "fields": {
+    "task": "d81b3e32-7c4c-430a-af11-28f89b8df3e6",
+    "tasker": 5,
+    "description": "done and done",
+    "photos": [
+      "/media/task_proofs/_Green%20Vintage%20Forest%20December%20Calendar%20Desktop%20Wallpaper%20(2)_ibliouF.png"
+    ],
+    "submitted_at": "2026-05-26T15:24:16.194Z",
+    "client_review": "accepted",
+    "revision_notes": null,
+    "reviewed_at": "2026-05-26T15:24:48.799Z"
+  }
+},
+{
+  "model": "tasks.taskproof",
+  "pk": "f66001c8-87c8-472e-9ab9-006a55a83e19",
+  "fields": {
+    "task": "c5774a1b-adf0-41cf-b37d-ad97867e0f86",
+    "tasker": 5,
+    "description": "done and done",
+    "photos": [
+      "/media/task_proofs/Your%20paragraph%20text.png"
+    ],
+    "submitted_at": "2026-05-26T12:16:33.389Z",
+    "client_review": "accepted",
+    "revision_notes": "swri mn jiha lkhra",
+    "reviewed_at": "2026-05-26T12:35:01.354Z"
+  }
+},
+{
+  "model": "messaging.conversation",
+  "pk": "117d79ab-9bf6-4055-a3a2-a10dc93443b9",
+  "fields": {
+    "application": "ea63c4f2-ae80-4dc0-a299-6346005132cc",
+    "client": 7,
+    "tasker": 5,
+    "is_reported": false,
+    "is_closed": true,
+    "report_reason": null,
+    "created_at": "2026-05-26T15:18:42.070Z",
+    "last_activity_at": "2026-05-26T15:24:48.876Z"
+  }
+},
+{
+  "model": "messaging.conversation",
+  "pk": "13e8b5e0-3957-460d-9e96-e1affbd83a37",
+  "fields": {
+    "application": "bea45d2d-d090-404e-92d3-010c1429a3db",
+    "client": 1,
+    "tasker": 2,
+    "is_reported": false,
+    "is_closed": true,
+    "report_reason": null,
+    "created_at": "2026-05-28T10:23:07.632Z",
+    "last_activity_at": "2026-05-28T11:52:52.332Z"
+  }
+},
+{
+  "model": "messaging.conversation",
+  "pk": "241dc8a7-2ecd-4875-b8b2-7a68a7c51b05",
+  "fields": {
+    "application": "c82aefe9-df3d-4538-9d04-ee098c0cf8a1",
+    "client": 7,
+    "tasker": 5,
+    "is_reported": false,
+    "is_closed": true,
+    "report_reason": null,
+    "created_at": "2026-05-26T10:26:55.680Z",
+    "last_activity_at": "2026-05-26T11:14:04.297Z"
+  }
+},
+{
+  "model": "messaging.conversation",
+  "pk": "870307a3-6ed3-40c8-8d33-70c2e7a8d71a",
+  "fields": {
+    "application": "c5d0db2c-2402-40d2-9df0-15fc18610a4c",
+    "client": 1,
+    "tasker": 2,
+    "is_reported": false,
+    "is_closed": false,
+    "report_reason": null,
+    "created_at": "2026-05-28T10:13:57.133Z",
+    "last_activity_at": "2026-05-28T10:18:09.120Z"
+  }
+},
+{
+  "model": "messaging.conversation",
+  "pk": "8a190c8f-be6e-4338-bc8c-74b61c2bf45f",
+  "fields": {
+    "application": "90c27f40-9132-455b-9ecb-42b839b67735",
+    "client": 5,
+    "tasker": 5,
+    "is_reported": false,
+    "is_closed": false,
+    "report_reason": null,
+    "created_at": "2026-05-26T10:19:10.183Z",
+    "last_activity_at": "2026-05-26T10:22:39.652Z"
+  }
+},
+{
+  "model": "messaging.conversation",
+  "pk": "8ffc544f-55c4-4b9e-90c6-73ebff517ad5",
+  "fields": {
+    "application": "52c948e2-a1e1-4c95-a6af-a04f92f72777",
+    "client": 5,
+    "tasker": 9,
+    "is_reported": false,
+    "is_closed": true,
+    "report_reason": null,
+    "created_at": "2026-05-29T23:03:02.330Z",
+    "last_activity_at": "2026-05-29T23:24:04.166Z"
+  }
+},
+{
+  "model": "messaging.conversation",
+  "pk": "a9403f24-7a33-44ea-8347-2be359ca7d6f",
+  "fields": {
+    "application": "5a36648b-4443-4d71-9651-bda0161f4673",
+    "client": 5,
+    "tasker": 8,
+    "is_reported": false,
+    "is_closed": true,
+    "report_reason": null,
+    "created_at": "2026-05-27T18:32:46.079Z",
+    "last_activity_at": "2026-05-30T13:39:36.622Z"
+  }
+},
+{
+  "model": "messaging.conversation",
+  "pk": "b93476e2-c75c-4d66-9030-9b89bfba3a6b",
+  "fields": {
+    "application": "c2ee8559-4e49-4cec-9a1d-862b2c0ff535",
+    "client": 1,
+    "tasker": 2,
+    "is_reported": false,
+    "is_closed": true,
+    "report_reason": null,
+    "created_at": "2026-05-25T08:40:24.846Z",
+    "last_activity_at": "2026-05-25T08:42:05.309Z"
+  }
+},
+{
+  "model": "messaging.conversation",
+  "pk": "df9bb7bc-02ef-4fda-ab72-12db1fd18abb",
+  "fields": {
+    "application": "6ef56850-8f4e-4683-ab23-6709dc2c4336",
+    "client": 7,
+    "tasker": 5,
+    "is_reported": false,
+    "is_closed": true,
+    "report_reason": null,
+    "created_at": "2026-05-26T11:38:57.632Z",
+    "last_activity_at": "2026-05-26T12:35:01.439Z"
+  }
+},
+{
+  "model": "messaging.conversation",
+  "pk": "ee7ec8ff-01e6-4e0a-99f8-75ca62c64621",
+  "fields": {
+    "application": "8b35262f-d2cc-42c3-8a3e-e83e3869dae0",
+    "client": 1,
+    "tasker": 2,
+    "is_reported": false,
+    "is_closed": false,
+    "report_reason": null,
+    "created_at": "2026-05-25T09:28:13.794Z",
+    "last_activity_at": "2026-05-25T09:28:13.795Z"
+  }
+},
+{
+  "model": "messaging.message",
+  "pk": "06b60540-4e81-4236-9acf-54a97e23858c",
+  "fields": {
+    "conversation": "870307a3-6ed3-40c8-8d33-70c2e7a8d71a",
+    "sender": 2,
+    "content": "bonjour",
+    "is_read": true,
+    "created_at": "2026-05-28T10:15:16.065Z"
+  }
+},
+{
+  "model": "messaging.message",
+  "pk": "17d3d299-403e-4533-b257-b26556e98863",
+  "fields": {
+    "conversation": "a9403f24-7a33-44ea-8347-2be359ca7d6f",
+    "sender": 5,
+    "content": "oh hi",
+    "is_read": true,
+    "created_at": "2026-05-27T19:14:36.288Z"
+  }
+},
+{
+  "model": "messaging.message",
+  "pk": "290a6d47-a300-4b43-b166-4522c7f4257b",
+  "fields": {
+    "conversation": "241dc8a7-2ecd-4875-b8b2-7a68a7c51b05",
+    "sender": 5,
+    "content": "hi",
+    "is_read": true,
+    "created_at": "2026-05-26T10:27:36.438Z"
+  }
+},
+{
+  "model": "messaging.message",
+  "pk": "2ac9202c-ac6a-4284-a49f-3a4efa311387",
+  "fields": {
+    "conversation": "870307a3-6ed3-40c8-8d33-70c2e7a8d71a",
+    "sender": 1,
+    "content": "hii",
+    "is_read": true,
+    "created_at": "2026-05-28T10:18:09.111Z"
+  }
+},
+{
+  "model": "messaging.message",
+  "pk": "34f260e2-f06f-4b3f-b473-b790d2d20dfc",
+  "fields": {
+    "conversation": "a9403f24-7a33-44ea-8347-2be359ca7d6f",
+    "sender": 8,
+    "content": "hi",
+    "is_read": true,
+    "created_at": "2026-05-27T18:34:56.460Z"
+  }
+},
+{
+  "model": "messaging.message",
+  "pk": "61301a91-03b2-4507-8a47-e5c0e58fa976",
+  "fields": {
+    "conversation": "df9bb7bc-02ef-4fda-ab72-12db1fd18abb",
+    "sender": 5,
+    "content": "what do you want",
+    "is_read": true,
+    "created_at": "2026-05-26T12:16:06.770Z"
+  }
+},
+{
+  "model": "messaging.message",
+  "pk": "65e5ad16-553f-4885-bb66-5617eadd1b06",
+  "fields": {
+    "conversation": "8a190c8f-be6e-4338-bc8c-74b61c2bf45f",
+    "sender": 5,
+    "content": "hi",
+    "is_read": false,
+    "created_at": "2026-05-26T10:19:20.773Z"
+  }
+},
+{
+  "model": "messaging.message",
+  "pk": "6e249d95-f8c1-432f-b461-345162e94db3",
+  "fields": {
+    "conversation": "117d79ab-9bf6-4055-a3a2-a10dc93443b9",
+    "sender": 5,
+    "content": "nn",
+    "is_read": true,
+    "created_at": "2026-05-26T15:19:28.305Z"
+  }
+},
+{
+  "model": "messaging.message",
+  "pk": "79ab36db-37fa-4b08-83de-cf2ef1839aa5",
+  "fields": {
+    "conversation": "870307a3-6ed3-40c8-8d33-70c2e7a8d71a",
+    "sender": 1,
+    "content": "bonjour",
+    "is_read": true,
+    "created_at": "2026-05-28T10:15:42.610Z"
+  }
+},
+{
+  "model": "messaging.message",
+  "pk": "7ce61fbd-784d-4759-bfa0-63e699b1f00d",
+  "fields": {
+    "conversation": "117d79ab-9bf6-4055-a3a2-a10dc93443b9",
+    "sender": 7,
+    "content": ".",
+    "is_read": true,
+    "created_at": "2026-05-26T15:23:24.007Z"
+  }
+},
+{
+  "model": "messaging.message",
+  "pk": "7d722198-f853-444b-87a4-2acb108377cf",
+  "fields": {
+    "conversation": "df9bb7bc-02ef-4fda-ab72-12db1fd18abb",
+    "sender": 7,
+    "content": "hi",
+    "is_read": true,
+    "created_at": "2026-05-26T12:10:09.961Z"
+  }
+},
+{
+  "model": "messaging.message",
+  "pk": "7dfcf951-150d-480f-8ed2-fd06d69e3fed",
+  "fields": {
+    "conversation": "241dc8a7-2ecd-4875-b8b2-7a68a7c51b05",
+    "sender": 7,
+    "content": "hi",
+    "is_read": true,
+    "created_at": "2026-05-26T10:27:25.528Z"
+  }
+},
+{
+  "model": "messaging.message",
+  "pk": "a14c6523-831e-4348-a023-0681b8d30dd8",
+  "fields": {
+    "conversation": "870307a3-6ed3-40c8-8d33-70c2e7a8d71a",
+    "sender": 1,
+    "content": "how are you",
+    "is_read": true,
+    "created_at": "2026-05-28T10:15:49.415Z"
+  }
+},
+{
+  "model": "messaging.message",
+  "pk": "ca18a9b0-1840-4190-a386-7a91ffe2977a",
+  "fields": {
+    "conversation": "13e8b5e0-3957-460d-9e96-e1affbd83a37",
+    "sender": 2,
+    "content": "bonjour",
+    "is_read": true,
+    "created_at": "2026-05-28T10:24:06.369Z"
+  }
+},
+{
+  "model": "messaging.message",
+  "pk": "d5bdf6e7-6652-4c5c-87ef-79cb673b1062",
+  "fields": {
+    "conversation": "8ffc544f-55c4-4b9e-90c6-73ebff517ad5",
+    "sender": 5,
+    "content": "helor",
+    "is_read": true,
+    "created_at": "2026-05-29T23:14:16.357Z"
+  }
+},
+{
+  "model": "messaging.message",
+  "pk": "df3eaa07-8cc8-4b3d-900f-8370ff9d5a67",
+  "fields": {
+    "conversation": "8a190c8f-be6e-4338-bc8c-74b61c2bf45f",
+    "sender": 5,
+    "content": "no",
+    "is_read": false,
+    "created_at": "2026-05-26T10:22:39.630Z"
+  }
+},
+{
+  "model": "messaging.message",
+  "pk": "fa341676-5a9c-4d15-b136-b251b6419be5",
+  "fields": {
+    "conversation": "b93476e2-c75c-4d66-9030-9b89bfba3a6b",
+    "sender": 2,
+    "content": "bonjour",
+    "is_read": false,
+    "created_at": "2026-05-25T08:40:59.320Z"
+  }
+},
+{
+  "model": "reputation.review",
+  "pk": "18da98a1-a2a0-4c5e-9726-c248295d9527",
+  "fields": {
+    "task": "3b56c604-50b8-4b73-9ccb-4ed6061309dd",
+    "reviewer": 8,
+    "reviewed": 5,
+    "rating": 3,
+    "comment": "idk why",
+    "review_type": "tasker_to_client",
+    "moderation_status": "validated",
+    "report_reason": null,
+    "reported_by": null,
+    "created_at": "2026-05-30T14:17:05.372Z",
+    "updated_at": "2026-05-30T14:17:05.372Z"
+  }
+},
+{
+  "model": "reputation.review",
+  "pk": "23794572-f2a2-4ba5-ba5b-992e1e69de18",
+  "fields": {
+    "task": "c5774a1b-adf0-41cf-b37d-ad97867e0f86",
+    "reviewer": 7,
+    "reviewed": 5,
+    "rating": 4,
+    "comment": "",
+    "review_type": "client_to_tasker",
+    "moderation_status": "validated",
+    "report_reason": null,
+    "reported_by": null,
+    "created_at": "2026-05-26T12:35:01.393Z",
+    "updated_at": "2026-05-26T12:35:21.952Z"
+  }
+},
+{
+  "model": "reputation.review",
+  "pk": "487fb84e-7231-4c8b-bcef-2a010c9b9133",
+  "fields": {
+    "task": "8d058058-5d7a-486d-bc42-e36518ae6b89",
+    "reviewer": 9,
+    "reviewed": 5,
+    "rating": 3,
+    "comment": "",
+    "review_type": "tasker_to_client",
+    "moderation_status": "validated",
+    "report_reason": null,
+    "reported_by": null,
+    "created_at": "2026-05-29T23:35:42.393Z",
+    "updated_at": "2026-05-29T23:35:42.393Z"
+  }
+},
+{
+  "model": "reputation.review",
+  "pk": "5f7dc8ed-ab60-461c-8945-b67781ac72c6",
+  "fields": {
+    "task": "1457fdde-1f81-4218-adc6-bcd6101bed53",
+    "reviewer": 2,
+    "reviewed": 1,
+    "rating": 4,
+    "comment": "",
+    "review_type": "tasker_to_client",
+    "moderation_status": "validated",
+    "report_reason": null,
+    "reported_by": null,
+    "created_at": "2026-05-25T08:42:25.811Z",
+    "updated_at": "2026-05-25T08:42:25.811Z"
+  }
+},
+{
+  "model": "reputation.review",
+  "pk": "613a5f11-94b1-45ee-83f6-b44a8b55a5e1",
+  "fields": {
+    "task": "1457fdde-1f81-4218-adc6-bcd6101bed53",
+    "reviewer": 1,
+    "reviewed": 2,
+    "rating": 3,
+    "comment": "",
+    "review_type": "client_to_tasker",
+    "moderation_status": "validated",
+    "report_reason": null,
+    "reported_by": null,
+    "created_at": "2026-05-25T08:42:05.283Z",
+    "updated_at": "2026-05-25T08:42:11.846Z"
+  }
+},
+{
+  "model": "reputation.review",
+  "pk": "6f74052b-35b0-47c9-a9ab-c7d330281365",
+  "fields": {
+    "task": "3b56c604-50b8-4b73-9ccb-4ed6061309dd",
+    "reviewer": 5,
+    "reviewed": 8,
+    "rating": 2,
+    "comment": "litigieuse",
+    "review_type": "client_to_tasker",
+    "moderation_status": "validated",
+    "report_reason": null,
+    "reported_by": null,
+    "created_at": "2026-05-30T14:16:51.061Z",
+    "updated_at": "2026-05-30T14:16:51.061Z"
+  }
+},
+{
+  "model": "reputation.review",
+  "pk": "8c074584-bed3-40da-ae1e-b420cfbf98c8",
+  "fields": {
+    "task": "8d058058-5d7a-486d-bc42-e36518ae6b89",
+    "reviewer": 5,
+    "reviewed": 9,
+    "rating": 4,
+    "comment": "",
+    "review_type": "client_to_tasker",
+    "moderation_status": "validated",
+    "report_reason": null,
+    "reported_by": null,
+    "created_at": "2026-05-29T23:24:04.120Z",
+    "updated_at": "2026-05-29T23:27:56.586Z"
+  }
+},
+{
+  "model": "reputation.review",
+  "pk": "a1783c28-b0a3-4c21-9596-b0b405ef61cd",
+  "fields": {
+    "task": "d81b3e32-7c4c-430a-af11-28f89b8df3e6",
+    "reviewer": 7,
+    "reviewed": 5,
+    "rating": 4,
+    "comment": "",
+    "review_type": "client_to_tasker",
+    "moderation_status": "validated",
+    "report_reason": null,
+    "reported_by": null,
+    "created_at": "2026-05-26T15:24:48.833Z",
+    "updated_at": "2026-05-26T15:24:58.836Z"
+  }
+},
+{
+  "model": "reputation.review",
+  "pk": "ab840bbd-453f-4dbc-999f-95f750542b25",
+  "fields": {
+    "task": "c5774a1b-adf0-41cf-b37d-ad97867e0f86",
+    "reviewer": 5,
+    "reviewed": 7,
+    "rating": 4,
+    "comment": "",
+    "review_type": "tasker_to_client",
+    "moderation_status": "validated",
+    "report_reason": null,
+    "reported_by": null,
+    "created_at": "2026-05-26T12:35:35.229Z",
+    "updated_at": "2026-05-26T12:35:35.229Z"
+  }
+},
+{
+  "model": "reputation.review",
+  "pk": "d5c59933-1b65-4535-8ce0-6b165f9de2ba",
+  "fields": {
+    "task": "cff10117-833d-4322-ac4c-e2289b663b9f",
+    "reviewer": 7,
+    "reviewed": 5,
+    "rating": 5,
+    "comment": "it s alright ",
+    "review_type": "client_to_tasker",
+    "moderation_status": "validated",
+    "report_reason": null,
+    "reported_by": null,
+    "created_at": "2026-05-26T11:14:04.249Z",
+    "updated_at": "2026-05-26T11:19:45.726Z"
+  }
+},
+{
+  "model": "reputation.review",
+  "pk": "ea03d721-a756-4b41-98e0-7373deade6c0",
+  "fields": {
+    "task": "8ab975a5-c1a7-4f18-bcc1-2fdfd28ae5b6",
+    "reviewer": 1,
+    "reviewed": 2,
+    "rating": 3,
+    "comment": "",
+    "review_type": "client_to_tasker",
+    "moderation_status": "validated",
+    "report_reason": null,
+    "reported_by": null,
+    "created_at": "2026-05-28T11:52:52.305Z",
+    "updated_at": "2026-05-28T11:54:47.035Z"
+  }
+}
+]

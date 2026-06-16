@@ -32,8 +32,7 @@ urlpatterns = [
     path('become-tasker/', views.become_tasker, name='become_tasker'),
     path('become-client/', views.become_client, name='become_client'),
     path('onboarding/done/', views.onboarding_done, name='onboarding_done'),
+    path('welcome/dismiss/', views.dismiss_welcome_modal, name='dismiss_welcome_modal'),
     path('social/complete/', views.social_complete, name='social_complete'),
     path('firebase/login/', views.FirebaseLoginView.as_view(), name='firebase_login'),
-    path('google/login/', views.GoogleLoginView.as_view(), name='google_login'),
-    path('google/callback/', views.GoogleCallbackView.as_view(), name='google_callback'),
 ]

@@ -52,7 +52,7 @@
             <div class="td-body-header">
                 <h1 class="td-title">{{ task.title }}</h1>
                 <span class="td-cat-badge" style="background:{{ task.category.color|default:'#EEF2FF' }}20;color:{{ task.category.color|default:'#6366F1' }};">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> {{ task.category.name }}
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> <i class="ti ti-{{ task.category|category_icon }}" style="vertical-align:middle;margin-right:2px;"></i> {{ task.category.name }}
                 </span>
             </div>
 
@@ -127,7 +127,18 @@
         </div>
 
         <!-- Bottom actions -->
-        {% if user.is_tasker and task.status == 'published' and can_apply %}
+        {% if user.is_tasker and task.status == 'published' and can_apply and not user.profile.is_face_verified %}
+        <div class="td-actions">
+            <div style="display:flex;align-items:center;gap:0.5rem;padding:0.7rem 0.85rem;background:#FFF7ED;border:1px solid #FDE68A;border-radius:10px;margin-bottom:10px;font-size:0.8rem;">
+                <span style="font-size:1rem;">🔍</span>
+                <div style="flex:1;min-width:0;">
+                    <span style="font-weight:500;color:#92400E;">Vérifie ton visage pour postuler</span>
+                    <span style="display:block;margin-top:0.15rem;color:#B45309;font-size:0.73rem;">Les clients font davantage confiance aux profils vérifiés.</span>
+                </div>
+                <a href="{% url 'accounts:verify_face' %}" class="td-btn td-btn-primary" style="font-size:0.78rem;padding:0.35rem 0.7rem;white-space:nowrap;">Vérifier</a>
+            </div>
+        </div>
+        {% elif user.is_tasker and task.status == 'published' and can_apply %}
         <div class="td-actions">
             <form method="post" action="{% url 'tasks:task_apply' task.id %}">
                 {% csrf_token %}
@@ -135,70 +146,24 @@
                     <textarea name="message" rows="2" placeholder="Ajouter un message au client (optionnel)…"></textarea>
                 </div>
                 <div class="td-actions-row">
-                    <button type="submit" class="td-btn td-btn-primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg> Envoyer ma candidature</button>
+                    <button type="submit" class="td-btn td-btn-primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg> Accepter la task</button>
                     <a href="javascript:history.back()" class="td-btn td-btn-outline">Annuler</a>
                 </div>
             </form>
         </div>
-        {% elif user.is_tasker and not can_apply %}
+        {% elif user.is_tasker and not can_apply and user != task.client %}
         <div class="td-already-applied">
             <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Vous avez déjà postulé à cette task</span>
         </div>
         {% endif %}
     </div>
 
-    <!-- Applications (client only) -->
-    {% if user == task.client and is_owner and applications %}
-    <div class="td-applications">
-        <h2 class="td-app-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg> Candidatures reçues <span class="td-app-count">{{ applications|length }}</span></h2>
-        {% for app in applications %}
-        <div class="td-app-card {{ app.status }}">
-            <div class="td-app-main">
-                <a href="{% url 'accounts:tasker_profile' app.tasker.id %}" class="td-app-avatar">
-                    {% if app.tasker.avatar %}
-                        <img src="{{ app.tasker.avatar.url }}" alt="{{ app.tasker.full_name }}">
-                    {% else %}
-                        <div class="td-app-initial">{{ app.tasker.full_name|make_list|first|upper }}</div>
-                    {% endif %}
-                </a>
-                <div class="td-app-info">
-                    <div class="td-app-header">
-                        <a href="{% url 'accounts:tasker_profile' app.tasker.id %}" class="td-app-name">{{ app.tasker.full_name }}</a>
-                        <span class="td-app-rank">{{ app.tasker.profile.level|rank_name }}</span>
-                    </div>
-                    <div class="td-app-meta">
-                        {% if app.tasker.profile.tasker_rating_avg %}
-                            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> {{ app.tasker.profile.tasker_rating_avg }}</span>
-                        {% endif %}
-                        <span>{{ app.tasker.profile.tasks_completed }} tasks</span>
-                        <span>il y a {{ app.created_at|timesince }}</span>
-                    </div>
-                    {% if app.message %}
-                    <div class="td-app-msg">{{ app.message }}</div>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="td-app-actions">
-                {% if app.status == 'pending' %}
-                    <form method="post" action="{% url 'tasks:task_choose_tasker' task.id app.id %}">
-                        {% csrf_token %}
-                        <button type="submit" class="td-btn td-btn-primary td-btn-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Accepter</button>
-                    </form>
-                    <form method="post" action="{% url 'tasks:task_reject_application' task.id app.id %}">
-                        {% csrf_token %}
-                        <button type="submit" class="td-btn td-btn-ghost td-btn-sm" style="color:#ef4444;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Refuser</button>
-                    </form>
-                {% elif app.status == 'accepted' %}
-                    <span class="td-app-status accepted"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Acceptée</span>
-                {% else %}
-                    <span class="td-app-status rejected"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Refusée</span>
-                {% endif %}
-                {% if app.conversation %}
-                    <a href="{% url 'messaging:conversation_detail' app.conversation.id %}" class="td-btn td-btn-outline td-btn-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Message</a>
-                {% endif %}
-            </div>
-        </div>
-        {% endfor %}
+    {% if user == task.client and is_owner %}
+    <div class="td-candidatures-link">
+        <a href="{% url 'tasks:task_candidatures' task.id %}" class="td-btn td-btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
+            Voir les candidatures ({{ applications|length }})
+        </a>
     </div>
     {% endif %}
 </div>
@@ -576,142 +541,16 @@
     color: var(--sq-text);
 }
 
-.td-already-applied {
+.td-candidatures-link {
     padding: 1rem 1.25rem;
     border-top: 1px solid var(--sq-border);
-    font-size: 0.85rem;
-    color: var(--sq-text-muted);
     text-align: center;
 }
 
-/* Applications section */
-.td-applications {
-    margin-top: 1.5rem;
-}
-
-.td-app-title {
-    font-size: 1rem;
-    font-weight: 700;
-    margin-bottom: 0.75rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.td-app-count {
-    background: var(--sq-bg);
-    font-size: 0.7rem;
-    padding: 0.1rem 0.5rem;
-    border-radius: 10px;
-    color: var(--sq-text-muted);
-    font-weight: 600;
-}
-
-.td-app-card {
-    background: var(--sq-surface);
-    border: 1px solid var(--sq-border);
-    border-radius: 12px;
-    padding: 0.85rem 1rem;
-    margin-bottom: 0.6rem;
-}
-
-.td-app-card.pending { border-left: 3px solid #fbbf24; }
-.td-app-card.accepted { border-left: 3px solid #22c55e; background: rgba(34,197,94,0.03); }
-.td-app-card.rejected { opacity: 0.55; border-left: 3px solid #ef4444; }
-
-.td-app-main {
-    display: flex;
-    gap: 0.75rem;
-}
-
-.td-app-avatar {
-    flex-shrink: 0;
-}
-
-.td-app-avatar img,
-.td-app-initial {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.td-app-initial {
-    background: var(--sq-primary);
-    color: white;
-    font-weight: 700;
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
+.td-candidatures-link .td-btn {
+    width: 100%;
     justify-content: center;
 }
-
-.td-app-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.td-app-header {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    margin-bottom: 0.1rem;
-}
-
-.td-app-name {
-    font-weight: 600;
-    font-size: 0.85rem;
-    color: var(--sq-text);
-    text-decoration: none;
-}
-
-.td-app-name:hover {
-    color: var(--sq-primary);
-}
-
-.td-app-rank {
-    font-size: 0.62rem;
-    font-weight: 600;
-    background: rgba(45,106,79,0.08);
-    color: var(--sq-primary);
-    padding: 0.05rem 0.4rem;
-    border-radius: 5px;
-}
-
-.td-app-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    font-size: 0.7rem;
-    color: var(--sq-text-muted);
-}
-
-.td-app-msg {
-    margin-top: 0.5rem;
-    font-size: 0.8rem;
-    color: var(--sq-text);
-    background: var(--sq-bg);
-    padding: 0.5rem 0.65rem;
-    border-radius: 8px;
-    border-left: 2px solid var(--sq-border);
-}
-
-.td-app-actions {
-    display: flex;
-    gap: 0.35rem;
-    margin-top: 0.5rem;
-    flex-wrap: wrap;
-}
-
-.td-app-status {
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 0.25rem 0.6rem;
-    border-radius: 8px;
-}
-
-.td-app-status.accepted { background: rgba(34,197,94,0.08); color: #16a34a; }
-.td-app-status.rejected { background: rgba(239,68,68,0.08); color: #dc2626; }
 
 @media (max-width: 640px) {
     .td-container { padding: 0.5rem 16px 2rem; }
@@ -747,7 +586,7 @@
       var guide = window.Alpine ? Alpine.store('guide') : null;
       if (guide) {
         clearInterval(wait);
-        guide.showTip('Lis attentivement les détails de la task. La description, la récompense, le lieu et la date limite t\'aident à décider si cette task est faite pour toi. Quand tu es prêt, clique sur \u00ab\u00a0Envoyer ma candidature\u00a0\u00bb pour postuler.', { duration: 12000 });
+        guide.showTip('Lis attentivement les détails de la task. La description, la récompense, le lieu et la date limite t\'aident à décider si cette task est faite pour toi. Quand tu es prêt, clique sur \u00ab\u00a0Accepter la task\u00a0\u00bb pour continuer.', { duration: 12000 });
         sessionStorage.setItem('sq_tip_step5', '1');
       }
     } catch(e) {}

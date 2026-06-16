@@ -53,18 +53,10 @@ class TaskerRegistrationForm(UserCreationForm):
         max_length=20,
         widget=forms.TextInput(attrs={'placeholder': _('+212 6 12 34 56 78')}),
     )
-    avatar = forms.ImageField(
-        label=_('Photo de profil'),
-        required=True,
-    )
-    face_photo_initial_data = forms.CharField(required=False, widget=forms.HiddenInput())
-    face_photo_left_data = forms.CharField(required=False, widget=forms.HiddenInput())
-    face_photo_right_data = forms.CharField(required=False, widget=forms.HiddenInput())
-    face_photo_blink_data = forms.CharField(required=False, widget=forms.HiddenInput())
 
     class Meta:
         model = CustomUser
-        fields = ('full_name', 'email', 'phone_number', 'avatar', 'password1', 'password2')
+        fields = ('full_name', 'email', 'phone_number', 'password1', 'password2')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

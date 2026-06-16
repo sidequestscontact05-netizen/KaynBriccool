@@ -259,10 +259,23 @@
     <div class="form-card-row">
       <div class="form-card">
         <div class="form-card-header">
+          <div class="form-card-icon purple"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></div>
+          <div>
+            <p class="form-card-label">Titre</p>
+            <h3 class="form-card-title">Donne un titre clair à ta task</h3>
+          </div>
+        </div>
+        <div class="form-card-body">
+          {{ form.title }}
+          {{ form.title.errors }}
+        </div>
+      </div>
+      <div class="form-card">
+        <div class="form-card-header">
           <div class="form-card-icon amber"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 2v4a2 2 0 0 0 2 2h4"/><rect x="2" y="2" width="18" height="18" rx="2"/><path d="M12 11v6"/><path d="M9 14h6"/></svg></div>
           <div>
             <p class="form-card-label">Description</p>
-            <h3 class="form-card-title">Ajouter une petite description</h3>
+            <h3 class="form-card-title">Explique la task en détail</h3>
           </div>
         </div>
         <div class="form-card-body">
@@ -303,6 +316,7 @@
         </div>
         <div class="form-card-body">
           {{ form.deadline }}
+          <p style="font-size:0.8rem;color:var(--sq-text-muted);margin:6px 0 0;">Après cette date, la task n'apparaîtra plus dans la liste des tasks disponibles.</p>
           {{ form.deadline.errors }}
         </div>
       </div>
@@ -339,7 +353,7 @@
         <div class="form-card-icon amber"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm-3 9.5L9.5 8.5l-3 2"/><path d="M9.5 11 12 14h5"/></svg></div>
         <div>
           <p class="form-card-label">Trajet</p>
-          <h3 class="form-card-title">Task avec trajet</h3>
+          <h3 class="form-card-title">Mission avec trajet</h3>
         </div>
       </div>
       {{ form.has_route }}
@@ -393,9 +407,13 @@
           <div class="summary-label">Catégorie</div>
           <div class="summary-value" id="preview-category">—</div>
         </div>
-        <div class="summary-item" style="grid-column:1/-1;">
+        <div class="summary-item">
           <div class="summary-label">Sous-catégorie</div>
           <div class="summary-value" id="preview-subcategory">—</div>
+        </div>
+        <div class="summary-item" style="grid-column:1/-1;">
+          <div class="summary-label">Titre</div>
+          <div class="summary-value" id="preview-title">—</div>
         </div>
       </div>
       <div class="summary-divider"></div>
@@ -612,6 +630,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function updatePreview() {
   var cat = document.getElementById('id_category');
   var sub = document.getElementById('id_subcategory');
+  var title = document.querySelector('[name="title"]');
   var desc = document.querySelector('[name="description"]');
   var reward = document.querySelector('[name="reward"]');
   var deadline = document.querySelector('[name="deadline"]');
@@ -621,6 +640,7 @@ function updatePreview() {
 
   document.getElementById('preview-category').textContent = cat ? cat.options[cat.selectedIndex]?.text || '—' : '—';
   document.getElementById('preview-subcategory').textContent = sub ? sub.options[sub.selectedIndex]?.text || '—' : '—';
+  document.getElementById('preview-title').textContent = title ? title.value || '—' : '—';
   document.getElementById('preview-description').textContent = desc ? desc.value || '—' : '—';
   document.getElementById('preview-reward').textContent = reward ? reward.value + ' DH' : '—';
   document.getElementById('preview-deadline').textContent = deadline ? deadline.value || '—' : '—';

@@ -252,24 +252,16 @@
         <span class="workspace-meta-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> {{ task.deadline|date:"d/m/Y" }}</span>
         {% endif %}
         <span class="workspace-meta-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg> {{ task.arrival_address|truncatechars:40 }}</span>
-        <span class="workspace-meta-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> {% if request.user == task.client %}{% if task.assigned_tasker %}<a href="{% url 'accounts:tasker_profile' task.assigned_tasker_id %}">{{ task.assigned_tasker.full_name }}</a>{% else %}En attente{% endif %}{% else %}{{ task.client.full_name }}{% endif %}</span>
+        <span class="workspace-meta-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> {% if request.user == task.client %}{{ task.assigned_tasker.full_name|default:"En attente" }}{% else %}{{ task.client.full_name }}{% endif %}</span>
       </div>
     </div>
     <div class="workspace-actions">
       {% if request.user == task.assigned_tasker %}
         {% if task.status == 'accepted' %}
-          {% if not task.proof_required %}
-          <form method="post" style="display:inline;" onsubmit="this.querySelector('button').disabled = true; this.querySelector('button').textContent = 'Envoi…';">
-            {% csrf_token %}
-            <input type="hidden" name="complete_mission" value="1">
-            <button type="submit" class="btn-ws btn-ws-success"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polyline points="20 6 9 17 4 12"/></svg> Terminer la task</button>
-          </form>
-          {% else %}
           <form method="post" action="{% url 'tasks:task_start' task.id %}" style="display:inline;">
             {% csrf_token %}
-            <button type="submit" class="btn-ws btn-ws-primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polygon points="5 3 19 12 5 21 5 3"/></svg> Démarrer la task</button>
+            <button type="submit" class="btn-ws btn-ws-primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><polygon points="5 3 19 12 5 21 5 3"/></svg> Commencer la task</button>
           </form>
-          {% endif %}
         {% endif %}
         {% if task.status == 'in_progress' and not task.proof_required %}
           <form method="post" style="display:inline;" onsubmit="this.querySelector('button').disabled = true; this.querySelector('button').textContent = 'Envoi…';">
@@ -384,7 +376,13 @@
   <!-- ─── PANEL: Mission (sans preuve) ─── -->
   <div class="workspace-panel" id="panel-mission">
     {% if is_tasker %}
-      {% if task.status == 'accepted' or task.status == 'in_progress' %}
+      {% if task.status == 'accepted' %}
+        <div class="ws-proof-box" style="text-align:center;padding:2rem;">
+          <div style="font-size:3rem;margin-bottom:1rem;">⏸️</div>
+          <h3 style="margin:0 0 0.5rem;">Task pas encore commencée</h3>
+          <p style="color:var(--sq-text-muted);max-width:400px;margin:0 auto 1.5rem;">Appuie sur « Commencer la task » dans l'en-tête pour démarrer la mission.</p>
+        </div>
+      {% elif task.status == 'in_progress' %}
         <div class="ws-proof-box" style="text-align:center;padding:2rem;">
           <div style="font-size:3rem;margin-bottom:1rem;">🎯</div>
           <h3 style="margin:0 0 0.5rem;">Task terminée ?</h3>
@@ -420,7 +418,19 @@
       {% endif %}
     {% else %}
       {# ── CLIENT ── #}
-      {% if task.status == 'awaiting_confirmation' %}
+      {% if task.status == 'accepted' %}
+        <div class="ws-proof-box" style="text-align:center;padding:2rem;">
+          <div style="font-size:3rem;margin-bottom:1rem;">⏳</div>
+          <h3 style="margin:0 0 0.5rem;">Task pas encore commencée</h3>
+          <p style="color:var(--sq-text-muted);max-width:400px;margin:0 auto 1.5rem;">{{ task.assigned_tasker.full_name }} n'a pas encore commencé la task. Sois patient, il va bientôt démarrer !</p>
+        </div>
+      {% elif task.status == 'in_progress' %}
+        <div class="ws-proof-box" style="text-align:center;padding:2rem;">
+          <div style="font-size:3rem;margin-bottom:1rem;">🏃</div>
+          <h3 style="margin:0 0 0.5rem;">Task en cours</h3>
+          <p style="color:var(--sq-text-muted);max-width:400px;margin:0 auto 1.5rem;">{{ task.assigned_tasker.full_name }} a commencé la task. Tu peux suivre l'avancement ici.</p>
+        </div>
+      {% elif task.status == 'awaiting_confirmation' %}
         <div class="ws-panel-grid">
           <div class="ws-proof-box" style="text-align:center;padding:2rem;">
             <div style="font-size:3rem;margin-bottom:1rem;">🚀</div>

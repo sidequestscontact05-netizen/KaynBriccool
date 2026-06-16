@@ -20,3 +20,5 @@ def save_user_profile(sender, instance, **kwargs):
 def update_streak_on_login(sender, request, user, **kwargs):
     if hasattr(user, 'profile'):
         user.profile.update_streak()
+        if user.is_tasker() and not user.profile.welcome_modal_shown:
+            request.session['show_welcome_modal'] = True

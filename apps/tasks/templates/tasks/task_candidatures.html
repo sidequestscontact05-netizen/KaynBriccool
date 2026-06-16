@@ -1,0 +1,325 @@
+{% extends 'base.html' %}
+{% load task_extras %}
+
+{% block title %}Candidatures — {{ task.title }} — SideQuest{% endblock %}
+
+{% block content %}
+<div class="tc-container">
+    <div class="tc-topbar">
+        <a href="javascript:history.back()" class="tc-back">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+            Retour
+        </a>
+        <span class="tc-topbar-title">Candidatures</span>
+    </div>
+
+    <div class="tc-header">
+        <h1 class="tc-title">{{ task.title }}</h1>
+        <span class="tc-count">{{ applications|length }} candidature{% if applications|length > 1 %}s{% endif %}</span>
+    </div>
+
+    {% if applications %}
+    <div class="tc-list">
+        {% for app in applications %}
+        <div class="tc-card {{ app.status }}">
+            <div class="tc-main">
+                <a href="{% url 'accounts:tasker_profile' app.tasker.id %}" class="tc-avatar">
+                    {% if app.tasker.avatar %}
+                        <img src="{{ app.tasker.avatar.url }}" alt="{{ app.tasker.full_name }}">
+                    {% else %}
+                        <div class="tc-initial">{{ app.tasker.full_name|make_list|first|upper }}</div>
+                    {% endif %}
+                </a>
+                <div class="tc-info">
+                    <div class="tc-header-row">
+                        <a href="{% url 'accounts:tasker_profile' app.tasker.id %}" class="tc-name">{{ app.tasker.full_name }}</a>
+                        <span class="tc-rank">{{ app.tasker.profile.level|rank_name }}</span>
+                    </div>
+                    <div class="tc-meta">
+                        {% if app.tasker.profile.tasker_rating_avg %}
+                            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> {{ app.tasker.profile.tasker_rating_avg }}</span>
+                        {% endif %}
+                        <span>{{ app.tasker.profile.tasks_completed }} tasks</span>
+                        <span>il y a {{ app.created_at|timesince }}</span>
+                    </div>
+                    {% if app.message %}
+                    <div class="tc-msg">{{ app.message }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="tc-actions">
+                {% if app.status == 'pending' %}
+                    <form method="post" action="{% url 'tasks:task_choose_tasker' task.id app.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="tc-btn tc-btn-primary">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Accepter
+                        </button>
+                    </form>
+                    <form method="post" action="{% url 'tasks:task_reject_application' task.id app.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="tc-btn tc-btn-ghost" style="color:#ef4444;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Refuser
+                        </button>
+                    </form>
+                {% elif app.status == 'accepted' %}
+                    <span class="tc-status accepted"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Acceptée</span>
+                {% else %}
+                    <span class="tc-status rejected"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Refusée</span>
+                {% endif %}
+                {% if app.conversation %}
+                    <a href="{% url 'messaging:conversation_detail' app.conversation.id %}" class="tc-btn tc-btn-outline">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Message
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="tc-empty">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="color:var(--sq-text-muted);"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
+        <p>Aucune candidature pour le moment.</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.tc-container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 1rem 12px 3rem;
+}
+
+.tc-topbar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.tc-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--sq-text-muted);
+    text-decoration: none;
+    padding: 0.35rem 0.6rem;
+    border-radius: 8px;
+    transition: all .2s;
+}
+
+.tc-back:hover {
+    color: var(--sq-text);
+    background: var(--sq-bg);
+}
+
+.tc-topbar-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--sq-text-muted);
+}
+
+.tc-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.tc-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.tc-count {
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: var(--sq-bg);
+    padding: 0.15rem 0.6rem;
+    border-radius: 10px;
+    color: var(--sq-text-muted);
+    white-space: nowrap;
+}
+
+.tc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.tc-card {
+    background: var(--sq-surface);
+    border: 1px solid var(--sq-border);
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+}
+
+.tc-card.pending { border-left: 3px solid #fbbf24; }
+.tc-card.accepted { border-left: 3px solid #22c55e; background: rgba(34,197,94,0.03); }
+.tc-card.rejected { opacity: 0.55; border-left: 3px solid #ef4444; }
+
+.tc-main {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.tc-avatar {
+    flex-shrink: 0;
+}
+
+.tc-avatar img,
+.tc-initial {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.tc-initial {
+    background: var(--sq-primary);
+    color: white;
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tc-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.tc-header-row {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.1rem;
+}
+
+.tc-name {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--sq-text);
+    text-decoration: none;
+}
+
+.tc-name:hover {
+    color: var(--sq-primary);
+}
+
+.tc-rank {
+    font-size: 0.62rem;
+    font-weight: 600;
+    background: rgba(45,106,79,0.08);
+    color: var(--sq-primary);
+    padding: 0.05rem 0.4rem;
+    border-radius: 5px;
+}
+
+.tc-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.7rem;
+    color: var(--sq-text-muted);
+}
+
+.tc-msg {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--sq-text);
+    background: var(--sq-bg);
+    padding: 0.5rem 0.65rem;
+    border-radius: 8px;
+    border-left: 2px solid var(--sq-border);
+}
+
+.tc-actions {
+    display: flex;
+    gap: 0.35rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.tc-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all .2s;
+    white-space: nowrap;
+}
+
+.tc-btn-primary {
+    background: var(--sq-primary);
+    color: white;
+}
+
+.tc-btn-primary:hover {
+    background: #1B4332;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(45,106,79,0.25);
+}
+
+.tc-btn-outline {
+    background: transparent;
+    color: var(--sq-text);
+    border: 1px solid var(--sq-border);
+}
+
+.tc-btn-outline:hover {
+    border-color: var(--sq-text-muted);
+    background: var(--sq-bg);
+}
+
+.tc-btn-ghost {
+    background: transparent;
+    color: var(--sq-text-muted);
+}
+
+.tc-btn-ghost:hover {
+    background: var(--sq-bg);
+    color: var(--sq-text);
+}
+
+.tc-status {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.6rem;
+    border-radius: 8px;
+}
+
+.tc-status.accepted { background: rgba(34,197,94,0.08); color: #16a34a; }
+.tc-status.rejected { background: rgba(239,68,68,0.08); color: #dc2626; }
+
+.tc-empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--sq-text-muted);
+}
+
+.tc-empty p {
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+    .tc-container { padding: 0.5rem 16px 2rem; }
+    .tc-actions .tc-btn { flex: 1; justify-content: center; }
+}
+@media (max-width: 400px) {
+    .tc-container { padding: 0.5rem 12px 2rem; }
+}
+</style>
+{% endblock %}
