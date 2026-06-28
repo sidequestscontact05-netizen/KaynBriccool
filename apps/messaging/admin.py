@@ -11,9 +11,9 @@ class MessageInline(admin.TabularInline):
 
 @admin.register(Conversation)
 class ConversationAdmin(admin.ModelAdmin):
-    list_display = ('task', 'client', 'tasker', 'last_activity_at')
+    list_display = ('client', 'tasker', 'last_activity_at')
     list_filter = ('created_at',)
-    search_fields = ('task__title', 'client__full_name', 'tasker__full_name')
+    search_fields = ('client__full_name', 'tasker__full_name')
     inlines = [MessageInline]
 
 

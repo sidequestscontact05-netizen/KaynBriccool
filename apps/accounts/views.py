@@ -13,12 +13,13 @@ from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.utils.decorators import method_decorator
+from apps.badges.engine import check_and_award_badges
 from django.utils import timezone
 from django.http import HttpResponseForbidden, JsonResponse, HttpResponseBadRequest
 from datetime import timedelta
 from apps.accounts.firebase_auth import verify_firebase_token
 
-from apps.accounts.models import CustomUser, UserProfile, VerificationRecord
+from apps.accounts.models import CustomUser, UserProfile, VerificationRecord, Skill, DeletionRequest
 from apps.accounts.forms import (
     ClientRegistrationForm,
     TaskerRegistrationForm,
@@ -26,6 +27,8 @@ from apps.accounts.forms import (
     PhoneVerificationForm,
     FaceIdVerificationForm,
     ProfileUpdateForm,
+    ProfileForm,
+    SkillForm,
     CustomPasswordResetForm,
 )
 from apps.accounts.utils import (
@@ -221,13 +224,18 @@ class VerifyFaceIdView(LoginRequiredMixin, View):
     def post(self, request):
         form = FaceIdVerificationForm(request.POST, request.FILES)
         if form.is_valid():
+            # Supprime toute ancienne tentative
+            VerificationRecord.objects.filter(
+                user=request.user,
+                type=VerificationRecord.TypeChoices.FACE_ID,
+            ).delete()
+
             verification = VerificationRecord.objects.create(
                 user=request.user,
                 type=VerificationRecord.TypeChoices.FACE_ID,
                 face_status=VerificationRecord.FaceStatusChoices.PENDING,
                 expires_at=timezone.now() + timedelta(days=365),
             )
-            form.save_m2m() if hasattr(form, 'save_m2m') else None
 
             verification.face_photo_initial = request.FILES.get('face_photo_initial')
             verification.face_photo_left = request.FILES.get('face_photo_left')
@@ -271,25 +279,41 @@ class CustomPasswordResetConfirmView(PasswordResetConfirmView):
     def form_valid(self, form):
         user = form.user
         if user:
-            user.phone_verified = True
-            user.save(update_fields=['phone_verified'])
             self.request.session['password_just_reset'] = True
         return super().form_valid(form)
 
 
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     model = CustomUser
-    form_class = ProfileUpdateForm
-    template_name = 'accounts/profile.html'
+    form_class = ProfileForm
     success_url = reverse_lazy('accounts:profile')
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.acting_as_tasker() or request.user.role == 'tasker':
+            self.template_name = 'accounts/tasker_profile.html'
+        else:
+            self.template_name = 'accounts/client_profile.html'
+        return super().dispatch(request, *args, **kwargs)
 
     def get_object(self):
         return self.request.user
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        check_and_award_badges(self.request.user)
         context['profile'] = self.request.user.profile
+        context['skills'] = Skill.objects.all()
+        context['face_verification'] = VerificationRecord.objects.filter(
+            user=self.request.user,
+            type=VerificationRecord.TypeChoices.FACE_ID,
+        ).order_by('-created_at').first()
         return context
+
+    def form_valid(self, form):
+        resp = super().form_valid(form)
+        self.request.user.profile.award_profile_xp()
+        messages.success(self.request, _('Profil mis à jour.'))
+        return resp
 
 
 @login_required
@@ -315,47 +339,12 @@ def become_tasker(request):
     if not user.is_client() or user.role == 'both' or user.is_tasker():
         return redirect('home')
 
-    if request.method == 'POST':
-        face_data_fields = [
-            'face_photo_initial_data',
-            'face_photo_left_data',
-            'face_photo_right_data',
-            'face_photo_blink_data',
-        ]
-        face_data = [request.POST.get(f, '') for f in face_data_fields]
+    user.role = CustomUser.Roles.BOTH
+    user.active_role = CustomUser.ActiveRoles.TASKER
+    user.save(update_fields=['role', 'active_role'])
 
-        if not all(face_data):
-            messages.error(request, _('Vérification faciale incomplète. Reprenez les 4 photos.'))
-            return render(request, 'accounts/become_tasker.html')
-
-        import base64
-        from django.core.files.base import ContentFile
-        from django.utils import timezone
-        from datetime import timedelta
-
-        verification = VerificationRecord.objects.create(
-            user=user,
-            type=VerificationRecord.TypeChoices.FACE_ID,
-            face_status=VerificationRecord.FaceStatusChoices.PENDING,
-            expires_at=timezone.now() + timedelta(days=365),
-        )
-
-        photo_names = ['face_photo_initial', 'face_photo_left', 'face_photo_right', 'face_photo_blink']
-        for i, data in enumerate(face_data):
-            if ',' in data:
-                data = data.split(',')[1]
-            img_bytes = base64.b64decode(data)
-            getattr(verification, photo_names[i]).save(photo_names[i] + '.jpg', ContentFile(img_bytes), save=False)
-        verification.save()
-
-        user.role = CustomUser.Roles.BOTH
-        user.active_role = CustomUser.ActiveRoles.TASKER
-        user.save(update_fields=['role', 'active_role'])
-
-        messages.success(request, _('Vérification envoyée ! Vous avez maintenant accès à l\'espace Tasker.'))
-        return redirect('tasks:tasker_dashboard')
-
-    return render(request, 'accounts/become_tasker.html')
+    messages.success(request, _('Vous êtes maintenant Tasker ! Complétez votre profil.'))
+    return redirect('tasks:tasker_dashboard')
 
 
 @login_required
@@ -388,12 +377,15 @@ def tasker_profile(request, tasker_id):
         messages.error(request, _('Ce profil n\'est pas un tasker.'))
         return redirect('home')
 
+    check_and_award_badges(tasker)
     profile = tasker.profile
-    reviews = Review.objects.filter(
+    reviews_qs = Review.objects.filter(
         reviewed=tasker,
         review_type=Review.ReviewTypeChoices.CLIENT_REVIEWS_TASKER,
         moderation_status=Review.ModerationStatusChoices.VALIDATED,
-    ).order_by('-created_at')[:10]
+    )
+    total_reviews = reviews_qs.count()
+    reviews = reviews_qs.order_by('-created_at')[:10]
 
     badges = UserBadge.objects.filter(
         user=tasker,
@@ -405,7 +397,8 @@ def tasker_profile(request, tasker_id):
         'profile': profile,
         'reviews': reviews,
         'badges': badges,
-        'total_reviews': reviews.count(),
+        'total_reviews': total_reviews,
+        'form': None,
     }
     return render(request, 'accounts/tasker_profile.html', context)
 
@@ -447,6 +440,90 @@ def social_complete(request):
 
 
 @login_required
+def add_skill(request):
+    if request.method == 'POST':
+        form = SkillForm(request.POST)
+        if form.is_valid():
+            skill = form.cleaned_data['skill_id']
+            profile = request.user.profile
+            profile.skills.add(skill)
+            profile.award_profile_xp()
+            return JsonResponse({'ok': True, 'name': skill.name, 'icon': skill.icon, 'id': str(skill.id)})
+        return JsonResponse({'error': str(form.errors)}, status=400)
+    return JsonResponse({'error': 'POST only'}, status=405)
+
+
+@login_required
+def remove_skill(request, skill_id):
+    if request.method == 'POST':
+        profile = request.user.profile
+        skill = get_object_or_404(Skill, id=skill_id)
+        profile.skills.remove(skill)
+        return JsonResponse({'ok': True})
+    return JsonResponse({'error': 'POST only'}, status=405)
+
+
+@login_required
+def save_skills(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST only'}, status=405)
+    import json
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+    profile = request.user.profile
+    skill_ids = data.get('skill_ids', [])
+    custom_names = data.get('custom_skills', [])
+
+    added = []
+    for sid in skill_ids:
+        try:
+            skill = Skill.objects.get(id=sid)
+            profile.skills.add(skill)
+            added.append({'id': str(skill.id), 'name': skill.name, 'icon': skill.icon})
+        except Skill.DoesNotExist:
+            pass
+
+    for name in custom_names:
+        name = name.strip()
+        if name:
+            skill, _ = Skill.objects.get_or_create(name=name, defaults={'category': 'autre', 'icon': 'tools'})
+            profile.skills.add(skill)
+            added.append({'id': str(skill.id), 'name': skill.name, 'icon': skill.icon})
+
+    profile.award_profile_xp()
+    all_skills = [{'id': str(s.id), 'name': s.name, 'icon': s.icon} for s in profile.skills.all()]
+    return JsonResponse({'ok': True, 'skills': all_skills})
+
+
+@login_required
+def update_zone(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST only'}, status=405)
+    import json
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+    profile = request.user.profile
+    city = data.get('city', '').strip()
+    radius = data.get('service_radius')
+
+    profile.city = city
+    try:
+        profile.service_radius = int(radius) if radius else None
+    except (ValueError, TypeError):
+        profile.service_radius = None
+    profile.save(update_fields=['city', 'service_radius', 'updated_at'])
+    profile.award_profile_xp()
+
+    return JsonResponse({'ok': True, 'city': profile.city, 'service_radius': profile.service_radius})
+
+
+@login_required
 def onboarding_done(request):
     if request.method == 'POST':
         profile = request.user.profile
@@ -466,6 +543,72 @@ def dismiss_welcome_modal(request):
             del request.session['show_welcome_modal']
         return JsonResponse({'ok': True})
     return JsonResponse({'error': 'POST only'}, status=405)
+
+
+CLIENT_REASONS = [
+    "Je n'ai pas trouvé de tasker pour ma tâche",
+    "Les taskers proposés ne sont pas fiables",
+    "Les taskers demandent des prix trop élevés",
+    "J'ai eu une mauvaise expérience avec un tasker",
+    "L'application est trop compliquée à utiliser",
+]
+
+TASKER_REASONS = [
+    "Je ne trouve pas assez de tâches",
+    "Les prix proposés par les clients sont trop bas",
+    "Je ne fais pas confiance aux clients",
+    "J'ai eu une mauvaise expérience avec un client",
+    "Les tâches ne correspondent pas à mes compétences",
+    "L'application est trop compliquée à utiliser",
+]
+
+
+@login_required
+def delete_account(request):
+    user = request.user
+    active_role = user.active_role
+
+    if request.method == 'POST':
+        reasons = request.POST.getlist('reasons')
+        other_text = request.POST.get('other', '').strip()
+
+        DeletionRequest.objects.create(
+            user=user,
+            role=active_role,
+            reasons=reasons,
+            other_text=other_text,
+        )
+
+        messages.success(request, _('Ta demande a été enregistrée. Ton compte sera supprimé sous 48h.'))
+
+        if active_role == 'client':
+            if user.role == 'both':
+                user.active_role = CustomUser.ActiveRoles.TASKER
+                user.save(update_fields=['active_role'])
+                messages.info(request, _('Ton profil client a été désactivé. Tu peux encore utiliser ton compte tasker.'))
+                return redirect('tasks:tasker_dashboard')
+            else:
+                user.is_active = False
+                user.save(update_fields=['is_active'])
+                logout(request)
+                return redirect('home')
+        else:
+            if user.role == 'both':
+                user.active_role = CustomUser.ActiveRoles.CLIENT
+                user.save(update_fields=['active_role'])
+                messages.info(request, _('Ton profil tasker a été désactivé. Tu peux encore utiliser ton compte client.'))
+                return redirect('tasks:client_dashboard')
+            else:
+                user.is_active = False
+                user.save(update_fields=['is_active'])
+                logout(request)
+                return redirect('home')
+
+    reasons_list = CLIENT_REASONS if active_role == 'client' else TASKER_REASONS
+    return render(request, 'accounts/delete_account.html', {
+        'reasons': reasons_list,
+        'role_label': 'Client' if active_role == 'client' else 'Tasker',
+    })
 
 
 class GoogleLoginView(View):
@@ -538,7 +681,7 @@ class GoogleCallbackView(View):
                 settings.GOOGLE_CLIENT_ID,
             )
         except ValueError as e:
-            messages.error(request, _(f'Token Google invalide : {str(e)}'))
+            messages.error(request, _('Token Google invalide : {}').format(str(e)))
             return redirect('accounts:login')
 
         google_id = info.get('sub')

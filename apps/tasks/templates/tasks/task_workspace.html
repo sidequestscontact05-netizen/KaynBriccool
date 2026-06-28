@@ -234,6 +234,155 @@
   .workspace-meta { gap: 6px; }
   .ws-panel-grid { grid-template-columns: 1fr; }
 }
+
+/* ── Audio player in chat ── */
+.waudio {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: 4px 8px; margin-top: 4px; min-width: 0; max-width: 260px;
+}
+.waudio-play {
+  display: flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 50%;
+  border: none; background: rgba(255,255,255,0.2); color: #fff;
+  cursor: pointer; flex-shrink: 0; font-size: 11px;
+  transition: background .15s;
+}
+.waudio-play:hover { background: rgba(255,255,255,0.3); }
+.message-other .waudio-play { background: var(--sq-primary, #0e6b52); color: #fff; }
+.message-other .waudio-play:hover { opacity: 0.9; }
+.waudio-waveform {
+  flex: 1; display: flex; align-items: center;
+  gap: 2px; height: 28px; cursor: pointer;
+  min-width: 80px; padding: 0 2px;
+}
+.waudio-waveform .wf-bar { background: rgba(255,255,255,0.25); }
+.waudio-waveform .wf-bar-active { background: rgba(255,255,255,0.9); }
+.message-other .waudio-waveform .wf-bar { background: #d1d5db; }
+.message-other .waudio-waveform .wf-bar-active { background: var(--sq-primary, #0e6b52); }
+.waudio-speed {
+  display: flex; align-items: center; justify-content: center;
+  padding: 1px 5px; border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: transparent; color: rgba(255,255,255,0.85);
+  font-size: 9px; font-weight: 600; cursor: pointer;
+  flex-shrink: 0; line-height: 1; font-family: inherit;
+}
+.waudio-speed:hover { background: rgba(255,255,255,0.15); }
+.message-other .waudio-speed { border-color: var(--sq-border, #d1d5db); color: var(--sq-primary, #0e6b52); }
+.message-other .waudio-speed:hover { background: var(--sq-primary, #0e6b52); color: #fff; }
+.waudio-time {
+  display: flex; justify-content: space-between;
+  font-size: 9px; color: rgba(255,255,255,0.6);
+  width: 100%; padding: 0 2px;
+}
+.message-other .waudio-time { color: var(--sq-text-muted, #6b7280); }
+.wf-bar {
+  flex: 1; border-radius: 2px;
+  transition: background .1s;
+  min-width: 2px;
+}
+
+/* ── File & voice in chat input ── */
+.chat-file-label {
+  display: flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px; border-radius: 50%;
+  cursor: pointer; color: var(--sq-text-muted); flex-shrink: 0;
+  transition: all .15s;
+}
+.chat-file-label:hover { background: var(--sq-border-light); color: var(--sq-primary); }
+.chat-file-input { display: none; }
+.chat-file-name {
+  font-size: 11px; color: var(--sq-primary); max-width: 80px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex-shrink: 0;
+}
+.chat-mic-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px; border-radius: 50%;
+  cursor: pointer; color: var(--sq-text-muted); flex-shrink: 0;
+  border: none; background: none; font-family: inherit;
+  transition: all .15s;
+}
+.chat-mic-btn:hover { background: var(--sq-border-light); color: var(--sq-primary); }
+.chat-mic-btn.recording { color: #EF4444; background: rgba(239,68,68,0.1); animation: micPulse 1s ease-in-out infinite; }
+@keyframes micPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+.chat-recording-timer {
+  font-size: 13px; font-weight: 600; color: #EF4444;
+  display: none; align-items: center; gap: 6px; flex-shrink: 0;
+}
+.chat-recording-timer.active { display: inline-flex; }
+.chat-recording-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #EF4444; animation: dotPulse 1s ease-in-out infinite;
+}
+@keyframes dotPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+.voice-preview {
+  display: none; align-items: center; gap: 10px;
+  padding: 8px 12px;
+  background: var(--sq-surface, #fff);
+  border-top: 1px solid var(--sq-border, #e9ecef);
+  animation: vpSlideIn .2s ease;
+}
+@keyframes vpSlideIn { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.vp-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border-radius: 50%;
+  border: none; cursor: pointer; flex-shrink: 0;
+  transition: all .15s;
+}
+.vp-delete { background: transparent; color: #6b7280; }
+.vp-delete:hover { background: #f3f4f6; color: #ef4444; }
+.vp-send { background: var(--sq-primary, #0e6b52); color: #fff; }
+.vp-send:hover { opacity: .9; }
+.vp-player {
+  flex: 1; display: flex; flex-wrap: wrap; align-items: center;
+  gap: 6px 8px; min-width: 0;
+}
+.vp-play {
+  display: flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; border-radius: 50%;
+  border: none; background: var(--sq-primary, #0e6b52); color: #fff;
+  cursor: pointer; flex-shrink: 0; font-size: 12px;
+}
+.vp-play:hover { opacity: .9; }
+.vp-waveform {
+  flex: 1; display: flex; align-items: center;
+  gap: 2px; height: 32px; cursor: pointer;
+  min-width: 100px; padding: 0 2px;
+}
+.vp-waveform .wf-bar { background: var(--sq-border-light, #e5e7eb); }
+.vp-waveform .wf-bar-active { background: var(--sq-primary, #0e6b52); }
+.vp-speed {
+  display: flex; align-items: center; justify-content: center;
+  padding: 2px 6px; border-radius: 8px;
+  border: 1px solid var(--sq-border, #d1d5db);
+  background: transparent; color: var(--sq-primary, #0e6b52);
+  font-size: 10px; font-weight: 600; cursor: pointer;
+  flex-shrink: 0; line-height: 1; font-family: inherit;
+}
+.vp-speed:hover { background: var(--sq-primary, #0e6b52); color: #fff; }
+.vp-time {
+  display: flex; justify-content: space-between;
+  font-size: 10px; color: var(--sq-text-muted, #6b7280);
+  width: 100%; padding: 0 2px;
+}
+/* ── System messages ── */
+.message-system {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  color: var(--sq-text-muted, #6b7280);
+}
+.message-system-content {
+  font-style: italic;
+  text-align: center;
+}
+.message-system-time {
+  font-size: 0.68rem;
+  opacity: 0.7;
+  align-self: flex-end;
+}
 </style>
 
 <div class="workspace">
@@ -257,6 +406,7 @@
     </div>
     <div class="workspace-actions">
       {% if request.user == task.assigned_tasker %}
+        <a href="{% url 'tasks:task_detail' task.id %}" class="btn-ws btn-ws-outline"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Voir la tâche</a>
         {% if task.status == 'accepted' %}
           <form method="post" action="{% url 'tasks:task_start' task.id %}" style="display:inline;">
             {% csrf_token %}
@@ -348,22 +498,47 @@
           <div class="ws-chat-empty">Aucun message pour le moment. Commencez la conversation !</div>
         {% endfor %}
       </div>
-      {% if not conversation.is_closed %}
+      <div class="voice-preview" id="voicePreview">
+        <button type="button" class="vp-btn vp-delete" onclick="discardVoicePreview()" title="Supprimer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <div class="vp-player">
+          <button class="vp-play" id="vpPlayBtn" onclick="togglePreviewPlay()" type="button">&#9654;</button>
+          <div class="vp-waveform" id="vpWaveform"></div>
+          <button class="vp-speed" id="vpSpeedBtn" onclick="cyclePreviewSpeed()" type="button">1&#215;</button>
+          <div class="vp-time">
+            <span id="vpCurrent">0:00</span>
+            <span id="vpDuration">0:00</span>
+          </div>
+        </div>
+        <button type="button" class="vp-btn vp-send" onclick="sendVoicePreview()" title="Envoyer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
       <form method="post" class="ws-chat-input" id="ws-chat-form"
+            enctype="multipart/form-data"
             hx-post="{% url 'tasks:task_workspace' task.id %}"
             hx-target="#ws-messages"
             hx-swap="beforeend"
-            hx-on::after-request="document.getElementById('ws-chat-form').querySelector('[name=content]').value='';document.getElementById('ws-chat-form').querySelector('[name=content]').focus();">
+            hx-encoding="multipart/form-data"
+            hx-on::after-request="afterWsHxMessage(event)">
         {% csrf_token %}
         <input type="hidden" name="send_message" value="1">
         {{ chat_form.content }}
+        <span class="chat-recording-timer" id="recordingTimer">
+          <span class="chat-recording-dot"></span>
+          <span id="recordingTimeDisplay">0:00</span>
+        </span>
+        <button type="button" class="chat-mic-btn" id="micBtn" onclick="toggleRecording()" title="Message vocal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        </button>
+        <label class="chat-file-label" for="file-input">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+        </label>
+        <input type="file" name="file" id="file-input" class="chat-file-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.gif,.zip,.txt" onchange="document.getElementById('file-name-display').textContent = this.files[0]?.name || ''">
+        <span id="file-name-display" class="chat-file-name"></span>
         <button type="submit" class="btn-ws btn-ws-primary">Envoyer</button>
       </form>
-      {% else %}
-      <div class="chat-closed-banner" style="border-radius:0;">
-        <p><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Conversation fermée</p>
-      </div>
-      {% endif %}
     </div>
     {% else %}
     <div class="ws-chat-empty" style="padding:3rem;border:1px dashed var(--sq-border);border-radius:14px;">
@@ -632,6 +807,269 @@
 </div>
 
 <script>
+var CSRF = (document.querySelector('[name=csrfmiddlewaretoken]') || {}).value;
+var mediaRecorder = null;
+var audioChunks = [];
+var recordingTimer = null;
+var recordingSeconds = 0;
+var previewBlob = null;
+var previewUrl = null;
+var previewAudio = null;
+
+function afterWsHxMessage(evt) {
+    var form = document.getElementById('ws-chat-form');
+    if (form) {
+        form.querySelector('[name=content]').value = '';
+        form.querySelector('[name=content]').focus();
+    }
+    document.getElementById('file-name-display').textContent = '';
+    var fi = document.getElementById('file-input');
+    if (fi) fi.value = '';
+    var chatMsgs = document.getElementById('ws-messages');
+    if (chatMsgs) chatMsgs.scrollTop = chatMsgs.scrollHeight;
+    initAudioPlayers(chatMsgs);
+    if (evt.detail && evt.detail.successful) {
+        var lastId = evt.detail.xhr.responseText.match(/data-message-id="([^"]+)"/);
+        if (lastId) window._chatLastId = lastId[1];
+    }
+}
+
+function toggleRecording() {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+        stopRecording();
+    } else {
+        startRecording();
+    }
+}
+
+function startRecording() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert('Enregistrement vocal non supporté sur ce navigateur.');
+        return;
+    }
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+        audioChunks = [];
+        mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
+        mediaRecorder.ondataavailable = function(e) {
+            if (e.data.size > 0) audioChunks.push(e.data);
+        };
+        mediaRecorder.onstop = function() {
+            stream.getTracks().forEach(function(t) { t.stop(); });
+            var blob = new Blob(audioChunks, { type: 'audio/webm' });
+            if (blob.size > 0) showVoicePreview(blob);
+            audioChunks = [];
+        };
+        mediaRecorder.start();
+        document.getElementById('micBtn').classList.add('recording');
+        document.getElementById('recordingTimer').classList.add('active');
+        recordingSeconds = 0;
+        document.getElementById('recordingTimeDisplay').textContent = '0:00';
+        recordingTimer = setInterval(function() {
+            recordingSeconds++;
+            var m = Math.floor(recordingSeconds / 60);
+            var s = recordingSeconds % 60;
+            document.getElementById('recordingTimeDisplay').textContent = m + ':' + (s < 10 ? '0' : '') + s;
+        }, 1000);
+    }).catch(function(err) {
+        console.error('Micro access denied:', err);
+        alert('Impossible d\'accéder au micro.');
+    });
+}
+
+function stopRecording() {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+        document.getElementById('micBtn').classList.remove('recording');
+        document.getElementById('recordingTimer').classList.remove('active');
+        clearInterval(recordingTimer);
+    }
+}
+
+function sendVoiceMessage(blob) {
+    var fd = new FormData();
+    fd.append('send_message', '1');
+    fd.append('csrfmiddlewaretoken', CSRF);
+    var ext = (blob.type.indexOf('webm') !== -1) ? 'webm' : 'ogg';
+    fd.append('file', blob, 'voice-message.' + ext);
+    var url = window.location.pathname;
+    fetch(url, { method: 'POST', body: fd, headers: { 'X-Requested-With': 'XMLHttpRequest', 'HX-Request': 'true' } })
+        .then(function(r) { return r.text(); })
+        .then(function(html) {
+            var chatMsgs = document.getElementById('ws-messages');
+            var wrapper = document.createElement('div');
+            wrapper.innerHTML = html;
+            var bubble = wrapper.firstElementChild;
+            if (bubble) chatMsgs.appendChild(bubble);
+            chatMsgs.scrollTop = chatMsgs.scrollHeight;
+            initAudioPlayers(chatMsgs);
+            var idMatch = html.match(/data-message-id="([^"]+)"/);
+            if (idMatch) window._chatLastId = idMatch[1];
+        }).catch(function(err) {
+            console.error('Envoi vocal échoué:', err);
+        });
+}
+
+function showVoicePreview(blob) {
+    previewBlob = blob;
+    previewUrl = URL.createObjectURL(blob);
+    previewAudio = new Audio(previewUrl);
+    var preview = document.getElementById('voicePreview');
+    preview.style.display = 'flex';
+    document.getElementById('vpPlayBtn').innerHTML = '&#9654;';
+    document.getElementById('vpCurrent').textContent = '0:00';
+    document.getElementById('vpDuration').textContent = '0:00';
+    document.getElementById('vpSpeedBtn').textContent = '1&#215;';
+    var waveform = document.getElementById('vpWaveform');
+    buildWaveform(waveform, 40);
+    previewAudio.playbackRate = 1;
+    function vpUpdateWaveform() {
+        var pct = previewAudio.currentTime / (previewAudio.duration || 1);
+        var bars = waveform.querySelectorAll('.wf-bar');
+        var bright = Math.round(pct * bars.length);
+        bars.forEach(function(bar, i) { bar.classList.toggle('wf-bar-active', i < bright); });
+    }
+    previewAudio.addEventListener('loadedmetadata', function() {
+        if (isFinite(previewAudio.duration)) document.getElementById('vpDuration').textContent = formatTime(previewAudio.duration);
+    });
+    previewAudio.addEventListener('timeupdate', function() {
+        vpUpdateWaveform();
+        document.getElementById('vpCurrent').textContent = formatTime(previewAudio.currentTime);
+    });
+    previewAudio.addEventListener('ended', function() {
+        document.getElementById('vpPlayBtn').innerHTML = '&#9654;';
+        waveform.querySelectorAll('.wf-bar').forEach(function(b) { b.classList.remove('wf-bar-active'); });
+        document.getElementById('vpCurrent').textContent = '0:00';
+    });
+}
+
+function discardVoicePreview() {
+    if (previewAudio) { previewAudio.pause(); previewAudio.src = ''; }
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    previewBlob = null;
+    previewUrl = null;
+    previewAudio = null;
+    document.getElementById('voicePreview').style.display = 'none';
+}
+
+function togglePreviewPlay() {
+    if (!previewAudio) return;
+    if (previewAudio.paused) {
+        previewAudio.play();
+        document.getElementById('vpPlayBtn').innerHTML = '&#9646;&#9646;';
+    } else {
+        previewAudio.pause();
+        document.getElementById('vpPlayBtn').innerHTML = '&#9654;';
+    }
+}
+
+function cyclePreviewSpeed() {
+    if (!previewAudio) return;
+    var speeds = [1, 1.5, 2];
+    var idx = speeds.indexOf(previewAudio.playbackRate);
+    var next = speeds[(idx + 1) % speeds.length];
+    previewAudio.playbackRate = next;
+    document.getElementById('vpSpeedBtn').textContent = next + '&#215;';
+}
+
+function sendVoicePreview() {
+    if (!previewBlob) return;
+    if (previewAudio) { previewAudio.pause(); previewAudio.src = ''; }
+    sendVoiceMessage(previewBlob);
+    discardVoicePreview();
+}
+
+function buildWaveform(container, count) {
+    container.innerHTML = '';
+    for (var i = 0; i < count; i++) {
+        var bar = document.createElement('div');
+        bar.className = 'wf-bar';
+        bar.style.height = (4 + Math.random() * 20) + 'px';
+        bar.dataset.index = i;
+        container.appendChild(bar);
+    }
+}
+
+function formatTime(secs) {
+    if (!isFinite(secs) || isNaN(secs)) return '0:00';
+    secs = Math.floor(secs);
+    var m = Math.floor(secs / 60);
+    var s = secs % 60;
+    return m + ':' + (s < 10 ? '0' : '') + s;
+}
+
+function initAudioPlayers(container) {
+    if (!container) container = document;
+    container.querySelectorAll('.waudio').forEach(function(w) {
+        if (w.dataset.initialized) return;
+        w.dataset.initialized = '1';
+        var audio = w.querySelector('audio');
+        var playBtn = w.querySelector('.waudio-play');
+        var curSpan = w.querySelector('.waudio-current');
+        var durSpan = w.querySelector('.waudio-duration');
+        var speedBtn = w.querySelector('.waudio-speed');
+        var waveform = w.querySelector('.waudio-waveform');
+
+        buildWaveform(waveform, 40);
+
+        function wfUpdate() {
+            var pct = audio.currentTime / (audio.duration || 1);
+            var bars = waveform.querySelectorAll('.wf-bar');
+            var bright = Math.round(pct * bars.length);
+            bars.forEach(function(bar, i) { bar.classList.toggle('wf-bar-active', i < bright); });
+        }
+
+        playBtn.onclick = function() {
+            if (audio.paused) {
+                audio.play();
+                playBtn.textContent = '⏸';
+            } else {
+                audio.pause();
+                playBtn.textContent = '▶';
+            }
+        };
+
+        audio.addEventListener('loadedmetadata', function() {
+            if (isFinite(audio.duration)) durSpan.textContent = formatTime(audio.duration);
+        });
+        audio.addEventListener('durationchange', function() {
+            if (isFinite(audio.duration)) durSpan.textContent = formatTime(audio.duration);
+        });
+
+        audio.addEventListener('timeupdate', function() {
+            wfUpdate();
+            curSpan.textContent = formatTime(audio.currentTime);
+        });
+
+        audio.addEventListener('ended', function() {
+            playBtn.textContent = '▶';
+            waveform.querySelectorAll('.wf-bar').forEach(function(b) { b.classList.remove('wf-bar-active'); });
+            curSpan.textContent = formatTime(0);
+        });
+
+        waveform.addEventListener('click', function(e) {
+            var bar = e.target.closest('.wf-bar');
+            if (!bar) return;
+            var idx = parseInt(bar.dataset.index);
+            var total = waveform.querySelectorAll('.wf-bar').length;
+            if (isFinite(audio.duration)) {
+                audio.currentTime = (idx / total) * audio.duration;
+                wfUpdate();
+                curSpan.textContent = formatTime(audio.currentTime);
+            }
+        });
+
+        if (speedBtn) {
+            speedBtn.onclick = function() {
+                var speeds = [1, 1.5, 2];
+                var idx = speeds.indexOf(audio.playbackRate);
+                var next = speeds[(idx + 1) % speeds.length];
+                audio.playbackRate = next;
+                speedBtn.textContent = next + '×';
+            };
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   var tabs = document.querySelectorAll('.workspace-tab');
   var defaultTab = 'chat';
@@ -662,6 +1100,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   var chatMsgs = document.getElementById('ws-messages');
   if (chatMsgs) {
+    initAudioPlayers(chatMsgs);
     chatMsgs.scrollTop = chatMsgs.scrollHeight;
     document.addEventListener('htmx:afterRequest', function(evt) {
       if (evt.detail.target && evt.detail.target.id === 'ws-messages') {
@@ -670,6 +1109,7 @@ document.addEventListener('DOMContentLoaded', function() {
           var lastId = evt.detail.xhr.responseText.match(/data-message-id="([^"]+)"/);
           if (lastId) window._chatLastId = lastId[1];
         }
+        initAudioPlayers(chatMsgs);
       }
     });
 
@@ -688,13 +1128,15 @@ document.addEventListener('DOMContentLoaded', function() {
           if (data.messages && data.messages.length > 0) {
             data.messages.forEach(function(msg) {
               if (chatMsgs.querySelector('[data-message-id="' + msg.id + '"]')) return;
-              var bubble = document.createElement('div');
-              bubble.className = 'message-bubble ' + (msg.is_mine ? 'message-mine' : 'message-other');
-              bubble.dataset.messageId = msg.id;
-              bubble.innerHTML = '<div class="message-content">' + msg.content + '</div><span class="message-time">' + new Date(msg.created_at).toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'}) + '</span>';
-              chatMsgs.appendChild(bubble);
-              lastId = msg.id;
+              var wrapper = document.createElement('div');
+              wrapper.innerHTML = msg.rendered_html;
+              var bubble = wrapper.firstElementChild;
+              if (bubble) {
+                chatMsgs.appendChild(bubble);
+                lastId = msg.id;
+              }
             });
+            initAudioPlayers(chatMsgs);
             chatMsgs.scrollTop = chatMsgs.scrollHeight;
           }
         })

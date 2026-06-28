@@ -1,57 +1,459 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Vérification Face ID — SideQuest{% endblock %}
-
-{% block extra_js %}
-<script src="{% static 'accounts/js/face_capture.js' %}"></script>
-{% endblock %}
+{% block title %}Vérification du visage — SideQuest{% endblock %}
 
 {% block content %}
-<div class="auth-container">
-    <div class="auth-card auth-card-wide">
-        <div class="page-header">
-            <a href="{% url 'accounts:profile' %}" class="btn-back" title="Retour">&#8592;</a>
-        </div>
-        <h1>Vérification d'identité</h1>
-        <p class="auth-subtitle">Prenez 4 photos selon les instructions ci-dessous</p>
-
-        <div class="face-steps" x-data="{ step: 1 }">
-            <div class="face-step" :class="{ active: step >= 1 }">
-                <div class="face-step-number">1</div>
-                <h3>Photo initiale</h3>
-                <p>Regardez la caméra face à vous</p>
-                <input type="file" name="face_photo_initial" accept="image/*" capture="user" required class="form-input">
-            </div>
-
-            <div class="face-step" :class="{ active: step >= 2 }">
-                <div class="face-step-number">2</div>
-                <h3>Visage tourné à gauche</h3>
-                <p>Tournez votre visage vers la gauche</p>
-                <input type="file" name="face_photo_left" accept="image/*" capture="user" required class="form-input">
-            </div>
-
-            <div class="face-step" :class="{ active: step >= 3 }">
-                <div class="face-step-number">3</div>
-                <h3>Visage tourné à droite</h3>
-                <p>Tournez votre visage vers la droite</p>
-                <input type="file" name="face_photo_right" accept="image/*" capture="user" required class="form-input">
-            </div>
-
-            <div class="face-step" :class="{ active: step >= 4 }">
-                <div class="face-step-number">4</div>
-                <h3>Clignement des yeux</h3>
-                <p>Prenez une photo en clignant des yeux</p>
-                <input type="file" name="face_photo_blink" accept="image/*" capture="user" required class="form-input">
-            </div>
-        </div>
-
-        <form method="post" enctype="multipart/form-data" class="auth-form">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-primary btn-full">Envoyer pour vérification</button>
-        </form>
-
-        <p class="form-hint">L'admin validera votre identité manuellement.</p>
+<div class="vf-wrap">
+  <div class="vf-card">
+    <div class="vf-top">
+      <a href="{% url 'accounts:profile' %}" class="vf-back">&#8592;</a>
+      <span class="vf-title">Vérification du visage</span>
     </div>
+
+    <div class="vf-camera-area" id="cameraArea">
+      <div class="vf-circle" id="circleFrame">
+        <video id="video" class="vf-video" autoplay playsinline muted></video>
+        <div class="vf-loading-overlay" id="loadingOverlay">
+          <div class="vf-spinner"></div>
+        </div>
+      </div>
+
+      <div class="vf-prompt" id="promptText">Placez votre visage devant la caméra</div>
+
+      <div class="vf-face-status" id="faceStatus">
+        <span class="vf-face-dot" id="faceDot"></span>
+        <span id="faceStatusText">Détection du visage...</span>
+      </div>
+
+      <div class="vf-step-indicator" id="stepIndicator"></div>
+
+      <div class="vf-warning" id="warningMsg"></div>
+    </div>
+
+    <button class="vf-start-btn" id="startBtn">
+      <span class="vf-start-inner">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Commencer
+      </span>
+    </button>
+
+    <div class="vf-success" id="successScreen">
+      <div class="vf-check-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2>Photos prises</h2>
+      <p>Envoi en cours...</p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" id="faceForm">
+      {% csrf_token %}
+      <input type="hidden" name="has_captured" value="1">
+    </form>
+  </div>
 </div>
+
+<style>
+.vf-wrap {
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:16px;box-sizing:border-box;
+}
+.vf-card {
+  width:100%;max-width:420px;background:#fff;border-radius:24px;
+  padding:24px 20px 32px;box-shadow:0 4px 32px rgba(0,0,0,0.08);
+  text-align:center;
+}
+.vf-top {
+  display:flex;align-items:center;gap:8px;margin-bottom:20px;
+}
+.vf-back {
+  font-size:22px;text-decoration:none;color:#1A1A1A;
+  width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+  border-radius:10px;background:#F3F4F6;
+}
+.vf-title { font-size:16px;font-weight:700;color:#1A1A1A; }
+
+.vf-camera-area {
+  position:relative;display:flex;flex-direction:column;align-items:center;gap:12px;
+}
+.vf-circle {
+  width:300px;height:300px;border-radius:50%;overflow:hidden;
+  position:relative;background:#1A1A1A;flex-shrink:0;
+}
+.vf-video {
+  width:100%;height:100%;object-fit:cover;transform:scaleX(-1);
+  display:block;
+}
+.vf-loading-overlay {
+  position:absolute;inset:0;border-radius:50%;
+  background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;
+  z-index:2;
+}
+.vf-spinner {
+  width:36px;height:36px;border:3px solid rgba(255,255,255,0.3);
+  border-top-color:white;border-radius:50%;animation:vfSpin 0.6s linear infinite;
+}
+@keyframes vfSpin { to { transform:rotate(360deg); } }
+
+.vf-prompt {
+  font-size:15px;font-weight:600;color:#1A1A1A;min-height:22px;
+}
+
+.vf-face-status {
+  display:flex;align-items:center;gap:6px;
+  font-size:13px;font-weight:500;color:#6B7280;
+}
+.vf-face-dot {
+  width:8px;height:8px;border-radius:50%;background:#9CA3AF;flex-shrink:0;
+  transition:background 0.2s;
+}
+.vf-face-dot.ok { background:#10B981;box-shadow:0 0 6px rgba(16,185,129,0.4); }
+
+.vf-step-indicator {
+  font-size:12px;font-weight:600;color:#6B7280;min-height:18px;
+}
+
+.vf-warning {
+  height:0;overflow:hidden;transition:height 0.25s ease;
+  font-size:13px;font-weight:600;color:#DC2626;background:#FEF2F2;
+  border-radius:10px;padding:0 14px;display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.vf-warning.show {
+  height:38px;padding:8px 14px;
+}
+
+.vf-start-btn {
+  display:inline-flex;align-items:center;gap:8px;
+  padding:14px 32px;border-radius:999px;border:none;
+  background:#1B4332;color:white;font-size:15px;font-weight:600;
+  cursor:pointer;transition:all 0.15s;margin-top:16px;
+}
+.vf-start-btn:hover { background:#0d3628; }
+.vf-start-btn:disabled { opacity:0.35;cursor:default; }
+.vf-start-inner { display:flex;align-items:center;gap:8px; }
+
+.vf-success {
+  display:none;flex-direction:column;align-items:center;gap:8px;
+  padding:20px 0;
+}
+.vf-success.show { display:flex; }
+.vf-check-icon {
+  width:80px;height:80px;border-radius:50%;background:#10B981;
+  display:flex;align-items:center;justify-content:center;
+  animation:vfPop 0.4s ease;
+}
+.vf-success h2 { margin:0;font-size:18px;font-weight:700;color:#1A1A1A; }
+.vf-success p { margin:0;font-size:13px;color:#6B7280; }
+
+@keyframes vfPop {
+  0% { transform:scale(0); }
+  60% { transform:scale(1.15); }
+  100% { transform:scale(1); }
+}
+
+@media (max-width:400px) {
+  .vf-circle { width:260px;height:260px; }
+  .vf-card { padding:16px; }
+}
+</style>
+
+<script>
+(function() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    document.getElementById('warningMsg').textContent = 'Appareil photo non disponible';
+    document.getElementById('warningMsg').classList.add('show');
+    return;
+  }
+
+  var positions = ['left', 'right', 'forward'];
+  var posLabels = {
+    left: 'Tournez la tête vers la gauche',
+    right: 'Tournez la tête vers la droite',
+    forward: 'Regardez droit devant'
+  };
+  var posFieldNames = {
+    left: 'face_photo_left',
+    right: 'face_photo_right',
+    forward: 'face_photo_initial'
+  };
+
+  var photos = [null, null, null];
+  var videoStream = null;
+  var detectorMode = null;
+  var captureState = 'idle'; // idle | running | done
+  var currentPos = 0;
+  var faceStable = false;
+  var stableTimer = null;
+
+  var video = document.getElementById('video');
+  var startBtn = document.getElementById('startBtn');
+  var warning = document.getElementById('warningMsg');
+  var successScreen = document.getElementById('successScreen');
+  var cameraArea = document.getElementById('cameraArea');
+  var faceForm = document.getElementById('faceForm');
+  var faceDot = document.getElementById('faceDot');
+  var faceStatusText = document.getElementById('faceStatusText');
+  var loadingOverlay = document.getElementById('loadingOverlay');
+  var promptText = document.getElementById('promptText');
+  var stepIndicator = document.getElementById('stepIndicator');
+
+  function hideWarning() { warning.classList.remove('show'); }
+  function setStatus(txt) { faceStatusText.textContent = txt; }
+
+  // ---------- DETECTOR INIT ----------
+  function tryNativeDetector() {
+    if (!('FaceDetector' in window)) { console.log('FD: FaceDetector API not found'); return false; }
+    try {
+      var fd = new FaceDetector();
+      console.log('FD: FaceDetector created successfully');
+      detectorMode = 'native';
+      setStatus('Détection du visage...');
+      return true;
+    } catch(e) {
+      console.log('FD: FaceDetector constructor failed:', e.message);
+      return false;
+    }
+  }
+
+  function loadFaceapi() {
+    console.log('FD: loading face-api.js from CDN...');
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js';
+    s.onload = function() {
+      console.log('FD: face-api.js loaded');
+      if (detectorMode !== null) return;
+      console.log('FD: loading tiny face detector models...');
+      faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights/')
+        .then(function() {
+          console.log('FD: face-api models ready');
+          if (detectorMode === null) {
+            detectorMode = 'faceapi';
+            setStatus('Détection du visage...');
+          }
+        })
+        .catch(function(e) {
+          console.log('FD: face-api models failed:', e);
+          if (detectorMode === null) tryHeuristicDetector();
+        });
+    };
+    s.onerror = function() {
+      console.log('FD: face-api.js script load failed');
+      if (detectorMode === null) tryHeuristicDetector();
+    };
+    document.head.appendChild(s);
+  }
+
+  function tryHeuristicDetector() {
+    console.log('FD: trying heuristic pixel-based detector...');
+    detectorMode = 'heuristic';
+    setStatus('Détection du visage...');
+  }
+
+  function initDetector() {
+    if (tryNativeDetector()) return;
+    loadFaceapi();
+  }
+
+  // ---------- CAMERA ----------
+  function startCamera() {
+    navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 640 } }
+    }).then(function(stream) {
+      videoStream = stream;
+      video.srcObject = stream;
+      loadingOverlay.style.display = 'none';
+    }).catch(function(err) {
+      loadingOverlay.style.display = 'none';
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        warning.innerHTML = 'Veuillez autoriser l\'accès à la caméra <button id="retryCam" style="margin-left:6px;padding:4px 12px;border-radius:999px;border:1px solid #DC2626;background:transparent;color:#DC2626;font-size:12px;font-weight:600;cursor:pointer;">Réessayer</button>';
+      } else {
+        warning.textContent = 'Impossible d\'accéder à la caméra';
+      }
+      warning.classList.add('show');
+    });
+    document.addEventListener('click', function retry(e) {
+      if (e.target && e.target.id === 'retryCam') {
+        warning.classList.remove('show');
+        loadingOverlay.style.display = 'flex';
+        startCamera();
+      }
+    });
+  }
+
+  function stopCamera() {
+    if (videoStream) {
+      videoStream.getTracks().forEach(function(t) { t.stop(); });
+      videoStream = null;
+    }
+  }
+
+  // ---------- FACE DETECTION ----------
+  var heuristicCanvas = document.createElement('canvas');
+  heuristicCanvas.width = 80;
+  heuristicCanvas.height = 80;
+
+  function detectFace() {
+    if (detectorMode === 'native') {
+      try {
+        var fd = new FaceDetector();
+        return fd.detect(video).then(function(faces) {
+          return faces.length > 0;
+        }).catch(function(e) {
+          console.log('FD: native detect error:', e.message);
+          return false;
+        });
+      } catch(e) {
+        console.log('FD: native detect threw:', e.message);
+        return Promise.resolve(false);
+      }
+    }
+    if (detectorMode === 'faceapi' && typeof faceapi !== 'undefined') {
+      return faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({
+        inputSize: 320, scoreThreshold: 0.5
+      })).then(function(r) {
+        return r !== undefined && r !== null;
+      }).catch(function(e) {
+        console.log('FD: faceapi detect error:', e.message);
+        return false;
+      });
+    }
+    if (detectorMode === 'heuristic') {
+      var ctx = heuristicCanvas.getContext('2d');
+      var cx = video.videoWidth / 2;
+      var cy = video.videoHeight / 2;
+      var s = Math.min(video.videoWidth, video.videoHeight) * 0.3;
+      ctx.drawImage(video, cx - s/2, cy - s/2, s, s, 0, 0, 80, 80);
+      var data = ctx.getImageData(0, 0, 80, 80).data;
+      var sum = 0, n = data.length / 4;
+      for (var i = 0; i < data.length; i += 4) sum += (data[i] + data[i+1] + data[i+2]) / 3;
+      var mean = sum / n;
+      var sqDiff = 0;
+      for (var i = 0; i < data.length; i += 4) {
+        var v = (data[i] + data[i+1] + data[i+2]) / 3;
+        sqDiff += (v - mean) * (v - mean);
+      }
+      var std = Math.sqrt(sqDiff / n);
+      console.log('FD: heuristic std=' + std.toFixed(1));
+      return Promise.resolve(std > 25);
+    }
+    return Promise.resolve(false);
+  }
+
+  // ---------- CAPTURE ----------
+  function capturePhoto() {
+    return new Promise(function(resolve) {
+      var canvas = document.createElement('canvas');
+      canvas.width = 300;
+      canvas.height = 300;
+      var ctx = canvas.getContext('2d');
+      ctx.translate(300, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(video, 0, 0, 300, 300);
+      canvas.toBlob(function(blob) { resolve(blob); }, 'image/jpeg', 0.85);
+    });
+  }
+
+  // ---------- AUTO-CAPTURE FLOW ----------
+  function startCapture() {
+    captureState = 'running';
+    currentPos = 0;
+    startBtn.style.display = 'none';
+    showPosition(0);
+    if (detectorMode !== null && detectorMode !== 'failed') {
+      detectLoop();
+    } else {
+      setStatus('Détection non disponible');
+      warning.textContent = 'La détection faciale n\'est pas disponible';
+      warning.classList.add('show');
+    }
+  }
+
+  function showPosition(index) {
+    var pos = positions[index];
+    promptText.textContent = posLabels[pos];
+    stepIndicator.textContent = (index + 1) + ' / 3';
+    faceDot.className = 'vf-face-dot';
+    setStatus('Placez votre visage...');
+    faceStable = false;
+    if (stableTimer) { clearTimeout(stableTimer); stableTimer = null; }
+  }
+
+  function onFaceFound() {
+    if (captureState !== 'running') return;
+    faceDot.className = 'vf-face-dot ok';
+    setStatus('Visage détecté');
+    if (!faceStable) {
+      faceStable = true;
+      stableTimer = setTimeout(function() {
+        if (captureState !== 'running' || !faceStable) return;
+        capturePhoto().then(function(blob) {
+          photos[currentPos] = blob;
+          currentPos++;
+          if (currentPos < positions.length) {
+            showPosition(currentPos);
+          } else {
+            finishCapture();
+          }
+        });
+      }, 800);
+    }
+  }
+
+  function onFaceLost() {
+    if (captureState !== 'running') return;
+    faceDot.className = 'vf-face-dot';
+    setStatus('Aucun visage détecté');
+    faceStable = false;
+    if (stableTimer) { clearTimeout(stableTimer); stableTimer = null; }
+  }
+
+  function finishCapture() {
+    captureState = 'done';
+    stopCamera();
+    successScreen.classList.add('show');
+    cameraArea.style.display = 'none';
+    startBtn.style.display = 'none';
+    submitPhotos();
+  }
+
+  function submitPhotos() {
+    var fd = new FormData(faceForm);
+    var fieldNames = ['face_photo_left', 'face_photo_right', 'face_photo_initial'];
+    for (var i = 0; i < photos.length; i++) {
+      if (photos[i]) fd.append(fieldNames[i], photos[i], fieldNames[i] + '.jpg');
+    }
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', window.location.pathname, true);
+    xhr.onload = function() {
+      if (xhr.status >= 200 && xhr.status < 400) {
+        window.location.href = '{% url "tasks:tasker_dashboard" %}';
+      }
+    };
+    xhr.send(fd);
+  }
+
+  // ---------- DETECTION LOOP ----------
+  function detectLoop() {
+    if (captureState !== 'running') return;
+    if (detectorMode === null || detectorMode === 'failed') {
+      setTimeout(detectLoop, 500);
+      return;
+    }
+    detectFace().then(function(found) {
+      if (found) onFaceFound();
+      else onFaceLost();
+      setTimeout(detectLoop, 500);
+    });
+  }
+
+  // ---------- BOOT ----------
+  startBtn.addEventListener('click', startCapture);
+  initDetector();
+  startCamera();
+  setTimeout(function waitVideo() {
+    if (!video.videoWidth) { setTimeout(waitVideo, 300); return; }
+    console.log('FD: video ready (' + video.videoWidth + 'x' + video.videoHeight + ')');
+  }, 500);
+})();
+</script>
 {% endblock %}

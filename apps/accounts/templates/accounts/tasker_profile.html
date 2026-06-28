@@ -1,284 +1,599 @@
 {% extends 'base.html' %}
+{% load static %}
+{% load task_extras %}
 
-{% block title %}{{ tasker.full_name }} — SideQuest{% endblock %}
+{% block title %}Mon profil Tasker — SideQuest{% endblock %}
 
-{% block content %}
-<div class="tasker-profile">
-    <div class="profile-header">
-        <a href="javascript:history.back()" class="btn-back" title="Retour">&#8592;</a>
-        <div class="profile-avatar-section">
-            {% if tasker.avatar %}
-                <img src="{{ tasker.avatar.url }}" alt="{{ tasker.full_name }}" class="profile-avatar">
-            {% else %}
-                <div class="profile-avatar-default">{{ tasker.full_name|make_list|first|upper }}</div>
-            {% endif %}
-            <div class="profile-info">
-                <h1>{{ tasker.full_name }}</h1>
-                <div class="profile-meta">
-                    <span class="level-badge">Niveau {{ profile.level }}</span>
-                    <span class="xp-text">{{ profile.xp }} XP</span>
-                    {% if profile.is_verified %}
-                        <span class="verified-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Vérifié</span>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="profile-stats">
-        <div class="stat-card">
-            <span class="stat-value">{{ profile.tasks_completed }}</span>
-            <span class="stat-label">Tasks terminées</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-value">{% if profile.tasker_rating_avg %}{{ profile.tasker_rating_avg }}{% else %}—{% endif %}</span>
-            <span class="stat-label">Note moyenne</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-value">{{ total_reviews }}</span>
-            <span class="stat-label">Avis reçus</span>
-        </div>
-    </div>
-
-    {% if badges %}
-    <div class="profile-section">
-        <h2>Badges</h2>
-        <div class="badges-grid">
-            {% for ub in badges %}
-                <div class="badge-item {% if ub.badge.tier == 'gold' %}badge-gold{% elif ub.badge.tier == 'silver' %}badge-silver{% else %}badge-bronze{% endif %}">
-                    <span class="badge-icon">{{ ub.badge.icon }}</span>
-                    <div>
-                        <strong>{{ ub.badge.name }}</strong>
-                        <p class="badge-desc">{{ ub.badge.description }}</p>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
-
-    {% if reviews %}
-    <div class="profile-section">
-        <h2>Avis clients</h2>
-        <div class="reviews-list">
-            {% for review in reviews %}
-                <div class="review-card">
-                    <div class="review-header">
-                        <div class="review-stars">
-                            {% for i in "12345" %}
-                                <span class="star {% if i|add:0 <= review.rating %}star-filled{% endif %}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
-                            {% endfor %}
-                        </div>
-                        <span class="review-date">{{ review.created_at|date:"d/m/Y" }}</span>
-                    </div>
-                    {% if review.comment %}
-                        <p class="review-comment">{{ review.comment }}</p>
-                    {% endif %}
-                    <span class="review-task">Task : {{ review.task.title }}</span>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% else %}
-    <div class="profile-section">
-        <p class="text-muted">Aucun avis pour le moment.</p>
-    </div>
-    {% endif %}
-</div>
-
+{% block extra_css %}
 <style>
-.tasker-profile {
-    max-width: 700px;
-    margin: 0 auto;
+.sq-profile { max-width: 640px; margin: 0 auto; padding-bottom: 40px; }
+
+.sq-prof-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 24px 0 16px;
+}
+.sq-prof-avatar {
+  width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0;
+  background: var(--sq-primary); display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 700; font-size: 20px; overflow: hidden;
+}
+.sq-prof-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.sq-prof-info { flex: 1; min-width: 0; }
+.sq-prof-name { font-size: 18px; font-weight: 700; color: var(--sq-text); margin: 0; }
+.sq-prof-email { font-size: 13px; color: var(--sq-text-muted); margin: 0; }
+
+.sq-prof-rank {
+  display: inline-flex; align-items: center; gap: 4px;
+  margin-top: 6px; padding: 3px 10px; border-radius: 999px;
+  font-size: 11px; font-weight: 600;
+  background: linear-gradient(135deg, #0e6b52, #52B788);
+  color: white;
 }
 
-.profile-header {
-    margin-bottom: 2rem;
+.sq-prof-stats {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 8px; margin-bottom: 22px;
+}
+.sq-prof-stat {
+  background: var(--sq-surface); border: 1px solid var(--sq-border-light);
+  border-radius: 14px; padding: 14px; text-align: center;
+}
+.sq-prof-stat-value { font-size: 20px; font-weight: 700; color: var(--sq-text); }
+.sq-prof-stat-value.gold { color: #F59E0B; }
+.sq-prof-stat-label { font-size: 10px; color: var(--sq-text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
+
+.sq-section-title {
+  font-size: 15px; font-weight: 700; color: var(--sq-text);
+  margin: 0 0 10px; display: flex; align-items: center; gap: 6px;
 }
 
-.profile-avatar-section {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    margin-top: 1rem;
-    padding: 1.5rem;
-    background: var(--sq-surface, #fff);
-    border-radius: 16px;
-    border: 1px solid var(--sq-border, #e2e8f0);
+.sq-action-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 20px; border-radius: 999px; font-size: 13px; font-weight: 600;
+  border: none; cursor: pointer; transition: all 0.15s; margin-bottom: 10px;
+}
+.sq-action-btn.primary {
+  background: var(--sq-primary); color: white;
+}
+.sq-action-btn.primary:hover { background: #0d3628; }
+.sq-action-btn.secondary {
+  background: var(--sq-surface); color: var(--sq-text);
+  border: 1px solid var(--sq-border-light);
+}
+.sq-action-btn.secondary:hover { background: var(--sq-border-light); }
+.sq-action-btn .xp-badge {
+  font-size: 11px; background: rgba(255,255,255,0.2);
+  padding: 2px 8px; border-radius: 999px; margin-left: 4px;
+}
+.sq-action-btn.primary .xp-badge { background: rgba(255,255,255,0.2); }
+.sq-action-btn.secondary .xp-badge { background: var(--sq-primary-light); color: var(--sq-primary); }
+
+.sq-panel {
+  background: var(--sq-surface); border: 1px solid var(--sq-border-light);
+  border-radius: 16px; padding: 20px; margin-bottom: 22px;
 }
 
-.profile-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid var(--sq-primary);
+.sq-panel label {
+  display: block; font-size: 12px; font-weight: 600; color: var(--sq-text); margin-bottom: 4px;
+}
+.sq-panel input[type="text"],
+.sq-panel input[type="number"],
+.sq-panel textarea,
+.sq-panel input[type="file"] {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--sq-border);
+  border-radius: 10px; font-size: 13px; background: var(--sq-bg); color: var(--sq-text);
+  box-sizing: border-box;
+}
+.sq-panel textarea { resize: vertical; min-height: 80px; }
+.sq-panel input:focus,
+.sq-panel textarea:focus { outline: none; border-color: var(--sq-primary); }
+.sq-panel .form-group { margin-bottom: 14px; }
+.sq-panel .btn-save {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 24px; border-radius: 999px; font-size: 13px; font-weight: 600;
+  background: var(--sq-primary); color: white; border: none; cursor: pointer;
+}
+.sq-panel .btn-cancel {
+  display: inline-flex; align-items: center; gap: 6px; margin-left: 8px;
+  padding: 10px 20px; border-radius: 999px; font-size: 13px; font-weight: 600;
+  background: transparent; color: var(--sq-text-muted); border: 1px solid var(--sq-border-light);
+  cursor: pointer;
+}
+.sq-panel .form-actions { display: flex; align-items: center; gap: 8px; margin-top: 14px; }
+
+.sq-prof-skills {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;
+}
+.sq-prof-skill {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 5px 12px; border-radius: 999px;
+  background: var(--sq-tasker-light); border: 1px solid var(--sq-primary-light);
+  font-size: 12px; font-weight: 500; color: var(--sq-primary);
+}
+.sq-prof-skill-remove {
+  background: none; border: none; cursor: pointer;
+  font-size: 14px; color: var(--sq-primary); padding: 0; line-height: 1; margin-left: 2px;
 }
 
-.profile-avatar-default {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: var(--sq-primary);
-    color: white;
-    font-size: 2rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.sq-category-group { margin-bottom: 16px; }
+.sq-category-label {
+  font-size: 12px; font-weight: 700; color: var(--sq-text-muted);
+  text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;
+}
+.sq-category-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+}
+.sq-category-grid label {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 500; color: var(--sq-text);
+  padding: 6px 8px; border-radius: 8px; cursor: pointer;
+  transition: background 0.1s;
+}
+.sq-category-grid label:hover { background: var(--sq-border-light); }
+.sq-category-grid input[type="checkbox"] { accent-color: var(--sq-primary); }
+
+.sq-prof-badges {
+  display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 22px;
+}
+.sq-prof-badge {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; border-radius: 12px;
+  background: var(--sq-surface); border: 1px solid var(--sq-border-light);
+  font-size: 20px; cursor: pointer;
+  transition: all 0.15s; text-decoration: none;
+}
+.sq-prof-badge:hover { border-color: var(--sq-primary); background: var(--sq-primary-light); transform: scale(1.05); }
+.sq-prof-badge.locked { opacity: 0.45; filter: grayscale(0.8); }
+.sq-prof-badge.locked:hover { opacity: 0.7; }
+
+.sq-badge-popup {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 9999; display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.35); backdrop-filter: blur(2px);
+}
+.sq-badge-popup-inner {
+  background: var(--sq-surface); border-radius: 16px; padding: 28px 32px;
+  max-width: 320px; width: 90%; text-align: center;
+  border: 1px solid var(--sq-border-light); box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+  animation: popupIn 0.15s ease-out;
+}
+@keyframes popupIn { from { opacity:0; transform:scale(0.92) translateY(8px); } to { opacity:1; transform:scale(1) translateY(0); } }
+.sq-badge-popup-icon { font-size: 40px; margin-bottom: 8px; }
+.sq-badge-popup-name { font-size: 17px; font-weight: 700; color: var(--sq-text); margin-bottom: 4px; }
+.sq-badge-popup-desc { font-size: 13px; color: var(--sq-text-muted); margin-bottom: 12px; line-height: 1.4; }
+.sq-badge-popup-status {
+  display: inline-block; padding: 4px 14px; border-radius: 999px;
+  font-size: 11px; font-weight: 600;
+}
+.sq-badge-popup-status.earned { background: #D8F3DC; color: #1B4332; }
+.sq-badge-popup-status.locked { background: #F3F4F6; color: #6B7280; }
+.sq-badge-popup-close {
+  margin-top: 14px; padding: 8px 24px; border-radius: 999px;
+  border: 1px solid var(--sq-border-light); background: transparent;
+  font-size: 12px; font-weight: 500; color: var(--sq-text-muted); cursor: pointer;
 }
 
-.profile-info h1 {
-    font-size: 1.5rem;
-    margin: 0 0 0.25rem;
+.sq-custom-skill-row {
+  display: flex; gap: 8px; align-items: center;
+}
+.sq-custom-skill-row input { flex: 1; }
+.sq-custom-skill-row button {
+  padding: 8px 14px; border-radius: 999px; border: 1px dashed var(--sq-border);
+  background: transparent; color: var(--sq-text-muted); font-size: 12px; cursor: pointer;
+  white-space: nowrap;
+}
+.sq-custom-tags {
+  display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px;
+}
+.sq-custom-tag {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 3px 10px; border-radius: 999px;
+  background: var(--sq-border-light); font-size: 12px; color: var(--sq-text);
+}
+.sq-custom-tag button {
+  background: none; border: none; cursor: pointer; font-size: 14px; color: var(--sq-text-muted); padding: 0; line-height: 1;
 }
 
-.profile-meta {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
+.face-status { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 10px; font-size: 13px; margin-bottom: 14px; }
+.face-status.approved { background: #D8F3DC; color: #1B4332; }
+.face-status.pending { background: #FEF3C7; color: #92400E; }
+.face-status.missing { background: #F3F4F6; color: #6B7280; }
+.face-status a { color: inherit; font-weight: 600; text-decoration: underline; }
+
+.role-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600;
+  background: var(--sq-surface); border: 1px solid var(--sq-border-light);
+  color: var(--sq-text-muted); margin-left: 8px;
 }
+.role-badge.client { border-color: #3B82F6; color: #3B82F6; background: #EFF6FF; }
+.role-badge.tasker { border-color: var(--sq-primary); color: var(--sq-primary); background: var(--sq-tasker-light); }
 
-.level-badge {
-    background: var(--sq-primary);
-    color: white;
-    padding: 0.2rem 0.6rem;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
-}
-
-.xp-text {
-    font-size: 0.85rem;
-    color: var(--sq-text-muted, #64748b);
-}
-
-.verified-badge {
-    background: rgba(16, 185, 129, 0.1);
-    color: #10b981;
-    padding: 0.2rem 0.6rem;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
-}
-
-.profile-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
-
-.stat-card {
-    text-align: center;
-    padding: 1.25rem;
-    background: var(--sq-surface, #fff);
-    border-radius: 12px;
-    border: 1px solid var(--sq-border, #e2e8f0);
-}
-
-.stat-value {
-    display: block;
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--sq-text, #1e293b);
-}
-
-.stat-label {
-    font-size: 0.8rem;
-    color: var(--sq-text-muted, #64748b);
-}
-
-.profile-section {
-    margin-bottom: 2rem;
-}
-
-.profile-section h2 {
-    font-size: 1.25rem;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--sq-border, #e2e8f0);
-}
-
-.badges-grid {
-    display: grid;
-    gap: 0.75rem;
-}
-
-.badge-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    background: var(--sq-surface, #fff);
-    border-radius: 12px;
-    border-left: 4px solid;
-}
-
-.badge-gold { border-left-color: #f59e0b; }
-.badge-silver { border-left-color: #94a3b8; }
-.badge-bronze { border-left-color: #b45309; }
-
-.badge-icon {
-    font-size: 2rem;
-}
-
-.badge-desc {
-    font-size: 0.8rem;
-    color: var(--sq-text-muted, #64748b);
-    margin: 0;
-}
-
-.reviews-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.review-card {
-    padding: 1rem;
-    background: var(--sq-surface, #fff);
-    border-radius: 12px;
-    border: 1px solid var(--sq-border, #e2e8f0);
-}
-
-.review-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-}
-
-.review-stars {
-    display: flex;
-    gap: 0.15rem;
-}
-
-.star {
-    color: #e2e8f0;
-    font-size: 1.1rem;
-}
-
-.star-filled {
-    color: #f59e0b;
-}
-
-.review-date {
-    font-size: 0.8rem;
-    color: var(--sq-text-muted, #64748b);
-}
-
-.review-comment {
-    margin: 0 0 0.5rem;
-    font-size: 0.95rem;
-    color: var(--sq-text, #1e293b);
-}
-
-.review-task {
-    font-size: 0.75rem;
-    color: var(--sq-text-muted, #64748b);
-    font-style: italic;
+@media (max-width: 480px) {
+  .sq-prof-stats { gap: 6px; }
+  .sq-prof-stat { padding: 10px; }
+  .sq-prof-stat-value { font-size: 17px; }
+  .sq-category-grid { grid-template-columns: 1fr; }
 }
 </style>
+{% endblock %}
+
+{% block content %}
+<div class="sq-profile">
+
+  <div style="display:flex;align-items:center;gap:8px;padding:16px 0 0;">
+    <a href="javascript:history.back()" class="btn-back" title="Retour">&#8592;</a>
+    {% if form %}<span class="role-badge tasker">Tasker</span>{% endif %}
+  </div>
+
+  <div class="sq-prof-header">
+    <div class="sq-prof-avatar">
+      {% if tasker.avatar %}<img src="{{ tasker.avatar.url }}" alt="">{% else %}{{ tasker.full_name|first|upper }}{% endif %}
+    </div>
+    <div class="sq-prof-info">
+      <h1 class="sq-prof-name">{{ tasker.full_name }}</h1>
+      {% if form %}<p class="sq-prof-email">{{ tasker.email }}</p>{% endif %}
+      {% if profile.level %}
+      <div class="sq-prof-rank">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        {{ profile.level|rank_name }} · Niveau {{ profile.level }}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="sq-prof-stats">
+    <div class="sq-prof-stat">
+      <div class="sq-prof-stat-value">{{ profile.xp }}</div>
+      <div class="sq-prof-stat-label">XP</div>
+    </div>
+    <div class="sq-prof-stat">
+      <div class="sq-prof-stat-value">{{ profile.level }}</div>
+      <div class="sq-prof-stat-label">Niveau</div>
+    </div>
+    <div class="sq-prof-stat">
+      <div class="sq-prof-stat-value gold">{{ profile.tasker_rating_avg|floatformat:1 }}</div>
+      <div class="sq-prof-stat-label">Note tasker</div>
+    </div>
+    <div class="sq-prof-stat">
+      <div class="sq-prof-stat-value">{{ profile.tasks_completed|default:"0" }}</div>
+      <div class="sq-prof-stat-label">Tasks complétées</div>
+    </div>
+  </div>
+
+  {% if profile.bio %}
+  <p style="font-size:13px;color:var(--sq-text);margin:0 0 14px;">{{ profile.bio }}</p>
+  {% endif %}
+
+  <h2 class="sq-section-title">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+    Badges
+  </h2>
+  <div class="sq-prof-badges">
+    {% for ub in tasker.badges_earned.all %}
+    <span class="sq-prof-badge"
+      onclick="showBadgePopup('{{ ub.badge.icon|escapejs }}', '{{ ub.badge.name|escapejs }}', '{{ ub.badge.description|escapejs }}', true)">
+      <i class="ti ti-{{ ub.badge.icon }}"></i>
+    </span>
+    {% empty %}
+    <span style="font-size:12px;color:var(--sq-text-muted);">Aucun badge pour le moment</span>
+    {% endfor %}
+  </div>
+
+  {% if form %}
+  {# ─── Compétences ─── #}
+  <h2 class="sq-section-title">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+    Compétences
+  </h2>
+
+  <div class="sq-prof-skills" id="skillList">
+    {% for s in profile.skills.all %}
+    <span class="sq-prof-skill" data-id="{{ s.id }}">
+      <i class="ti ti-{{ s.icon }}" style="font-size:14px;"></i>
+      {{ s.name }}
+    </span>
+    {% empty %}
+    <span style="font-size:12px;color:var(--sq-text-muted);">Aucune compétence</span>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if form %}
+  <button class="sq-action-btn {% if profile.skills.exists %}secondary{% else %}primary{% endif %}" id="toggleSkillsBtn" onclick="toggleSkillsPanel()">
+    {% if profile.skills.exists %}
+    Modifier compétences
+    {% else %}
+    Ajouter des compétences
+    <span class="xp-badge">+10 XP</span>
+    {% endif %}
+  </button>
+
+  <div class="sq-panel" id="skillsPanel" style="display:none;">
+    <div style="max-height:320px;overflow-y:auto;padding-right:4px;">
+      {% regroup skills by get_category_display as skill_categories %}
+      {% for cat in skill_categories %}
+      <div class="sq-category-group">
+        <div class="sq-category-label">{{ cat.grouper|default:"Autre" }}</div>
+        <div class="sq-category-grid">
+          {% for s in cat.list %}
+          <label>
+            <input type="checkbox" class="skill-cb" value="{{ s.id }}"
+              {% if s in profile.skills.all %}checked{% endif %}>
+            {{ s.name }}
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--sq-border-light);">
+      <div class="sq-custom-skill-row">
+        <input type="text" id="customSkillInput" placeholder="Autre compétence..." style="padding:8px 12px;border:1px solid var(--sq-border);border-radius:10px;font-size:13px;">
+        <button type="button" onclick="addCustomSkill()">Ajouter</button>
+      </div>
+      <div class="sq-custom-tags" id="customSkillTags"></div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-save" onclick="saveSkills()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        Enregistrer
+      </button>
+      <button type="button" class="btn-cancel" onclick="toggleSkillsPanel()">Annuler</button>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if form %}
+  {# ─── Vérification faciale ─── #}
+  <h2 class="sq-section-title">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+    Vérification du visage
+    {% if not profile.is_face_verified %}<span style="font-size:11px;font-weight:400;color:var(--sq-text-muted);">+40 XP</span>{% endif %}
+  </h2>
+  {% if profile.is_face_verified %}
+    <div class="face-status approved">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      Vérification approuvée
+    </div>
+  {% elif face_verification and face_verification.face_status == 'pending' %}
+    <div class="face-status pending">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Vérification en attente de validation par l'admin
+    </div>
+  {% else %}
+    <div class="face-status missing">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+      Non vérifiée — <a href="{% url 'accounts:verify_face' %}">Vérifier mon visage</a>
+    </div>
+  {% endif %}
+  {% endif %}
+
+  {% if form %}
+  {# ─── Zone d'action ─── #}
+  <h2 class="sq-section-title">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    Zone d'action
+  </h2>
+
+  <p style="font-size:13px;color:var(--sq-text);margin:0 0 6px;" id="zoneDisplay">
+    {% if profile.city %}{{ profile.city }}{% if profile.service_radius %} ({{ profile.service_radius }} km){% endif %}{% else %}Aucune zone définie{% endif %}
+  </p>
+
+  <button class="sq-action-btn {% if profile.city or profile.service_radius %}secondary{% else %}primary{% endif %}" id="toggleZoneBtn" onclick="toggleZonePanel()">
+    {% if profile.city or profile.service_radius %}
+    Modifier la zone
+    {% else %}
+    Ajouter la zone
+    <span class="xp-badge">+15 XP</span>
+    {% endif %}
+  </button>
+
+  <div class="sq-panel" id="zonePanel" style="display:none;">
+    <div class="form-group">
+      <label for="zoneCity">Ville</label>
+      <input type="text" id="zoneCity" value="{{ profile.city|default:'' }}" placeholder="ex: Casablanca">
+    </div>
+    <div class="form-group">
+      <label for="zoneRadius">Rayon d'action (km)</label>
+      <input type="number" id="zoneRadius" value="{{ profile.service_radius|default:'' }}" placeholder="ex: 15" min="1">
+    </div>
+    <div class="form-actions">
+      <button class="btn-save" onclick="saveZone()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        Enregistrer
+      </button>
+      <button type="button" class="btn-cancel" onclick="toggleZonePanel()">Annuler</button>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if form %}
+  {# ─── Modifier le profil ─── #}
+  <h2 class="sq-section-title" style="margin-top:22px;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    Informations personnelles
+  </h2>
+
+  <div x-data="{ editing: false }">
+    <button class="sq-action-btn secondary" @click="editing = !editing" x-text="editing ? 'Annuler' : 'Modifier le profil'">
+      Modifier le profil
+    </button>
+    <div x-show="editing" x-transition.opacity.duration.200ms class="sq-panel">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="{{ form.full_name.id_for_label }}">{{ form.full_name.label }}</label>
+          {{ form.full_name }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.phone_number.id_for_label }}">{{ form.phone_number.label }}</label>
+          {{ form.phone_number }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.avatar.id_for_label }}">{{ form.avatar.label }}</label>
+          {{ form.avatar }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.bio.id_for_label }}">{{ form.bio.label }}</label>
+          {{ form.bio }}
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn-save">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Enregistrer
+          </button>
+          <button type="button" class="btn-cancel" @click="editing = false">Annuler</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div style="margin-top:32px;padding-top:20px;border-top:1px solid var(--sq-border-light);text-align:center;">
+    <a href="{% url 'accounts:delete_account' %}" style="font-size:12px;color:#DC2626;text-decoration:none;font-weight:500;">Supprimer mon compte Tasker</a>
+  </div>
+  {% endif %}
+
+  <div id="badgePopup" class="sq-badge-popup" style="display:none;" onclick="closeBadgePopup(event)">
+    <div class="sq-badge-popup-inner" onclick="event.stopPropagation()">
+      <div id="badgePopupIcon" class="sq-badge-popup-icon"></div>
+      <div id="badgePopupName" class="sq-badge-popup-name"></div>
+      <div id="badgePopupDesc" class="sq-badge-popup-desc"></div>
+      <div id="badgePopupStatus" class="sq-badge-popup-status"></div>
+      <div><button class="sq-badge-popup-close" onclick="closeBadgePopup()">Fermer</button></div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function showBadgePopup(icon, name, desc, earned) {
+  document.getElementById('badgePopupIcon').innerHTML = '<i class="ti ti-' + icon + '"></i>';
+  document.getElementById('badgePopupName').textContent = name;
+  document.getElementById('badgePopupDesc').textContent = desc;
+  var status = document.getElementById('badgePopupStatus');
+  if (earned) {
+    status.textContent = 'Débloqué';
+    status.className = 'sq-badge-popup-status earned';
+  } else {
+    status.textContent = 'Verrouillé';
+    status.className = 'sq-badge-popup-status locked';
+  }
+  document.getElementById('badgePopup').style.display = 'flex';
+}
+function closeBadgePopup(e) {
+  if (!e || e.target === e.currentTarget || !e) {
+    document.getElementById('badgePopup').style.display = 'none';
+  }
+}
+
+var CSRF = (document.querySelector('[name=csrfmiddlewaretoken]') || {}).value;
+
+function toggleSkillsPanel() {
+  var panel = document.getElementById('skillsPanel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
+function addCustomSkill() {
+  var input = document.getElementById('customSkillInput');
+  var name = input.value.trim();
+  if (!name) return;
+  var tags = document.getElementById('customSkillTags');
+  var tag = document.createElement('span');
+  tag.className = 'sq-custom-tag';
+  tag.textContent = name;
+  tag.dataset.name = name;
+  var rm = document.createElement('button');
+  rm.textContent = '\u00d7';
+  rm.onclick = function() { tag.remove(); };
+  tag.appendChild(rm);
+  tags.appendChild(tag);
+  input.value = '';
+}
+
+function saveSkills() {
+  var cbs = document.querySelectorAll('.skill-cb:checked');
+  var skillIds = [];
+  cbs.forEach(function(cb) { skillIds.push(cb.value); });
+  var customTags = document.querySelectorAll('#customSkillTags .sq-custom-tag');
+  var customNames = [];
+  customTags.forEach(function(t) { customNames.push(t.dataset.name); });
+
+  fetch('{% url "accounts:save_skills" %}', {
+    method: 'POST',
+    headers: {'X-CSRFToken': CSRF, 'Content-Type': 'application/json'},
+    body: JSON.stringify({skill_ids: skillIds, custom_skills: customNames})
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    if (data.ok) {
+      var list = document.getElementById('skillList');
+      list.innerHTML = '';
+      data.skills.forEach(function(s) {
+        var span = document.createElement('span');
+        span.className = 'sq-prof-skill';
+        span.innerHTML = '<i class="ti ti-' + s.icon + '" style="font-size:14px;"></i> ' + s.name;
+        list.appendChild(span);
+      });
+      if (data.skills.length === 0) {
+        list.innerHTML = '<span style="font-size:12px;color:var(--sq-text-muted);">Aucune compétence</span>';
+      }
+      toggleSkillsPanel();
+      updateSkillsButton(data.skills.length > 0);
+    }
+  });
+}
+
+function updateSkillsButton(hasSkills) {
+  var btn = document.getElementById('toggleSkillsBtn');
+  if (hasSkills) {
+    btn.className = 'sq-action-btn secondary';
+    btn.innerHTML = 'Modifier compétences';
+  } else {
+    btn.className = 'sq-action-btn primary';
+    btn.innerHTML = 'Ajouter des compétences <span class="xp-badge">+10 XP</span>';
+  }
+}
+
+function toggleZonePanel() {
+  var panel = document.getElementById('zonePanel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
+function saveZone() {
+  var city = document.getElementById('zoneCity').value.trim();
+  var radius = document.getElementById('zoneRadius').value.trim();
+
+  fetch('{% url "accounts:update_zone" %}', {
+    method: 'POST',
+    headers: {'X-CSRFToken': CSRF, 'Content-Type': 'application/json'},
+    body: JSON.stringify({city: city, service_radius: radius || null})
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    if (data.ok) {
+      var display = document.getElementById('zoneDisplay');
+      if (data.city || data.service_radius) {
+        display.textContent = data.city + (data.service_radius ? ' (' + data.service_radius + ' km)' : '');
+      } else {
+        display.textContent = 'Aucune zone définie';
+      }
+      toggleZonePanel();
+      updateZoneButton(!!(data.city || data.service_radius));
+    }
+  });
+}
+
+function updateZoneButton(hasZone) {
+  var btn = document.getElementById('toggleZoneBtn');
+  if (hasZone) {
+    btn.className = 'sq-action-btn secondary';
+    btn.innerHTML = 'Modifier la zone';
+  } else {
+    btn.className = 'sq-action-btn primary';
+    btn.innerHTML = 'Ajouter la zone <span class="xp-badge">+15 XP</span>';
+  }
+}
+</script>
 {% endblock %}

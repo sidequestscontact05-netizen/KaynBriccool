@@ -93,8 +93,8 @@ class Task(models.Model):
         related_name='tasks',
         verbose_name=_('sous-catégorie'),
     )
-    title = models.CharField(_('titre'), max_length=200)
-    description = models.TextField(_('description'))
+    title = models.CharField(_('titre'), max_length=200, blank=True, default='')
+    description = models.TextField(_('description'), blank=True, default='')
     reward = models.DecimalField(
         _('rémunération'),
         max_digits=8,
@@ -114,7 +114,7 @@ class Task(models.Model):
     arrival_lat = models.FloatField(_('lat arrivée'), blank=True, null=True)
     arrival_lng = models.FloatField(_('lng arrivée'), blank=True, null=True)
     departure_address = models.CharField(_('adresse de départ'), max_length=300, blank=True, null=True)
-    arrival_address = models.CharField(_('adresse d\'arrivée'), max_length=300)
+    arrival_address = models.CharField(_('adresse d\'arrivée'), max_length=300, blank=True, default='')
 
     assigned_tasker = models.ForeignKey(
         settings.AUTH_USER_MODEL,

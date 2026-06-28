@@ -45,8 +45,8 @@ a.mission-card { text-decoration: none; color: inherit; display: flex; }
 {% with base_url=request.path %}
 <div class="filter-tabs">
     <a href="{{ base_url }}" class="filter-tab {% if not status_filter %}active{% endif %}">Toutes <span>({{ total_count }})</span></a>
-    <a href="{{ base_url }}?status=in_progress" class="filter-tab {% if status_filter == 'in_progress' %}active{% endif %}">Actives <span>({{ active_count }})</span></a>
     <a href="{{ base_url }}?status=applications" class="filter-tab {% if status_filter == 'applications' %}active{% endif %}">Candidatures <span>({{ applications_count }})</span></a>
+    <a href="{{ base_url }}?status=in_progress" class="filter-tab {% if status_filter == 'in_progress' %}active{% endif %}">Actives <span>({{ active_count }})</span></a>
     <a href="{{ base_url }}?status=completed" class="filter-tab {% if status_filter == 'completed' %}active{% endif %}">Terminées <span>({{ completed_count }})</span></a>
 </div>
 {% endwith %}

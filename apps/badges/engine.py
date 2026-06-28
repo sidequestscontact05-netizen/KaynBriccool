@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Count
 from django.utils import timezone
 from apps.badges.models import Badge, UserBadge
 from apps.accounts.models import UserProfile
@@ -38,6 +39,39 @@ def check_and_award_badges(user):
         created, _ = UserBadge.objects.get_or_create(user=user, badge=badge)
         if created:
             _notify_badge_earned(user, badge)
+
+    _deduplicate_tasks_completed_badges(user, profile)
+
+
+def _deduplicate_tasks_completed_badges(user, profile):
+    user_badges = UserBadge.objects.filter(
+        user=user,
+        badge__condition_type=Badge.ConditionTypeChoices.TASKS_COMPLETED,
+    ).select_related('badge')
+
+    if user_badges.count() <= 1:
+        return
+
+    tiers = []
+    for ub in user_badges:
+        min_tasks = ub.badge.condition_value.get('min_tasks', 0)
+        tiers.append((min_tasks, ub))
+
+    tiers.sort(key=lambda x: x[0], reverse=True)
+
+    best_ub = None
+    for min_tasks, ub in tiers:
+        if profile.tasks_completed >= min_tasks:
+            best_ub = ub
+            break
+
+    if best_ub is None:
+        user_badges.delete()
+        return
+
+    for min_tasks, ub in tiers:
+        if ub.id != best_ub.id:
+            ub.delete()
 
 
 def _evaluate_badge(badge, profile, user, role='tasker'):
@@ -133,15 +167,30 @@ def _check_custom(value, user, profile, role):
         if check_type == 'tasks_in_category':
             category_slug = check.get('category_slug')
             min_count = check.get('min_count', 1)
+
+            task_filter = {
+                'status__in': [Task.StatusChoices.VALIDATED, Task.StatusChoices.EVALUATED],
+            }
+            if role == 'tasker':
+                task_filter['assigned_tasker'] = user
+            elif role == 'client':
+                task_filter['client'] = user
+            else:
+                return False
+
             if category_slug:
-                count = Task.objects.filter(
-                    assigned_tasker=user if role == 'tasker' else None,
-                    client=user if role == 'client' else None,
-                    category__slug=category_slug,
-                    status__in=[Task.StatusChoices.VALIDATED, Task.StatusChoices.EVALUATED],
-                ).count()
-                if count < min_count:
-                    return False
+                task_filter['category__slug'] = category_slug
+                count = Task.objects.filter(**task_filter).count()
+            else:
+                qs = Task.objects.filter(**task_filter).exclude(
+                    category__isnull=True
+                ).values('category').annotate(
+                    total=Count('id')
+                ).order_by('-total')
+                count = qs[0]['total'] if qs else 0
+
+            if count < min_count:
+                return False
 
         elif check_type == 'min_xp':
             if profile.xp < check.get('min_xp', 0):
@@ -230,3 +279,18 @@ def _notify_badge_earned(user, badge):
         title='Nouveau badge débloqué !',
         message=f'Félicitations ! Vous avez obtenu le badge "{badge.name}".',
     )
+
+
+def award_xp(user, amount):
+    profile = user.profile
+    profile.xp += amount
+    profile.save(update_fields=['xp', 'updated_at'])
+    profile.update_level()
+
+
+def award_task_completion_bonuses(tasker):
+    profile = tasker.profile
+    if not profile._xp_awarded_first_task:
+        award_xp(tasker, 100)
+        profile._xp_awarded_first_task = True
+        profile.save(update_fields=['_xp_awarded_first_task', 'updated_at'])

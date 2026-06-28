@@ -133,9 +133,7 @@
                 {% endif %}
                 {% if task_accepted_conv_map|get_item:task.id %}
                     {% with conv=task_accepted_conv_map|get_item:task.id %}
-                        {% if not conv.is_closed %}
-                            <a href="{% url 'messaging:conversation_detail' conv.id|conv_id %}" class="btn btn-sm">Message</a>
-                        {% endif %}
+                        <a href="{% url 'messaging:conversation_detail' conv.id|conv_id %}" class="btn btn-sm">Message</a>
                     {% endwith %}
                 {% endif %}
             </div>

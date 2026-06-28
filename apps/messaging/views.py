@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseForbidden, JsonResponse
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
+from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
+from django.db.models import OuterRef, Subquery
 from apps.messaging.models import Conversation, Message
 from apps.messaging.forms import MessageForm
 from apps.accounts.models import Notification
@@ -17,7 +19,15 @@ def conversation_list(request):
         conversations = Conversation.objects.filter(tasker=request.user)
         base_template = 'base_tasker.html'
 
-    conversations = conversations.select_related('application__task').order_by('-last_activity_at')
+    latest_msg = Message.objects.filter(conversation=OuterRef('pk')).order_by('-created_at')
+    conversations = conversations.select_related(
+        'client', 'tasker'
+    ).annotate(
+        last_msg_content=Subquery(latest_msg.values('content')[:1]),
+        last_msg_sender_name=Subquery(latest_msg.values('sender__full_name')[:1]),
+        last_msg_is_system=Subquery(latest_msg.values('is_system')[:1]),
+        last_msg_created_at=Subquery(latest_msg.values('created_at')[:1]),
+    ).order_by('-last_activity_at')
 
     return render(request, 'messaging/conversation_list.html', {
         'conversations': conversations,
@@ -51,22 +61,14 @@ def conversation_detail(request, conversation_id):
         is_read=False,
     ).update(is_read=True)
 
-    if conversation.is_closed:
-        messages.error(request, _('Cette conversation est clôturée. Vous ne pouvez plus envoyer de messages.'))
-        return render(request, 'messaging/conversation_detail.html', {
-            'conversation': conversation,
-            'chat_messages': message_list,
-            'form': None,
-            'other_user': conversation.other_participant(request.user),
-            'base_template': base_template,
-        })
-
     if request.method == 'POST':
-        form = MessageForm(request.POST)
+        form = MessageForm(request.POST, request.FILES)
         if form.is_valid():
             message = form.save(commit=False)
             message.conversation = conversation
             message.sender = request.user
+            if message.file:
+                message.file_name = message.file.name
             message.save()
             conversation.save(update_fields=['last_activity_at'])
 
@@ -75,9 +77,8 @@ def conversation_detail(request, conversation_id):
                 user=recipient,
                 type=Notification.TypeChoices.MESSAGE_RECEIVED,
                 title=_('Nouveau message'),
-                message=_('Vous avez reçu un nouveau message de la part de %(sender)s au sujet de « %(task)s »') % {
+                message=_('Vous avez reçu un nouveau message de la part de %(sender)s.') % {
                     'sender': request.user.full_name,
-                    'task': conversation.task.title,
                 },
                 related_conversation=conversation,
             )
@@ -88,6 +89,8 @@ def conversation_detail(request, conversation_id):
                 })
 
             return redirect('messaging:conversation_detail', conversation_id=conversation.id)
+        elif request.htmx:
+            return HttpResponse('', status=400)
     else:
         form = MessageForm()
 
@@ -129,12 +132,14 @@ def conversation_poll(request, conversation_id):
             {
                 'id': str(m.id),
                 'content': m.content,
-                'sender': m.sender.full_name,
+                'sender': m.sender.full_name if m.sender else 'Système',
                 'created_at': m.created_at.isoformat(),
                 'is_mine': m.sender == request.user,
+                'rendered_html': render_to_string('messaging/snippets/message_bubble.html', {
+                    'message': m, 'request_user': request.user,
+                }),
             }
             for m in new_messages
         ],
-        'is_closed': conversation.is_closed,
     }
     return JsonResponse(data)

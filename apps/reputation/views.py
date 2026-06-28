@@ -83,7 +83,7 @@ def tasker_review_client(request, task_id):
             create_notification(
                 task.client,
                 _('Nouvel avis reçu'),
-                _(f'Le tasker a évalué votre task "{task.title}" avec {review.rating}/5.'),
+                _('Le tasker a évalué votre task "{}" avec {}/5.').format(task.title, review.rating),
                 Notification.TypeChoices.REVIEW_RECEIVED,
                 related_task=task,
                 related_review=review,

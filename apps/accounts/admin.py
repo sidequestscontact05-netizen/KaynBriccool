@@ -1,12 +1,20 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from apps.accounts.models import CustomUser, VerificationRecord, UserProfile
+
+from apps.accounts.models import CustomUser, VerificationRecord, UserProfile, Skill, DeletionRequest
 
 
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
     can_delete = False
     readonly_fields = ('tasker_rating_avg', 'tasker_rating_count', 'client_rating_avg', 'client_rating_count', 'tasks_completed', 'tasks_published', 'tasks_cancelled')
+    filter_horizontal = ('skills',)
+    fieldsets = (
+        ('Zone', {'fields': ('city', 'service_radius')}),
+        ('Compétences', {'fields': ('skills',)}),
+        ('Statistiques', {'fields': ('xp', 'level', 'tasks_completed', 'tasks_published', 'tasks_cancelled')}),
+        ('Notation', {'fields': ('tasker_rating_avg', 'tasker_rating_count', 'client_rating_avg', 'client_rating_count')}),
+    )
 
 
 @admin.register(CustomUser)
@@ -39,3 +47,56 @@ class VerificationRecordAdmin(admin.ModelAdmin):
     list_filter = ('type', 'face_status', 'is_used')
     search_fields = ('user__full_name', 'user__email')
     date_hierarchy = 'created_at'
+
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ('user_full_name', 'city', 'service_radius', 'skills_list', 'xp', 'level', 'tasks_completed')
+    list_filter = ('city', 'skills', 'level')
+    search_fields = ('user__full_name', 'user__email', 'city')
+    list_select_related = ('user',)
+
+    def user_full_name(self, obj):
+        return obj.user.full_name
+    user_full_name.short_description = 'Utilisateur'
+    user_full_name.admin_order_field = 'user__full_name'
+
+    def skills_list(self, obj):
+        skills = obj.skills.all()
+        if not skills:
+            return '-'
+        return ', '.join(s.name for s in skills)
+    skills_list.short_description = 'Compétences'
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related('skills')
+
+    fieldsets = (
+        ('Zone', {'fields': ('city', 'service_radius', 'latitude', 'longitude')}),
+        ('Compétences', {'fields': ('skills',)}),
+        ('XP & Niveau', {'fields': ('xp', 'level')}),
+        ('Statistiques', {'fields': ('tasks_completed', 'tasks_published', 'tasks_cancelled')}),
+        ('Notation', {'fields': ('tasker_rating_avg', 'tasker_rating_count', 'client_rating_avg', 'client_rating_count')}),
+    )
+
+
+@admin.register(Skill)
+class SkillAdmin(admin.ModelAdmin):
+    list_display = ('name', 'category', 'icon', 'user_count')
+    list_filter = ('category',)
+    search_fields = ('name',)
+
+    def user_count(self, obj):
+        return obj.userprofile_set.count()
+    user_count.short_description = 'Utilisateurs'
+
+
+@admin.register(DeletionRequest)
+class DeletionRequestAdmin(admin.ModelAdmin):
+    list_display = ('user', 'role', 'reasons_summary', 'created_at')
+    list_filter = ('role', 'created_at')
+    readonly_fields = ('user', 'role', 'reasons', 'other_text', 'created_at')
+
+    def reasons_summary(self, obj):
+        return ', '.join(obj.reasons[:3]) + ('...' if len(obj.reasons) > 3 else '')
+    reasons_summary.short_description = 'Raisons'

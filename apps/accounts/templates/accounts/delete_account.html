@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Supprimer mon compte {{ role_label }} — SideQuest{% endblock %}
+
+{% block extra_css %}
+<style>
+.sq-delete-container { max-width: 520px; margin: 0 auto; padding: 24px 0 40px; }
+
+.sq-delete-header { margin-bottom: 20px; }
+.sq-delete-header h1 { font-size: 20px; font-weight: 700; color: var(--sq-text); margin: 0 0 6px; }
+.sq-delete-header p { font-size: 13px; color: var(--sq-text-muted); margin: 0; }
+
+.sq-delete-warning {
+  background: #FEF3C7; border: 1px solid #FDE68A; border-radius: 12px;
+  padding: 12px 16px; font-size: 13px; color: #92400E; margin-bottom: 20px;
+  display: flex; align-items: flex-start; gap: 8px;
+}
+.sq-delete-warning svg { flex-shrink: 0; margin-top: 1px; }
+
+.sq-delete-reason-group { margin-bottom: 12px; }
+.sq-delete-reason-group label {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 14px; border: 1px solid var(--sq-border-light);
+  border-radius: 10px; cursor: pointer; transition: all 0.15s;
+  font-size: 14px; color: var(--sq-text); line-height: 1.4;
+}
+.sq-delete-reason-group label:hover { background: var(--sq-border-light); }
+.sq-delete-reason-group input[type="checkbox"] {
+  margin-top: 2px; flex-shrink: 0; accent-color: var(--sq-primary);
+}
+
+.sq-delete-other { margin-top: 16px; }
+.sq-delete-other textarea {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--sq-border);
+  border-radius: 10px; font-size: 13px; background: var(--sq-bg); color: var(--sq-text);
+  resize: vertical; min-height: 70px; box-sizing: border-box;
+}
+
+.sq-delete-actions { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+.sq-delete-btn {
+  padding: 10px 24px; border-radius: 999px; font-size: 13px; font-weight: 600;
+  border: none; cursor: pointer; transition: all 0.15s;
+}
+.sq-delete-btn.danger { background: #DC2626; color: white; }
+.sq-delete-btn.danger:hover { background: #B91C1C; }
+.sq-delete-btn.cancel {
+  background: var(--sq-surface); color: var(--sq-text-muted);
+  border: 1px solid var(--sq-border-light);
+}
+.sq-delete-btn.cancel:hover { background: var(--sq-border-light); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="sq-delete-container">
+  <div class="sq-delete-header">
+    <a href="javascript:history.back()" class="btn-back" title="Retour">&#8592;</a>
+    <h1>Supprimer mon compte {{ role_label }}</h1>
+    <p>Nous sommes navrés de te voir partir. Dis-nous pourquoi&nbsp;:</p>
+  </div>
+
+  <div class="sq-delete-warning">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <span>Cette action est irréversible. Si tu as les deux rôles (Client & Tasker), seul le profil <strong>{{ role_label }}</strong> sera supprimé. Tu pourras continuer à utiliser l'autre rôle.</span>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    <p style="font-size:13px;font-weight:600;color:var(--sq-text);margin:0 0 8px;">Pourquoi supprimer ton compte {{ role_label }} ?</p>
+
+    {% for reason in reasons %}
+    <div class="sq-delete-reason-group">
+      <label>
+        <input type="checkbox" name="reasons" value="{{ reason }}">
+        <span>{{ reason }}</span>
+      </label>
+    </div>
+    {% endfor %}
+
+    <div class="sq-delete-other">
+      <label style="font-size:13px;font-weight:600;color:var(--sq-text);display:block;margin-bottom:4px;">Autre raison</label>
+      <textarea name="other" placeholder="Explique-nous en détail..."></textarea>
+    </div>
+
+    <div class="sq-delete-actions">
+      <button type="submit" class="sq-delete-btn danger" onclick="return confirm('Es-tu sûr de vouloir supprimer ton compte {{ role_label }} ? Cette action est irréversible.')">Supprimer mon compte {{ role_label }}</button>
+      <a href="javascript:history.back()" class="sq-delete-btn cancel">Annuler</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

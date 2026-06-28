@@ -24,6 +24,7 @@ urlpatterns = [
     path('client/dashboard/', views.client_dashboard, name='client_dashboard'),
     path('client/quests/', views.client_quests, name='client_quests'),
     path('tasker/dashboard/', views.tasker_dashboard, name='tasker_dashboard'),
+    path('tasker/accepted/', views.tasker_accepted_tasks, name='tasker_accepted_tasks'),
     path('tasker/missions/', views.tasker_missions, name='tasker_missions'),
     path('tasks/<uuid:task_id>/candidatures/', views.task_candidatures, name='task_candidatures'),
     path('tasks/<uuid:task_id>/save/', views.task_toggle_save, name='task_toggle_save'),

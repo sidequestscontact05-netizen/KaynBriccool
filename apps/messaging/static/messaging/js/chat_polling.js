@@ -36,14 +36,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.messages && data.messages.length > 0) {
                     data.messages.forEach(function(msg) {
                         if (messageExists(msg.id)) return;
-                        var bubble = document.createElement('div');
-                        bubble.className = 'message-bubble ' + (msg.is_mine ? 'message-mine' : 'message-other');
-                        bubble.dataset.messageId = msg.id;
-                        bubble.innerHTML = '<div class="message-content">' + msg.content + '</div>' +
-                            '<span class="message-time">' + new Date(msg.created_at).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'}) + '</span>';
-                        chatMessages.appendChild(bubble);
-                        lastId = msg.id;
+                        var wrapper = document.createElement('div');
+                        wrapper.innerHTML = msg.rendered_html;
+                        var bubble = wrapper.firstElementChild;
+                        if (bubble) {
+                            chatMessages.appendChild(bubble);
+                            lastId = msg.id;
+                        }
                     });
+                    if (typeof initAudioPlayers === 'function') {
+                        initAudioPlayers(chatMessages);
+                    }
                     chatMessages.scrollTop = chatMessages.scrollHeight;
                 }
             })

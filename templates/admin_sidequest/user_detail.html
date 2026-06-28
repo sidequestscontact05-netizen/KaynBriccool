@@ -18,7 +18,42 @@
         <p><strong>Inscrit le :</strong> {{ profile_user.date_joined|date:"d/m/Y H:i" }}</p>
     </div>
 
-    <div class="admin-user-actions">
+    {% if profile %}
+    <div style="margin:1.5rem 0;display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="admin-section" style="margin:0;">
+            <h2 style="font-size:0.95rem;">Zone d'action</h2>
+            {% if profile.city %}
+            <p><strong>Ville :</strong> {{ profile.city }}</p>
+            <p><strong>Rayon :</strong> {{ profile.service_radius|default:"Non défini" }} km</p>
+            {% else %}
+            <p class="text-muted">Aucune zone définie</p>
+            {% endif %}
+        </div>
+        <div class="admin-section" style="margin:0;">
+            <h2 style="font-size:0.95rem;">XP & Niveau</h2>
+            <p><strong>XP :</strong> {{ profile.xp }}</p>
+            <p><strong>Niveau :</strong> {{ profile.level }}</p>
+        </div>
+    </div>
+
+    <div class="admin-section">
+        <h2 style="font-size:0.95rem;">Compétences</h2>
+        {% if profile.skills.exists %}
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            {% for s in profile.skills.all %}
+            <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:999px;background:var(--sq-surface);border:1px solid var(--sq-border-light);font-size:12px;font-weight:500;">
+                {{ s.name }}
+                <span style="font-size:10px;color:var(--sq-text-muted);">{{ s.get_category_display|default:"Autre" }}</span>
+            </span>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-muted">Aucune compétence</p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="admin-user-actions" style="margin-top:1.5rem;">
         {% if profile_user.is_active %}
             <a href="{% url 'admin_sidequest:ban_user' profile_user.id %}" class="btn btn-admin-warning">Bannir</a>
         {% else %}

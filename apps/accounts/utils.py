@@ -75,10 +75,10 @@ def verify_phone_code(user, code):
         return False
 
     verification.is_used = True
-    verification.save(update_fields=['is_used'])
+    verification.save(update_fields=['is_used', 'updated_at'])
 
     user.phone_verified = True
-    user.save(update_fields=['phone_verified'])
+    user.save(update_fields=['phone_verified', 'updated_at'])
 
     return True
 
@@ -143,10 +143,10 @@ def verify_email_code(user, code):
         return False
 
     verification.is_used = True
-    verification.save(update_fields=['is_used'])
+    verification.save(update_fields=['is_used', 'updated_at'])
 
     user.email_verified = True
-    user.save(update_fields=['email_verified'])
+    user.save(update_fields=['email_verified', 'updated_at'])
 
     return True
 
@@ -156,12 +156,12 @@ def send_form_email(user):
 
     subject = _('SideQuest — Formulaire à remplir')
     message = _(
-        f'Bonjour {user.full_name},\n\n'
-        f'Merci de remplir ce formulaire SideQuest :\n'
-        f'{form_url}\n\n'
-        f'Votre réponse nous aidera à améliorer la plateforme.\n\n'
-        f'— L\'équipe SideQuest'
-    )
+        'Bonjour {},\n\n'
+        'Merci de remplir ce formulaire SideQuest :\n'
+        '{}\n\n'
+        'Votre réponse nous aidera à améliorer la plateforme.\n\n'
+        '— L\'équipe SideQuest'
+    ).format(user.full_name, form_url)
 
     try:
         send_mail(

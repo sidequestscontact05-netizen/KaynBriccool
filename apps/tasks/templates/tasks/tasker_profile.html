@@ -57,16 +57,47 @@
 
 /* ── Badges grid ── */
 .sq-prof-badges {
-  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px;
+  display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 22px;
 }
 .sq-prof-badge {
-  display: flex; align-items: center; gap: 6px;
-  padding: 6px 12px; border-radius: 999px;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; border-radius: 12px;
   background: var(--sq-surface); border: 1px solid var(--sq-border-light);
-  font-size: 12px; font-weight: 500; color: var(--sq-text);
+  font-size: 20px; cursor: pointer;
+  transition: all 0.15s; text-decoration: none;
 }
-.sq-prof-badge.locked { opacity: 0.35; filter: grayscale(1); }
-.sq-prof-badge-icon { font-size: 16px; line-height: 1; }
+.sq-prof-badge:hover { border-color: var(--sq-primary); background: var(--sq-primary-light); transform: scale(1.05); }
+.sq-prof-badge.locked { opacity: 0.45; filter: grayscale(0.8); }
+.sq-prof-badge.locked:hover { opacity: 0.7; }
+
+/* ── Badge popup ── */
+.sq-badge-popup {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 9999; display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.35); backdrop-filter: blur(2px);
+}
+.sq-badge-popup-inner {
+  background: var(--sq-surface); border-radius: 16px; padding: 28px 32px;
+  max-width: 320px; width: 90%; text-align: center;
+  border: 1px solid var(--sq-border-light); box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+  animation: popupIn 0.15s ease-out;
+}
+@keyframes popupIn { from { opacity:0; transform:scale(0.92) translateY(8px); } to { opacity:1; transform:scale(1) translateY(0); } }
+.sq-badge-popup-icon { font-size: 40px; margin-bottom: 8px; }
+.sq-badge-popup-name { font-size: 17px; font-weight: 700; color: var(--sq-text); margin-bottom: 4px; }
+.sq-badge-popup-desc { font-size: 13px; color: var(--sq-text-muted); margin-bottom: 12px; line-height: 1.4; }
+.sq-badge-popup-status {
+  display: inline-block; padding: 4px 14px; border-radius: 999px;
+  font-size: 11px; font-weight: 600;
+}
+.sq-badge-popup-status.earned { background: #D8F3DC; color: #1B4332; }
+.sq-badge-popup-status.locked { background: #F3F4F6; color: #6B7280; }
+.sq-badge-popup-close {
+  margin-top: 14px; padding: 8px 24px; border-radius: 999px;
+  border: 1px solid var(--sq-border-light); background: transparent;
+  font-size: 12px; font-weight: 500; color: var(--sq-text-muted); cursor: pointer;
+}
 
 /* ── Reputation / level card ── */
 .sq-rep-card {
@@ -153,20 +184,30 @@
   </a>
 
   {# ═════ BADGES ═════ #}
-  {% if all_badges %}
   <h2 class="sq-section-title">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
     Badges
   </h2>
   <div class="sq-prof-badges">
     {% for badge in all_badges %}
-    <span class="sq-prof-badge {% if badge.slug not in earned_slugs %}locked{% endif %}">
-      <span class="sq-prof-badge-icon">{{ badge.icon }}</span>
-      {{ badge.name }}
+    <span class="sq-prof-badge {% if badge.slug not in earned_slugs %}locked{% endif %}"
+      onclick="showBadgePopup('{{ badge.icon|escapejs }}', '{{ badge.name|escapejs }}', '{{ badge.description|escapejs }}', '{{ badge.slug }}'{% if badge.slug in earned_slugs %}, true{% else %}, false{% endif %})">
+      <i class="ti ti-{{ badge.icon }}"></i>
     </span>
+    {% empty %}
+    <span style="font-size:12px;color:var(--sq-text-muted);">Aucun badge pour le moment</span>
     {% endfor %}
   </div>
-  {% endif %}
+
+<div id="badgePopup" class="sq-badge-popup" style="display:none;" onclick="closeBadgePopup(event)">
+  <div class="sq-badge-popup-inner" onclick="event.stopPropagation()">
+    <div id="badgePopupIcon" class="sq-badge-popup-icon"></div>
+    <div id="badgePopupName" class="sq-badge-popup-name"></div>
+    <div id="badgePopupDesc" class="sq-badge-popup-desc"></div>
+    <div id="badgePopupStatus" class="sq-badge-popup-status"></div>
+    <div><button class="sq-badge-popup-close" onclick="closeBadgePopup()">Fermer</button></div>
+  </div>
+</div>
 
 </div>
 
@@ -177,3 +218,27 @@
 {% endblock %}
 
 {% block dashboard_right %}{% endblock %}
+
+{% block extra_js %}
+<script>
+function showBadgePopup(icon, name, desc, earned) {
+  document.getElementById('badgePopupIcon').innerHTML = '<i class="ti ti-' + icon + '"></i>';
+  document.getElementById('badgePopupName').textContent = name;
+  document.getElementById('badgePopupDesc').textContent = desc;
+  var status = document.getElementById('badgePopupStatus');
+  if (earned) {
+    status.textContent = 'Débloqué';
+    status.className = 'sq-badge-popup-status earned';
+  } else {
+    status.textContent = 'Verrouillé';
+    status.className = 'sq-badge-popup-status locked';
+  }
+  document.getElementById('badgePopup').style.display = 'flex';
+}
+function closeBadgePopup(e) {
+  if (!e || e.target === e.currentTarget || !e) {
+    document.getElementById('badgePopup').style.display = 'none';
+  }
+}
+</script>
+{% endblock %}

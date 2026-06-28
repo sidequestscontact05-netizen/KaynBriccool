@@ -24,21 +24,23 @@
         <tr>
             <th>Nom</th>
             <th>Email</th>
-            <th>Téléphone</th>
             <th>Rôle</th>
+            <th>Ville</th>
+            <th>Compétences</th>
             <th>Vérifié</th>
             <th>Statut</th>
-            <th>Date</th>
             <th>Actions</th>
         </tr>
     </thead>
     <tbody>
         {% for user in users %}
+        {% with profile=user.profile %}
         <tr>
             <td><a href="{% url 'admin_sidequest:user_detail' user.id %}">{{ user.full_name }}</a></td>
             <td>{{ user.email }}</td>
-            <td>{{ user.phone_number|default:"—" }}</td>
             <td><span class="admin-role-badge admin-role-{{ user.role }}">{{ user.get_role_display }}</span></td>
+            <td>{{ profile.city|default:"—" }}</td>
+            <td>{{ profile.skills.count }}</td>
             <td>
                 {% if user.is_verified %}
                     <span class="badge badge-success">Oui</span>
@@ -53,11 +55,11 @@
                     <span class="badge badge-danger">Banni</span>
                 {% endif %}
             </td>
-            <td>{{ user.date_joined|date:"d/m/Y" }}</td>
             <td>
                 <a href="{% url 'admin_sidequest:user_detail' user.id %}" class="btn btn-sm btn-admin-outline">Voir</a>
             </td>
         </tr>
+        {% endwith %}
         {% endfor %}
     </tbody>
 </table>

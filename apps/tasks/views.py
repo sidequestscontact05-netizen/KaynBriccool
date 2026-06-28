@@ -22,10 +22,17 @@ from apps.messaging.models import Conversation, Message
 from apps.accounts.models import CustomUser, Notification, UserProfile
 from apps.reputation.models import Review
 from apps.badges.models import Badge
-from apps.badges.engine import check_and_award_badges
+from apps.badges.engine import check_and_award_badges, award_xp, award_task_completion_bonuses
 
 
-LEVEL_THRESHOLDS = [0, 100, 300, 600, 1000, 1500, 2100, 2800, 3600, 4500, 5500]
+def _add_system_message(conversation, content):
+    Message.objects.create(
+        conversation=conversation,
+        sender=None,
+        content=content,
+        is_system=True,
+    )
+    conversation.save(update_fields=['last_activity_at'])
 
 
 def create_notification(user, title, message, n_type, related_task=None, related_conversation=None, related_review=None):
@@ -38,18 +45,6 @@ def create_notification(user, title, message, n_type, related_task=None, related
         related_conversation=related_conversation,
         related_review=related_review,
     )
-
-
-def award_xp(user, amount):
-    profile = user.profile
-    profile.xp += amount
-    new_level = 1
-    for i, threshold in enumerate(LEVEL_THRESHOLDS):
-        if profile.xp >= threshold:
-            new_level = i + 1
-    if new_level > profile.level:
-        profile.level = new_level
-    profile.save(update_fields=['xp', 'level'])
 
 
 @login_required
@@ -74,16 +69,15 @@ def client_dashboard(request):
         Task.StatusChoices.CANCELLED,
     ])
 
-    task_app_map = {}
     task_accepted_conv_map = {}
-    task_ids = list(tasks.values_list('id', flat=True))
-    for app in TaskApplication.objects.filter(task_id__in=task_ids).select_related('conversation', 'task'):
-        if app.task_id not in task_app_map:
-            task_app_map[app.task_id] = []
-        if hasattr(app, 'conversation'):
-            task_app_map[app.task_id].append(app.conversation)
-            if app.task.assigned_tasker_id and app.tasker_id == app.task.assigned_tasker_id:
-                task_accepted_conv_map[app.task_id] = app.conversation
+    conv_lookup = {
+        (c.client_id, c.tasker_id): c.id
+        for c in Conversation.objects.filter(client=request.user)
+    }
+    for task in tasks.filter(assigned_tasker__isnull=False).select_related('assigned_tasker'):
+        key = (task.client_id, task.assigned_tasker_id)
+        if key in conv_lookup:
+            task_accepted_conv_map[task.id] = conv_lookup[key]
 
     top_taskers = UserProfile.objects.filter(
         user__role__in=['tasker', 'both'],
@@ -98,7 +92,6 @@ def client_dashboard(request):
         'accepted': accepted,
         'in_progress': in_progress,
         'finished': finished,
-        'task_app_map': task_app_map,
         'task_accepted_conv_map': task_accepted_conv_map,
         'user_badges': request.user.badges_earned.select_related('badge').filter(
             badge__target_role__in=['client', 'both']
@@ -130,16 +123,15 @@ def client_quests(request):
         Task.StatusChoices.CANCELLED,
     ])
 
-    task_app_map = {}
     task_accepted_conv_map = {}
-    task_ids = list(tasks.values_list('id', flat=True))
-    for app in TaskApplication.objects.filter(task_id__in=task_ids).select_related('conversation', 'task'):
-        if app.task_id not in task_app_map:
-            task_app_map[app.task_id] = []
-        if hasattr(app, 'conversation'):
-            task_app_map[app.task_id].append(app.conversation)
-            if app.task.assigned_tasker_id and app.tasker_id == app.task.assigned_tasker_id:
-                task_accepted_conv_map[app.task_id] = app.conversation
+    conv_lookup = {
+        (c.client_id, c.tasker_id): c.id
+        for c in Conversation.objects.filter(client=request.user)
+    }
+    for task in tasks.filter(assigned_tasker__isnull=False).select_related('assigned_tasker'):
+        key = (task.client_id, task.assigned_tasker_id)
+        if key in conv_lookup:
+            task_accepted_conv_map[task.id] = conv_lookup[key]
 
     top_taskers = UserProfile.objects.filter(
         user__role__in=['tasker', 'both'],
@@ -156,7 +148,6 @@ def client_quests(request):
         'accepted': accepted,
         'in_progress': in_progress,
         'finished': finished,
-        'task_app_map': task_app_map,
         'task_accepted_conv_map': task_accepted_conv_map,
         'user_badges': request.user.badges_earned.select_related('badge').filter(
             badge__target_role__in=['client', 'both']
@@ -171,8 +162,10 @@ def client_quests(request):
 @tasker_required
 def tasker_dashboard(request):
     tasks = get_tasker_tasks(request.user)
+    accepted_tasks = tasks.filter(
+        status=Task.StatusChoices.ACCEPTED,
+    ).select_related('client', 'category')[:3]
     active_tasks = tasks.filter(status__in=[
-        Task.StatusChoices.ACCEPTED,
         Task.StatusChoices.IN_PROGRESS,
         Task.StatusChoices.AWAITING_CONFIRMATION,
     ]).select_related('proof')
@@ -250,6 +243,7 @@ def tasker_dashboard(request):
     context = {
         'tasks': tasks,
         'active_tasks': active_tasks,
+        'accepted_tasks': accepted_tasks,
         'finished_tasks': finished_tasks,
         'available_tasks': available_tasks,
         'top_taskers': top_taskers,
@@ -265,7 +259,18 @@ def tasker_dashboard(request):
 
 @login_required
 @tasker_required
+def tasker_accepted_tasks(request):
+    tasks = Task.objects.filter(
+        assigned_tasker=request.user,
+        status=Task.StatusChoices.ACCEPTED,
+    ).select_related('client', 'category').order_by('-updated_at')
+    return render(request, 'tasks/tasker_accepted_tasks.html', {'tasks': tasks})
+
+
+@login_required
+@tasker_required
 def tasker_profile(request):
+    check_and_award_badges(request.user)
     profile = request.user.profile
     user_badges = request.user.badges_earned.select_related('badge').filter(
         badge__target_role__in=['tasker', 'both']
@@ -587,10 +592,19 @@ def task_detail(request, task_id):
     if request.user == task.client:
         context['is_owner'] = True
         context['can_apply'] = False
-        context['applications'] = task.applications.filter(status=TaskApplication.StatusChoices.PENDING).select_related('conversation')
+        context['applications'] = task.applications.filter(status=TaskApplication.StatusChoices.PENDING)
     elif request.user.acting_as_tasker() and task.status == Task.StatusChoices.PUBLISHED and not task.is_expired:
-        already_applied = TaskApplication.objects.filter(task=task, tasker=request.user).exists()
-        context['can_apply'] = not already_applied
+        existing_app = TaskApplication.objects.filter(task=task, tasker=request.user).first()
+        context['can_apply'] = not existing_app
+        context['existing_application'] = existing_app
+
+    context['client_review'] = Review.objects.filter(
+        task=task,
+        reviewer=task.client,
+        reviewed=request.user,
+        review_type=Review.ReviewTypeChoices.CLIENT_REVIEWS_TASKER,
+        moderation_status=Review.ModerationStatusChoices.VALIDATED,
+    ).first()
 
     return render(request, 'tasks/task_detail.html', context)
 
@@ -604,11 +618,18 @@ def task_candidatures(request, task_id):
 
     applications = task.applications.filter(
         status=TaskApplication.StatusChoices.PENDING
-    ).select_related('conversation')
+    ).select_related('tasker')
+
+    accepted_conversation = None
+    if task.assigned_tasker:
+        accepted_conversation = Conversation.objects.filter(
+            client=task.client, tasker=task.assigned_tasker
+        ).first()
 
     return render(request, 'tasks/task_candidatures.html', {
         'task': task,
         'applications': applications,
+        'accepted_conversation': accepted_conversation,
     })
 
 
@@ -629,12 +650,6 @@ def task_apply(request, task_id):
             return HttpResponse('<div style="display:none;" hx-swap-oob="true"></div>')
         return redirect('tasks:task_detail', task_id=task.id)
 
-    if not request.user.profile.is_face_verified():
-        messages.warning(request, _('Vérification du visage requise pour postuler. Complétez-la dans votre profil.'))
-        if request.htmx:
-            return HttpResponse('<div style="display:none;" hx-swap-oob="true"></div>')
-        return redirect('accounts:verify_face')
-
     if TaskApplication.objects.filter(task=task, tasker=request.user).exists():
         messages.info(request, _('Vous avez déjà postulé à cette tâche.'))
         if request.htmx:
@@ -654,16 +669,12 @@ def task_apply(request, task_id):
             return HttpResponse('<div style="display:none;" hx-swap-oob="true"></div>')
         return redirect('tasks:tasker_dashboard')
 
-    Conversation.objects.create(
-        application=application,
-        client=task.client,
-        tasker=request.user,
-    )
+    award_xp(request.user, 5)
 
     create_notification(
         task.client,
         _('Nouvelle candidature'),
-        _(f'{request.user.full_name} a postulé à "{task.title}".'),
+        _('{} a postulé à "{}".').format(request.user.full_name, task.title),
         Notification.TypeChoices.NEW_APPLICATION,
         related_task=task,
     )
@@ -691,10 +702,23 @@ def task_choose_tasker(request, task_id, application_id):
 
     application.accept()
 
+    conversation, _ = Conversation.objects.get_or_create(
+        client=task.client,
+        tasker=application.tasker,
+    )
+    _add_system_message(
+        conversation,
+        _('{} a été choisi(e) pour la tâche « {} ». La conversation est ouverte.').format(
+            application.tasker.full_name, task.title
+        ),
+    )
+
+    award_xp(application.tasker, 10)
+
     create_notification(
         application.tasker,
         _('Mission acceptée !'),
-        _(f'Votre candidature pour "{task.title}" a été acceptée par le client.'),
+        _('Votre candidature pour "{}" a été acceptée par le client.').format(task.title),
         Notification.TypeChoices.TASK_ACCEPTED,
         related_task=task,
     )
@@ -704,12 +728,12 @@ def task_choose_tasker(request, task_id, application_id):
         create_notification(
             app.tasker,
             _('Candidature non retenue'),
-            _(f'Ton application pour "{task.title}" n\'a pas été retenue cette fois. Continue — chaque postulation compte ! 💪'),
+            _('Ton application pour "{}" n\'a pas été retenue cette fois. Continue — chaque postulation compte ! 💪').format(task.title),
             Notification.TypeChoices.APPLICATION_REJECTED,
             related_task=task,
         )
 
-    messages.success(request, _(f'Tasker {application.tasker.full_name} choisi !'))
+    messages.success(request, _('Tasker {} choisi !').format(application.tasker.full_name))
     return redirect('tasks:client_dashboard')
 
 
@@ -724,7 +748,7 @@ def task_reject_application(request, task_id, application_id):
     create_notification(
         application.tasker,
         _('Candidature non retenue'),
-        _(f'Ton application pour "{task.title}" n\'a pas été retenue cette fois. Continue — chaque postulation compte ! 💪'),
+        _('Ton application pour "{}" n\'a pas été retenue cette fois. Continue — chaque postulation compte ! 💪').format(task.title),
         Notification.TypeChoices.APPLICATION_REJECTED,
         related_task=task,
     )
@@ -755,11 +779,10 @@ def task_workspace(request, task_id):
         return HttpResponseForbidden(_("Vous n'avez pas accès à cet espace de travail."))
 
     conversation = None
-    try:
-        app = TaskApplication.objects.get(task=task, status='accepted')
-        conversation = getattr(app, 'conversation', None)
-    except TaskApplication.DoesNotExist:
-        pass
+    if task.assigned_tasker:
+        conversation = Conversation.objects.filter(
+            client=task.client, tasker=task.assigned_tasker
+        ).first()
 
     is_tasker = request.user == task.assigned_tasker
     existing_proof = getattr(task, 'proof', None)
@@ -784,8 +807,8 @@ def task_workspace(request, task_id):
 
     if request.method == 'POST':
         # Chat message
-        if 'send_message' in request.POST and conversation and not conversation.is_closed:
-            chat_form = MessageForm(request.POST)
+        if 'send_message' in request.POST and conversation:
+            chat_form = MessageForm(request.POST, request.FILES)
             if chat_form.is_valid():
                 msg = chat_form.save(commit=False)
                 msg.conversation = conversation
@@ -800,7 +823,7 @@ def task_workspace(request, task_id):
                     title=_('Nouveau message'),
                     message=_('Vous avez reçu un nouveau message de la part de %(sender)s au sujet de « %(task)s »') % {
                         'sender': request.user.full_name,
-                        'task': conversation.task.title,
+                        'task': task.title,
                     },
                     related_conversation=conversation,
                 )
@@ -817,9 +840,12 @@ def task_workspace(request, task_id):
             if task.status == Task.StatusChoices.ACCEPTED:
                 task.start()
             task.await_confirmation()
+            conv = Conversation.objects.filter(client=task.client, tasker=request.user).first()
+            if conv:
+                _add_system_message(conv, _('La mission « {} » a été marquée comme terminée. En attente de la confirmation du client.').format(task.title))
             create_notification(
                 task.client, _('Mission terminée !'),
-                _(f'{request.user.full_name} a terminé "{task.title}". Confirmez la fin de mission.'),
+                _('{} a terminé "{}". Confirmez la fin de mission.').format(request.user.full_name, task.title),
                 Notification.TypeChoices.TASK_COMPLETED, related_task=task,
             )
             messages.success(request, _('Mission marquée comme terminée !'))
@@ -862,16 +888,19 @@ def task_workspace(request, task_id):
                         photos=photo_urls,
                     )
                 task.await_confirmation()
+                conv = Conversation.objects.filter(client=task.client, tasker=request.user).first()
+                if conv:
+                    _add_system_message(conv, _('Une preuve a été soumise pour « {} ». En attente de la vérification du client.').format(task.title))
                 if revision_resubmission:
                     create_notification(
                         task.client, _('Preuve corrigée soumise'),
-                        _(f'Le tasker a soumis une preuve corrigée pour "{task.title}". Vérifiez la modification.'),
+                        _('Le tasker a soumis une preuve corrigée pour "{}". Vérifiez la modification.').format(task.title),
                         Notification.TypeChoices.SYSTEM, related_task=task,
                     )
                 else:
                     create_notification(
                         task.client, _('Mission terminée !'),
-                        _(f'Le tasker a terminé "{task.title}". Vérifiez la preuve.'),
+                        _('Le tasker a terminé "{}". Vérifiez la preuve.').format(task.title),
                         Notification.TypeChoices.TASK_COMPLETED, related_task=task,
                     )
                 return redirect(reverse('tasks:task_workspace', kwargs={'task_id': task.id}) + '?tab=proof')
@@ -881,11 +910,9 @@ def task_workspace(request, task_id):
             action = request.POST.get('completion_action')
             if action == 'accept':
                 task.validate()
-                accepted_app = TaskApplication.objects.filter(
-                    task=task, tasker=task.assigned_tasker
-                ).first()
-                if accepted_app and hasattr(accepted_app, 'conversation'):
-                    accepted_app.conversation.close()
+                conv = Conversation.objects.filter(client=task.client, tasker=task.assigned_tasker).first()
+                if conv:
+                    _add_system_message(conv, _('La mission « {} » a été validée par le client.').format(task.title))
                 profile = task.assigned_tasker.profile
                 reviews = Review.objects.filter(
                     reviewed=task.assigned_tasker,
@@ -895,12 +922,13 @@ def task_workspace(request, task_id):
                 avg = reviews.aggregate(Avg('rating'))['rating__avg'] or 0
                 profile.tasker_rating_avg = round(float(avg), 2)
                 profile.tasker_rating_count = reviews.count()
-                profile.save(update_fields=['tasker_rating_avg', 'tasker_rating_count'])
+                profile.save(update_fields=['tasker_rating_avg', 'tasker_rating_count', 'updated_at'])
                 award_xp(task.assigned_tasker, 50)
+                award_task_completion_bonuses(task.assigned_tasker)
                 check_and_award_badges(task.assigned_tasker)
                 create_notification(
                     task.assigned_tasker, _('Mission validée !'),
-                    _(f'Le client a confirmé la fin de "{task.title}".'),
+                    _('Le client a confirmé la fin de "{}".').format(task.title),
                     Notification.TypeChoices.TASK_COMPLETED, related_task=task,
                 )
                 Notification.objects.filter(
@@ -916,10 +944,10 @@ def task_workspace(request, task_id):
                 notes = request.POST.get('notes', '').strip()
                 task.open_litige()
                 if conversation:
-                    conversation.close()
-                msg = _(f'Un litige a été ouvert pour "{task.title}".')
+                    _add_system_message(conversation, _('Un litige a été ouvert pour « {} ». Un administrateur va intervenir.').format(task.title))
+                msg = _('Un litige a été ouvert pour "{}".').format(task.title)
                 if notes:
-                    msg += _(f' Motif : {notes}')
+                    msg += _(' Motif : {}').format(notes)
                 create_notification(
                     task.assigned_tasker, _('Litige ouvert'),
                     msg,
@@ -944,11 +972,9 @@ def task_workspace(request, task_id):
                 if action == 'accept':
                     proof.accept()
                     task.validate()
-                    accepted_app = TaskApplication.objects.filter(
-                        task=task, tasker=task.assigned_tasker
-                    ).first()
-                    if accepted_app and hasattr(accepted_app, 'conversation'):
-                        accepted_app.conversation.close()
+                    conv = Conversation.objects.filter(client=task.client, tasker=task.assigned_tasker).first()
+                    if conv:
+                        _add_system_message(conv, _('La mission « {} » a été validée par le client.').format(task.title))
                     profile = task.assigned_tasker.profile
                     reviews = Review.objects.filter(
                         reviewed=task.assigned_tasker,
@@ -958,30 +984,20 @@ def task_workspace(request, task_id):
                     avg = reviews.aggregate(Avg('rating'))['rating__avg'] or 0
                     profile.tasker_rating_avg = round(float(avg), 2)
                     profile.tasker_rating_count = reviews.count()
-                    profile.save(update_fields=['tasker_rating_avg', 'tasker_rating_count'])
+                    profile.save(update_fields=['tasker_rating_avg', 'tasker_rating_count', 'updated_at'])
                     award_xp(task.assigned_tasker, 50)
-                    check_and_award_badges(task.assigned_tasker)
-                    create_notification(
-                        task.assigned_tasker, _('Preuve validée !'),
-                        _(f'Le client a validé votre preuve pour "{task.title}".'),
-                        Notification.TypeChoices.TASK_COMPLETED, related_task=task,
-                    )
-                    # Mark related notifications as read
-                    Notification.objects.filter(
-                        user=request.user,
-                        type__in=[Notification.TypeChoices.TASK_COMPLETED, Notification.TypeChoices.SYSTEM],
-                        related_task=task,
-                        is_read=False,
-                    ).update(is_read=True)
-                    return redirect('tasks:task_evaluate', task_id=task.id)
+                    award_task_completion_bonuses(task.assigned_tasker)
+
 
                 elif action == 'revision':
                     proof.request_revision(notes)
                     task.status = Task.StatusChoices.IN_PROGRESS
                     task.save(update_fields=['status', 'updated_at'])
+                    if conversation:
+                        _add_system_message(conversation, _('Le client a demandé une modification pour « {} ».').format(task.title))
                     create_notification(
                         task.assigned_tasker, _('Modification demandée'),
-                        _(f'Le client demande des modifications pour "{task.title}" : {notes}'),
+                        _('Le client demande des modifications pour "{}" : {}').format(task.title, notes),
                         Notification.TypeChoices.SYSTEM, related_task=task,
                     )
 
@@ -992,10 +1008,10 @@ def task_workspace(request, task_id):
                     proof.save()
                     task.open_litige()
                     if conversation:
-                        conversation.close()
+                        _add_system_message(conversation, _('Un litige a été ouvert pour « {} ». Un administrateur va intervenir.').format(task.title))
                     create_notification(
                         task.assigned_tasker, _('Litige ouvert'),
-                        _(f'Un litige a été ouvert pour "{task.title}".'),
+                        _('Un litige a été ouvert pour "{}".').format(task.title),
                         Notification.TypeChoices.SYSTEM, related_task=task,
                     )
 
@@ -1043,10 +1059,14 @@ def task_start(request, task_id):
 
     task.start()
 
+    conv = Conversation.objects.filter(client=task.client, tasker=request.user).first()
+    if conv:
+        _add_system_message(conv, _('La mission « {} » a commencé.').format(task.title))
+
     create_notification(
         task.client,
         _('Mission démarrée !'),
-        _(f'{request.user.full_name} a commencé "{task.title}".'),
+        _('{} a commencé "{}".').format(request.user.full_name, task.title),
         Notification.TypeChoices.SYSTEM,
         related_task=task,
     )
@@ -1088,11 +1108,11 @@ def task_review_proof(request, task_id):
                 proof.accept()
                 task.validate()
 
-                accepted_app = TaskApplication.objects.filter(
-                    task=task, tasker=task.assigned_tasker
+                conv = Conversation.objects.filter(
+                    client=task.client, tasker=task.assigned_tasker
                 ).first()
-                if accepted_app and hasattr(accepted_app, 'conversation'):
-                    accepted_app.conversation.close()
+                if conv:
+                    _add_system_message(conv, _('La mission « {} » a été validée par le client.').format(task.title))
 
                 profile = task.assigned_tasker.profile
                 reviews = Review.objects.filter(
@@ -1103,9 +1123,10 @@ def task_review_proof(request, task_id):
                 avg = reviews.aggregate(Avg('rating'))['rating__avg'] or 0
                 profile.tasker_rating_avg = round(float(avg), 2)
                 profile.tasker_rating_count = reviews.count()
-                profile.save(update_fields=['tasker_rating_avg', 'tasker_rating_count'])
+                profile.save(update_fields=['tasker_rating_avg', 'tasker_rating_count', 'updated_at'])
 
                 award_xp(task.assigned_tasker, 50)
+                award_task_completion_bonuses(task.assigned_tasker)
                 check_and_award_badges(task.assigned_tasker)
 
                 messages.success(request, _('Tâche validée !'))
@@ -1114,10 +1135,16 @@ def task_review_proof(request, task_id):
                 task.status = Task.StatusChoices.IN_PROGRESS
                 task.save(update_fields=['status'])
 
+                conv = Conversation.objects.filter(
+                    client=task.client, tasker=task.assigned_tasker
+                ).first()
+                if conv:
+                    _add_system_message(conv, _('Le client a demandé une modification pour « {} ».').format(task.title))
+
                 create_notification(
                     task.assigned_tasker,
                     _('Modification demandée'),
-                    _(f'Le client a demandé une modification pour "{task.title}". Notes : {notes or "Aucune"}'),
+                    _('Le client a demandé une modification pour "{}". Notes : {}').format(task.title, notes or "Aucune"),
                     Notification.TypeChoices.SYSTEM,
                     related_task=task,
                 )
@@ -1129,16 +1156,16 @@ def task_review_proof(request, task_id):
                 proof.save()
                 task.reject()
 
-                accepted_app = TaskApplication.objects.filter(
-                    task=task, tasker=task.assigned_tasker
+                conv = Conversation.objects.filter(
+                    client=task.client, tasker=task.assigned_tasker
                 ).first()
-                if accepted_app and hasattr(accepted_app, 'conversation'):
-                    accepted_app.conversation.close()
+                if conv:
+                    _add_system_message(conv, _('La mission « {} » a été refusée par le client.').format(task.title))
 
                 create_notification(
                     task.assigned_tasker,
                     _('Mission refusée'),
-                    _(f'Le client a refusé votre mission "{task.title}".'),
+                    _('Le client a refusé votre mission "{}".').format(task.title),
                     Notification.TypeChoices.SYSTEM,
                     related_task=task,
                 )
@@ -1147,16 +1174,16 @@ def task_review_proof(request, task_id):
             elif action == 'litige':
                 task.open_litige(notes or 'Litige signalé par le client')
 
-                accepted_app = TaskApplication.objects.filter(
-                    task=task, tasker=task.assigned_tasker
+                conv = Conversation.objects.filter(
+                    client=task.client, tasker=task.assigned_tasker
                 ).first()
-                if accepted_app and hasattr(accepted_app, 'conversation'):
-                    accepted_app.conversation.close()
+                if conv:
+                    _add_system_message(conv, _('Un litige a été ouvert pour « {} ». Un administrateur va intervenir.').format(task.title))
 
                 create_notification(
                     task.assigned_tasker,
                     _('Litige ouvert'),
-                    _(f'Un litige a été signalé pour "{task.title}". Un administrateur va intervenir.'),
+                    _('Un litige a été signalé pour "{}". Un administrateur va intervenir.').format(task.title),
                     Notification.TypeChoices.SYSTEM,
                     related_task=task,
                 )
@@ -1247,12 +1274,17 @@ def task_evaluate(request, task_id):
         avg = reviews.aggregate(Avg('rating'))['rating__avg'] or 0
         profile.tasker_rating_avg = round(float(avg), 2)
         profile.tasker_rating_count = reviews.count()
-        profile.save(update_fields=['tasker_rating_avg', 'tasker_rating_count'])
+        profile.save(update_fields=['tasker_rating_avg', 'tasker_rating_count', 'updated_at'])
+
+        if rating == 5:
+            award_xp(task.assigned_tasker, 20)
+        elif rating == 4:
+            award_xp(task.assigned_tasker, 10)
 
         create_notification(
             task.assigned_tasker,
             _('Nouvel avis reçu'),
-            _(f'Le client a évalué votre mission "{task.title}" avec {rating}/5.'),
+            _('Le client a évalué votre mission "{}" avec {}/5.').format(task.title, rating),
             Notification.TypeChoices.REVIEW_RECEIVED,
             related_task=task,
             related_review=review,
@@ -1278,7 +1310,7 @@ def task_close(request, task_id):
         create_notification(
             task.assigned_tasker,
             _('Mission clôturée'),
-            _(f'La mission "{task.title}" a été clôturée.'),
+            _('La mission "{}" a été clôturée.').format(task.title),
             Notification.TypeChoices.SYSTEM,
             related_task=task,
         )
@@ -1292,7 +1324,6 @@ def get_subcategories(request, cat_id):
     return JsonResponse({'subcategories': data})
 
 
-@login_required
 @login_required
 def notifications_list(request):
     if request.user.acting_as_client():

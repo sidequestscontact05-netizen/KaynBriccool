@@ -151,14 +151,53 @@
                 </div>
             </form>
         </div>
-        {% elif user.is_tasker and not can_apply and user != task.client %}
+        {% elif user.is_tasker and not can_apply and user != task.client and user != task.assigned_tasker %}
         <div class="td-already-applied">
-            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Vous avez déjà postulé à cette task</span>
+            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            {% if existing_application.status == 'rejected' %}
+                Candidature rejetée par le client
+            {% else %}
+                Candidature en attente d'acceptation par le client
+            {% endif %}
+            </span>
         </div>
         {% endif %}
-    </div>
 
-    {% if user == task.client and is_owner %}
+        {% if user == task.assigned_tasker and task.status == 'accepted' or user == task.assigned_tasker and task.status == 'in_progress' or user == task.assigned_tasker and task.status == 'awaiting_confirmation' %}
+        <div class="td-actions">
+            <a href="{% url 'tasks:task_workspace' task.id %}" class="td-btn td-btn-primary" style="display:flex;align-items:center;gap:6px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                Accéder à l'espace de travail
+            </a>
+        </div>
+    {% endif %}
+
+    {% if client_review %}
+    <div class="review-card" style="margin-top:1rem;">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;font-size:13px;font-weight:600;color:var(--sq-text-muted);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Note évaluée par le client
+      </div>
+      <div class="review-header">
+        <div class="review-rating">
+          {% for i in "12345" %}
+            {% if forloop.counter <= client_review.rating %}
+              <span class="star-filled"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+            {% else %}
+              <span class="star-empty"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+      {% if client_review.comment %}
+      <p class="review-comment">{{ client_review.comment }}</p>
+      {% endif %}
+      <span class="review-date">{{ client_review.created_at|date:"d F Y" }}</span>
+    </div>
+    {% endif %}
+  </div>
+
+  {% if user == task.client and is_owner %}
     <div class="td-candidatures-link">
         <a href="{% url 'tasks:task_candidatures' task.id %}" class="td-btn td-btn-primary">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>

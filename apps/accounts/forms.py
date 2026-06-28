@@ -182,13 +182,34 @@ class ProfileForm(forms.ModelForm):
         required=False,
         widget=forms.Textarea(attrs={'rows': 4, 'class': 'form-input'}),
     )
-    city = forms.CharField(
-        label=_('Ville'),
-        required=False,
-        max_length=100,
-        widget=forms.TextInput(attrs={'class': 'form-input'}),
-    )
 
     class Meta:
         model = CustomUser
         fields = ('full_name', 'phone_number', 'avatar')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'instance' in kwargs:
+            self.fields['bio'].initial = kwargs['instance'].profile.bio
+
+    def save(self, commit=True):
+        user = super().save(commit=commit)
+        profile = user.profile
+        profile.bio = self.cleaned_data.get('bio', '')
+        if commit:
+            profile.save(update_fields=['bio'])
+        return user
+
+
+class SkillForm(forms.Form):
+    skill_id = forms.UUIDField()
+
+    def clean_skill_id(self):
+        sid = self.cleaned_data['skill_id']
+        try:
+            return Skill.objects.get(id=sid)
+        except Skill.DoesNotExist:
+            raise forms.ValidationError(_('Compétence introuvable.'))
+
+
+from apps.accounts.models import Skill

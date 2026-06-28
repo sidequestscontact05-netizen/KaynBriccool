@@ -10,7 +10,7 @@ CATEGORY_ICONS = {
     'aide personnelle': 'heart-handshake',
     'animaux': 'paw',
     'autres': 'dots-circle-horizontal',
-    'beauté & bien-être': 'sparkles',
+    'beauté & bien-être': 'moon-stars',
     'bricolage & jardinage': 'tools',
     'courses & achats': 'shopping-cart',
     'cuisine & traiteur': 'chef-hat',
@@ -49,7 +49,7 @@ def rank_name(level):
         return 'Beginner'
 
 
-LEVEL_XP_THRESHOLDS = [0, 100, 300, 600, 1000, 1500, 2100, 2800, 3600, 4500, 5500]
+LEVEL_XP_THRESHOLDS = [0, 200, 500, 1000, 2000, 5000]
 
 
 @register.filter

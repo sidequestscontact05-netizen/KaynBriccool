@@ -151,11 +151,49 @@ class VerificationRecord(models.Model):
         verbose_name = _('vérification')
         verbose_name_plural = _('vérifications')
         constraints = [
-            models.UniqueConstraint(fields=['user', 'type'], name='unique_user_verification_type'),
+            models.UniqueConstraint(
+                fields=['user', 'type'],
+                name='unique_user_verification_type',
+                condition=~models.Q(face_status='rejected'),
+            ),
         ]
 
     def __str__(self):
         return f'{self.user.full_name} - {self.get_type_display()}'
+
+
+class Skill(models.Model):
+    CATEGORY_CHOICES = [
+        ('menage', 'Ménage'),
+        ('bricolage', 'Bricolage & Réparation'),
+        ('jardinage', 'Jardinage'),
+        ('livraison', 'Livraison'),
+        ('courses', 'Courses & Shopping'),
+        ('tech', 'Tech & Digital'),
+        ('enseignement', 'Enseignement & Cours'),
+        ('soins', 'Soins & Bien-être'),
+        ('transport', 'Transport'),
+        ('evenementiel', 'Événementiel'),
+        ('garde', 'Garde & Animaux'),
+        ('autre', 'Autre'),
+    ]
+
+    name = models.CharField(_('nom'), max_length=100)
+    icon = models.CharField(_('icône'), max_length=50, blank=True, default='tools')
+    category = models.CharField(_('catégorie'), max_length=30, choices=CATEGORY_CHOICES, blank=True, default='')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        self.icon = self.icon.removeprefix('ti-') if self.icon else self.icon
+        super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = _('compétence')
+        verbose_name_plural = _('compétences')
+        ordering = ['category', 'name']
+
+    def __str__(self):
+        return self.name
 
 
 class UserProfile(models.Model):
@@ -204,6 +242,7 @@ class UserProfile(models.Model):
 
     xp = models.IntegerField(_('points d\'expérience'), default=0)
     level = models.IntegerField(_('niveau'), default=1)
+    level_title = models.CharField(_('titre de niveau'), max_length=50, default='Apprenti')
 
     onboarding_seen = models.BooleanField(_('guide vu'), default=False)
     welcome_modal_shown = models.BooleanField(_('modal bienvenue vue'), default=False)
@@ -211,9 +250,62 @@ class UserProfile(models.Model):
     current_streak = models.IntegerField(_('série actuelle'), default=0)
     last_streak_date = models.DateField(_('dernière activité'), blank=True, null=True)
     saved_tasks = models.ManyToManyField('tasks.Task', blank=True, related_name='saved_by')
+    skills = models.ManyToManyField('Skill', blank=True, verbose_name=_('compétences'))
+    service_radius = models.IntegerField(_('rayon d\'action (km)'), blank=True, null=True)
+
+    _xp_awarded_avatar = models.BooleanField(default=False)
+    _xp_awarded_face = models.BooleanField(default=False)
+    _xp_awarded_skills = models.BooleanField(default=False)
+    _xp_awarded_zone = models.BooleanField(default=False)
+    _xp_awarded_first_task = models.BooleanField(default=False)
+    _xp_awarded_profile_complete = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(_('créé le'), auto_now_add=True)
     updated_at = models.DateTimeField(_('modifié le'), auto_now=True)
+
+    LEVEL_TITLES = {
+        1: 'Apprenti',
+        2: 'Aventurier',
+        3: 'Chasseur de quêtes',
+        4: 'Vétéran',
+        5: 'Maître des quêtes',
+        6: 'Légende SideQuest',
+    }
+
+    LEVEL_XP_THRESHOLDS = [0, 200, 500, 1000, 2000, 5000]
+
+    def update_level(self):
+        new_level = 1
+        for i, threshold in enumerate(self.LEVEL_XP_THRESHOLDS):
+            if self.xp >= threshold:
+                new_level = i + 1
+        if new_level > self.level:
+            self.level = new_level
+            self.level_title = self.LEVEL_TITLES.get(new_level, 'Apprenti')
+            self.save(update_fields=['level', 'level_title', 'updated_at'])
+
+    def award_profile_xp(self):
+        from apps.badges.engine import award_xp
+        if self.has_avatar() and not self._xp_awarded_avatar:
+            award_xp(self.user, 15)
+            self._xp_awarded_avatar = True
+        if self.is_face_verified() and not self._xp_awarded_face:
+            award_xp(self.user, 40)
+            self._xp_awarded_face = True
+        if self.skills.exists() and not self._xp_awarded_skills:
+            award_xp(self.user, 10)
+            self._xp_awarded_skills = True
+        if (self.city or self.service_radius) and not self._xp_awarded_zone:
+            award_xp(self.user, 15)
+            self._xp_awarded_zone = True
+        if self.profile_completion_pct() == 100 and not self._xp_awarded_profile_complete:
+            award_xp(self.user, 30)
+            self._xp_awarded_profile_complete = True
+        self.save(update_fields=[
+            '_xp_awarded_avatar', '_xp_awarded_face', '_xp_awarded_skills',
+            '_xp_awarded_zone', '_xp_awarded_profile_complete', 'xp', 'level',
+            'updated_at',
+        ])
 
     def update_streak(self):
         from datetime import date, timedelta
@@ -249,9 +341,9 @@ class UserProfile(models.Model):
             pct += 25
         if self.is_face_verified():
             pct += 25
-        if self.bio:
+        if self.skills.exists():
             pct += 25
-        if self.city:
+        if self.city or self.service_radius:
             pct += 25
         return pct
 
@@ -327,3 +419,26 @@ class Notification(models.Model):
         self.is_opened = True
         self.opened_at = timezone.now()
         self.save(update_fields=['is_opened', 'opened_at'])
+
+
+class DeletionRequest(models.Model):
+    ROLE_CHOICES = [
+        ('client', 'Client'),
+        ('tasker', 'Tasker'),
+    ]
+
+    user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
+    reasons = models.JSONField(default=list)
+    other_text = models.TextField(blank=True, default='')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Suppression {self.user or '?'} - {self.role}"
+
+    class Meta:
+        verbose_name = 'Demande de suppression'
+        verbose_name_plural = 'Demandes de suppression'
+
+    def __str__(self):
+        return f'{self.user} ({self.role}) — {self.created_at}'

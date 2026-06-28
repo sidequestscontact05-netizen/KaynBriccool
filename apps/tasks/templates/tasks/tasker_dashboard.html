@@ -428,7 +428,6 @@
       </div>
     </div>
     <div class="hero-right">
-      <span style="background:rgba(254,44,85,0.12);color:#FE2C55;border-radius:999px;padding:3px 10px;font-size:10px;font-weight:600;display:inline-block;">{{ user.profile.current_streak|default:'0' }} streak</span>
       <span style="background:rgba(27,67,50,0.12);color:#1B4332;border-radius:999px;padding:3px 10px;font-size:10px;font-weight:600;display:inline-block;">{{ user.profile.xp|default:'0' }} XP</span>
     </div>
   </div>
@@ -447,51 +446,65 @@
   {% endif %}
   {% endwith %}
 
-  {# ═══════ CATEGORY FILTERS ═══════ #}
-  <div style="display:flex;gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px;margin-bottom:16px;" id="cat-filters">
+   {# ═══════ CATEGORY FILTERS ═══════ #}
+  <div style="display:flex;gap:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px;margin-bottom:16px;" id="cat-filters">
     <div onclick="filterCat('')" id="cat-all"
-      style="display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;flex-shrink:0;">
-      <div style="width:52px;height:52px;border-radius:14px;background:#1B4332;display:flex;align-items:center;justify-content:center;">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      style="display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;flex-shrink:0;width:80px;">
+      <div style="width:64px;height:64px;border-radius:16px;background:#1B4332;display:flex;align-items:center;justify-content:center;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       </div>
-      <span style="font-size:10px;font-weight:500;color:#1B4332;">Toutes</span>
+      <span style="font-size:11px;font-weight:500;color:#1B4332;text-align:center;line-height:1.2;">Toutes</span>
     </div>
     {% for cat in categories %}
     <div onclick="filterCat('{{ cat.slug }}')" id="cat-{{ cat.slug }}"
-      style="display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;flex-shrink:0;">
-      <div style="width:52px;height:52px;border-radius:14px;background:#F3F4F6;border:0.5px solid #E5E5E0;display:flex;align-items:center;justify-content:center;color:#6B7280;">
-        <i class="ti ti-{{ cat|category_icon }}" style="font-size:22px;"></i>
+      style="display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;flex-shrink:0;width:80px;">
+      <div style="width:64px;height:64px;border-radius:16px;background:#F3F4F6;border:0.5px solid #E5E5E0;display:flex;align-items:center;justify-content:center;color:#6B7280;">
+        <i class="ti ti-{{ cat|category_icon }}" style="font-size:28px;"></i>
       </div>
-      <span style="font-size:10px;font-weight:500;color:#6B7280;">{{ cat.name }}</span>
+      <span style="font-size:11px;font-weight:500;color:#6B7280;text-align:center;line-height:1.2;word-wrap:break-word;overflow-wrap:break-word;">{{ cat.name }}</span>
     </div>
     {% endfor %}
   </div>
 
   {# ═══════ SECTION 1 — ACTIVE QUESTS ═══════ #}
-  {% if active_tasks %}
+  {% if accepted_tasks or active_tasks %}
   <h2 class="sq-section-title" style="margin:0 0 10px;">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
     My active tasks
   </h2>
 
   <div class="sq-active-list">
+      {% if accepted_tasks %}
+      <a href="{% url 'tasks:tasker_accepted_tasks' %}" class="sq-active-card sq-accepted-group">
+        <div class="sq-active-icon orange">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+        </div>
+        <div class="sq-active-body">
+          <div class="sq-active-title">Mes tasks acceptées</div>
+          <div class="sq-active-meta">
+            <span>{{ accepted_tasks|length }} tâche{{ accepted_tasks|length|pluralize }}</span>
+          </div>
+        </div>
+        <div class="sq-active-bar">
+          <div class="sq-active-bar-fill" style="width:25%;"></div>
+        </div>
+        <svg class="sq-active-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+      {% endif %}
       {% for task in active_tasks %}
       <a href="{% url 'tasks:task_workspace' task.id %}" class="sq-active-card">
-        <div class="sq-active-icon {% if task.status == 'in_progress' %}blue{% elif task.status == 'awaiting_confirmation' %}green{% else %}orange{% endif %}">
+        <div class="sq-active-icon {% if task.status == 'in_progress' %}blue{% else %}green{% endif %}">
           {% if task.status == 'in_progress' %}
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          {% elif task.status == 'awaiting_confirmation' %}
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="20 6 9 17 4 12"/></svg>
           {% else %}
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="20 6 9 17 4 12"/></svg>
           {% endif %}
         </div>
         <div class="sq-active-body">
           <div class="sq-active-title">{{ task.title }}</div>
           <div class="sq-active-meta">
             <span>
-              {% if task.status == 'accepted' %}Acceptée
-              {% elif task.status == 'in_progress' %}En cours
+              {% if task.status == 'in_progress' %}En cours
               {% elif task.status == 'awaiting_confirmation' %}En attente
               {% endif %}
             </span>
@@ -502,7 +515,7 @@
           </div>
         </div>
         <div class="sq-active-bar">
-          <div class="sq-active-bar-fill" style="width:{% if task.status == 'accepted' %}25{% elif task.status == 'in_progress' %}55{% elif task.status == 'awaiting_confirmation' %}85{% else %}100{% endif %}%;"></div>
+          <div class="sq-active-bar-fill" style="width:{% if task.status == 'in_progress' %}55{% else %}85{% endif %}%;"></div>
         </div>
         <svg class="sq-active-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
@@ -534,9 +547,6 @@
             {% if task.proof_required %}<span class="avail-card-tag">Preuve requise</span>{% endif %}
           </div>
           <div class="avail-card-actions">
-            <button class="avail-action-btn" title="Save" data-save="{{ task.id }}">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-            </button>
             <button class="avail-action-btn" title="Share" data-share="{{ task.id }}" data-title="{{ task.title|escape }}" data-reward="{{ task.reward }}" data-url="{% url 'tasks:task_detail' task.id %}">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
             </button>
@@ -565,6 +575,25 @@
 {% endwith %}
 {% endwith %}
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function filterCat(slug) {
+  document.querySelectorAll('#cat-filters > div').forEach(function(el) {
+    var bg = el.querySelector('div');
+    if (bg) bg.style.outline = 'none';
+  });
+  var active = document.getElementById('cat-' + (slug || 'all'));
+  if (active) {
+    var bg = active.querySelector('div');
+    if (bg) bg.style.outline = '2px solid #1B4332';
+  }
+  document.querySelectorAll('.avail-card').forEach(function(card) {
+    card.style.display = (!slug || card.dataset.cat === slug) ? '' : 'none';
+  });
+}
+</script>
 {% endblock %}
 
 {% block dashboard_right %}{% endblock %}
