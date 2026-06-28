@@ -2,7 +2,7 @@ from .base import *  # noqa: F401,F403
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['sidequest2.pythonanywhere.com', 'www.sidequest2.pythonanywhere.com']
+ALLOWED_HOSTS = ['KaynBricool.pythonanywhere.com', 'www.kaynbricool.com', 'kaynbricool.com']
 
 DATABASES = {
     'default': {
@@ -22,6 +22,12 @@ CACHES = {
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 SECURE_SSL_REDIRECT = False
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://KaynBricool.pythonanywhere.com',
+    'https://www.kaynbricool.com',
+    'https://kaynbricool.com',
+]
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 
