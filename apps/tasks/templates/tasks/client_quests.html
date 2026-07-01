@@ -131,11 +131,11 @@
                 {% if task.status == 'awaiting_confirmation' %}
                     <a href="{% url 'tasks:task_review_proof' task.id %}" class="btn btn-sm">Vérifier la preuve</a>
                 {% endif %}
-                {% if task_accepted_conv_map|get_item:task.id %}
-                    {% with conv=task_accepted_conv_map|get_item:task.id %}
-                        <a href="{% url 'messaging:conversation_detail' conv.id|conv_id %}" class="btn btn-sm">Message</a>
-                    {% endwith %}
-                {% endif %}
+                {% with conv=task_accepted_conv_map|get_item:task.id %}
+                    {% if conv.id %}
+                        <a href="{% url 'messaging:conversation_detail' conv.id %}" class="btn btn-sm">Message</a>
+                    {% endif %}
+                {% endwith %}
             </div>
         </div>
         {% endfor %}
