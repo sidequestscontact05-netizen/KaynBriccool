@@ -4,9 +4,9 @@
 
 {% block dashboard_content %}
 <div class="page-header">
-    <a href="{% url 'admin_sidequest:dashboard' %}" class="btn-back" title="Retour">&#8592;</a>
+    <a href="{% url 'admin_KaynBricool:dashboard' %}" class="btn-back" title="Retour">&#8592;</a>
     <h1>Catégories</h1>
-    <a href="{% url 'admin_sidequest:create_category' %}" class="btn btn-admin">+ Ajouter</a>
+    <a href="{% url 'admin_KaynBricool:create_category' %}" class="btn btn-admin">+ Ajouter</a>
 </div>
 
 <table class="admin-table">
@@ -33,8 +33,8 @@
             </td>
             <td>{{ cat.subcategories.count }}</td>
             <td>
-                <a href="{% url 'admin_sidequest:edit_category' cat.id %}" class="btn btn-sm btn-admin-outline">Modifier</a>
-                <a href="{% url 'admin_sidequest:delete_category' cat.id %}" class="btn btn-sm btn-admin-danger">Supprimer</a>
+                <a href="{% url 'admin_KaynBricool:edit_category' cat.id %}" class="btn btn-sm btn-admin-outline">Modifier</a>
+                <a href="{% url 'admin_KaynBricool:delete_category' cat.id %}" class="btn btn-sm btn-admin-danger">Supprimer</a>
             </td>
         </tr>
         {% empty %}

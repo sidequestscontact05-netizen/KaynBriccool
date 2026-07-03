@@ -21,7 +21,7 @@ def admin_required(view_func):
 @ensure_csrf_cookie
 def admin_badges(request):
     badges = Badge.objects.all().order_by('name')
-    return render(request, 'admin_sidequest/badges.html', {
+    return render(request, 'admin_KaynBricool/badges.html', {
         'badges': badges,
     })
 
@@ -37,13 +37,13 @@ def admin_create_badge(request):
 
         if not name:
             messages.error(request, _('Le nom est obligatoire.'))
-            return render(request, 'admin_sidequest/badge_form.html', {'form_action': 'create'})
+            return render(request, 'admin_KaynBricool/badge_form.html', {'form_action': 'create'})
 
         try:
             cond_value = json.loads(value) if value else {"min_tasks": 10}
         except json.JSONDecodeError:
             messages.error(request, _('JSON invalide pour la condition.'))
-            return render(request, 'admin_sidequest/badge_form.html', {'form_action': 'create'})
+            return render(request, 'admin_KaynBricool/badge_form.html', {'form_action': 'create'})
 
         try:
             Badge.objects.create(
@@ -58,10 +58,10 @@ def admin_create_badge(request):
                 target_role=request.POST.get('target_role', 'tasker'),
             )
             messages.success(request, _('Badge créé.'))
-            return redirect('admin_sidequest:badges')
+            return redirect('admin_KaynBricool:badges')
         except Exception as e:
             messages.error(request, f'Erreur: {e}')
-    return render(request, 'admin_sidequest/badge_form.html', {'form_action': 'create'})
+    return render(request, 'admin_KaynBricool/badge_form.html', {'form_action': 'create'})
 
 
 @admin_required
@@ -84,7 +84,7 @@ def admin_edit_badge(request, badge_id):
                 badge.condition_value = json.loads(value)
             except json.JSONDecodeError:
                 messages.error(request, _('JSON invalide pour la condition.'))
-                return render(request, 'admin_sidequest/badge_form.html', {'badge': badge, 'form_action': 'edit'})
+                return render(request, 'admin_KaynBricool/badge_form.html', {'badge': badge, 'form_action': 'edit'})
 
         if new_slug:
             badge.slug = new_slug
@@ -95,14 +95,14 @@ def admin_edit_badge(request, badge_id):
             badge.full_clean()
         except Exception as e:
             messages.error(request, str(e))
-            return render(request, 'admin_sidequest/badge_form.html', {'badge': badge, 'form_action': 'edit'})
+            return render(request, 'admin_KaynBricool/badge_form.html', {'badge': badge, 'form_action': 'edit'})
 
         try:
             badge.save()
             messages.success(request, _('Badge modifié.'))
-            return redirect('admin_sidequest:badges')
+            return redirect('admin_KaynBricool:badges')
         except Exception as e:
             messages.error(request, f'Erreur: {e}')
-            return render(request, 'admin_sidequest/badge_form.html', {'badge': badge, 'form_action': 'edit'})
+            return render(request, 'admin_KaynBricool/badge_form.html', {'badge': badge, 'form_action': 'edit'})
 
-    return render(request, 'admin_sidequest/badge_form.html', {'badge': badge, 'form_action': 'edit'})
+    return render(request, 'admin_KaynBricool/badge_form.html', {'badge': badge, 'form_action': 'edit'})

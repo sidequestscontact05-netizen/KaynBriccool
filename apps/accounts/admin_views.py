@@ -63,7 +63,7 @@ def admin_dashboard(request):
     ).select_related('user').order_by('-created_at')[:10]
     litiges = Task.objects.filter(status='litige').select_related('client', 'assigned_tasker').order_by('-updated_at')[:5]
 
-    return render(request, 'admin_sidequest/dashboard.html', {
+    return render(request, 'admin_KaynBricool/dashboard.html', {
         'stats': stats,
         'top_skills': top_skills,
         'top_cities': top_cities,
@@ -90,7 +90,7 @@ def admin_users(request):
     if role_filter:
         users = users.filter(role=role_filter)
 
-    return render(request, 'admin_sidequest/users.html', {
+    return render(request, 'admin_KaynBricool/users.html', {
         'users': users,
         'search': search,
         'role_filter': role_filter,
@@ -101,7 +101,7 @@ def admin_users(request):
 def admin_user_detail(request, user_id):
     user = get_object_or_404(User, id=user_id, is_staff=False)
     profile = getattr(user, 'profile', None)
-    return render(request, 'admin_sidequest/user_detail.html', {
+    return render(request, 'admin_KaynBricool/user_detail.html', {
         'profile_user': user,
         'profile': profile,
     })
@@ -114,8 +114,8 @@ def admin_ban_user(request, user_id):
         user.is_active = False
         user.save()
         messages.success(request, _('Utilisateur {} banni.').format(user.full_name))
-        return redirect('admin_sidequest:users')
-    return render(request, 'admin_sidequest/user_confirm_ban.html', {'profile_user': user})
+        return redirect('admin_KaynBricool:users')
+    return render(request, 'admin_KaynBricool/user_confirm_ban.html', {'profile_user': user})
 
 
 @admin_required
@@ -124,8 +124,8 @@ def admin_delete_user(request, user_id):
     if request.method == 'POST':
         user.delete()
         messages.success(request, _('Utilisateur {} supprimé.').format(user.full_name))
-        return redirect('admin_sidequest:users')
-    return render(request, 'admin_sidequest/user_confirm_delete.html', {'profile_user': user})
+        return redirect('admin_KaynBricool:users')
+    return render(request, 'admin_KaynBricool/user_confirm_delete.html', {'profile_user': user})
 
 
 @admin_required
@@ -145,7 +145,7 @@ def admin_verifications(request):
     elif status_filter == 'all':
         pass
 
-    return render(request, 'admin_sidequest/verifications.html', {
+    return render(request, 'admin_KaynBricool/verifications.html', {
         'verifications': verifications,
         'status_filter': status_filter,
     })
@@ -174,9 +174,9 @@ def admin_verify_face(request, verification_id):
             verification.save(update_fields=['face_status', 'admin_notes', 'updated_at'])
             messages.warning(request, _('Vérification de {} rejetée.').format(verification.user.full_name))
 
-        return redirect('admin_sidequest:verifications')
+        return redirect('admin_KaynBricool:verifications')
 
-    return render(request, 'admin_sidequest/verify_face.html', {
+    return render(request, 'admin_KaynBricool/verify_face.html', {
         'verification': verification,
     })
 
@@ -188,7 +188,7 @@ def admin_delete_face_photo(request, verification_id, photo_name):
 
     if photo_name not in valid_photos:
         messages.error(request, _('Photo invalide.'))
-        return redirect('admin_sidequest:verify_face', verification_id=verification.id)
+        return redirect('admin_KaynBricool:verify_face', verification_id=verification.id)
 
     photo_field = getattr(verification, photo_name)
     if photo_field:
@@ -199,7 +199,7 @@ def admin_delete_face_photo(request, verification_id, photo_name):
     else:
         messages.info(request, _('Cette photo n\'existe pas.'))
 
-    return redirect('admin_sidequest:verify_face', verification_id=verification.id)
+    return redirect('admin_KaynBricool:verify_face', verification_id=verification.id)
 
 
 @admin_required
@@ -208,4 +208,4 @@ def admin_delete_verification(request, verification_id):
     user_name = verification.user.full_name
     verification.delete()
     messages.success(request, _('Vérification Face ID de {} supprimée.').format(user_name))
-    return redirect('admin_sidequest:verifications')
+    return redirect('admin_KaynBricool:verifications')

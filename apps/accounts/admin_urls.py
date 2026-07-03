@@ -24,7 +24,7 @@ from apps.badges.admin_views import (
     admin_edit_badge,
 )
 
-app_name = 'admin_sidequest'
+app_name = 'admin_KaynBricool'
 
 urlpatterns = [
     path('', admin_dashboard, name='dashboard'),

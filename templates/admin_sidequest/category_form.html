@@ -4,7 +4,7 @@
 
 {% block dashboard_content %}
 <div class="page-header">
-    <a href="{% url 'admin_sidequest:categories' %}" class="btn-back" title="Retour">&#8592;</a>
+    <a href="{% url 'admin_KaynBricool:categories' %}" class="btn-back" title="Retour">&#8592;</a>
     <h1>{% if form_action == 'edit' %}Modifier{% else %}Créer{% endif %} une catégorie</h1>
 </div>
 
@@ -25,9 +25,9 @@
     <div class="form-actions">
         <button type="submit" class="btn btn-admin">Sauvegarder</button>
         {% if form_action == 'edit' %}
-            <a href="{% url 'admin_sidequest:categories' %}" class="btn btn-admin-outline">Annuler</a>
+            <a href="{% url 'admin_KaynBricool:categories' %}" class="btn btn-admin-outline">Annuler</a>
         {% else %}
-            <a href="{% url 'admin_sidequest:categories' %}" class="btn btn-admin-outline">Annuler</a>
+            <a href="{% url 'admin_KaynBricool:categories' %}" class="btn btn-admin-outline">Annuler</a>
         {% endif %}
     </div>
 </form>

@@ -147,7 +147,7 @@ class FirebaseLoginView(View):
             return JsonResponse({'redirect': reverse('accounts:social_complete')})
 
         if user.is_admin():
-            return JsonResponse({'redirect': reverse('admin_sidequest:dashboard')})
+            return JsonResponse({'redirect': reverse('admin_KaynBricool:dashboard')})
         return JsonResponse({'redirect': reverse('home')})
 
 

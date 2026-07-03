@@ -13,13 +13,13 @@ def generate_verification_code():
 
 
 def send_verification_email(user, code):
-    subject = _('SideQuest — Votre code de vérification')
+    subject = _('KaynBricool — Votre code de vérification')
     message = _(
         f'Bonjour {user.full_name},\n\n'
-        f'Votre code de vérification SideQuest est : {code}\n\n'
+        f'Votre code de vérification KaynBricool est : {code}\n\n'
         f'Ce code expire dans 10 minutes.\n\n'
         f'Si vous n\'avez pas demandé ce code, ignorez cet email.\n\n'
-        f'— L\'équipe SideQuest'
+        f'— L\'équipe KaynBricool'
     )
     
     try:
@@ -100,15 +100,15 @@ def create_email_verification(user):
         expires_at=expires_at,
     )
 
-    subject = _('SideQuest — Vérifiez votre email')
+    subject = _('KaynBricool — Vérifiez votre email')
     message = _(
         f'Bonjour {user.full_name},\n\n'
-        f'Bienvenue sur SideQuest ! Pour activer votre compte, '
+        f'Bienvenue sur KaynBricool ! Pour activer votre compte, '
         f'utilisez le code de vérification suivant :\n\n'
         f'Code de vérification : {code}\n\n'
         f'Ce code expire dans 10 minutes.\n\n'
-        f'Si vous n\'avez pas créé de compte SideQuest, ignorez cet email.\n\n'
-        f'— L\'équipe SideQuest'
+        f'Si vous n\'avez pas créé de compte KaynBricool, ignorez cet email.\n\n'
+        f'— L\'équipe KaynBricool'
     )
 
     try:
@@ -154,13 +154,13 @@ def verify_email_code(user, code):
 def send_form_email(user):
     form_url = 'https://docs.google.com/forms/d/e/1FAIpQLSfSttWHmdBFooMw9BNYwvBWdsUrEPT8qI12WuT5GvSVPW4jmw/viewform?usp=publish-editor'
 
-    subject = _('SideQuest — Formulaire à remplir')
+    subject = _('KaynBricool — Formulaire à remplir')
     message = _(
         'Bonjour {},\n\n'
-        'Merci de remplir ce formulaire SideQuest :\n'
+        'Merci de remplir ce formulaire KaynBricool :\n'
         '{}\n\n'
         'Votre réponse nous aidera à améliorer la plateforme.\n\n'
-        '— L\'équipe SideQuest'
+        '— L\'équipe KaynBricool'
     ).format(user.full_name, form_url)
 
     try:
@@ -176,7 +176,7 @@ def send_form_email(user):
 
 
 def send_password_reset_email(user, reset_url):
-    subject = _('SideQuest — Réinitialisation de votre mot de passe')
+    subject = _('KaynBricool — Réinitialisation de votre mot de passe')
     message = _(
         f'Bonjour {user.full_name},\n\n'
         f'Vous avez demandé à réinitialiser votre mot de passe.\n\n'
@@ -184,7 +184,7 @@ def send_password_reset_email(user, reset_url):
         f'{reset_url}\n\n'
         f'Ce lien expire dans 1 heure.\n\n'
         f'Si vous n\'avez pas demandé cette réinitialisation, ignorez cet email.\n\n'
-        f'— L\'équipe SideQuest'
+        f'— L\'équipe KaynBricool'
     )
     send_mail(
         subject=subject,

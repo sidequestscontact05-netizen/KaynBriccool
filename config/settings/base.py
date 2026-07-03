@@ -155,7 +155,7 @@ EMAIL_PORT = env.int('EMAIL_PORT', default=587)
 EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
 EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', default=True)
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='noreply@sidequest.app')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='noreply@KaynBricool.app')
 SITE_URL = env('SITE_URL', default='http://localhost:8000')
 
 REDIS_URL = env('REDIS_URL', default='redis://localhost:6379/0')

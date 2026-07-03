@@ -1220,7 +1220,7 @@ def task_resolve_litige(request, task_id):
 
     task.resolve_litige()
     messages.success(request, _('Litige résolu. La mission est en statut Résolue, les deux parties peuvent maintenant s\'évaluer.'))
-    return redirect('admin_sidequest:dashboard')
+    return redirect('admin_KaynBricool:dashboard')
 
 
 @login_required

@@ -4,7 +4,7 @@
 
 {% block dashboard_content %}
 <div class="page-header">
-    <a href="{% url 'admin_sidequest:dashboard' %}" class="btn-back" title="Retour">&#8592;</a>
+    <a href="{% url 'admin_KaynBricool:dashboard' %}" class="btn-back" title="Retour">&#8592;</a>
     <h1>Utilisateurs</h1>
 </div>
 
@@ -36,7 +36,7 @@
         {% for user in users %}
         {% with profile=user.profile %}
         <tr>
-            <td><a href="{% url 'admin_sidequest:user_detail' user.id %}">{{ user.full_name }}</a></td>
+            <td><a href="{% url 'admin_KaynBricool:user_detail' user.id %}">{{ user.full_name }}</a></td>
             <td>{{ user.email }}</td>
             <td><span class="admin-role-badge admin-role-{{ user.role }}">{{ user.get_role_display }}</span></td>
             <td>{{ profile.city|default:"—" }}</td>
@@ -56,7 +56,7 @@
                 {% endif %}
             </td>
             <td>
-                <a href="{% url 'admin_sidequest:user_detail' user.id %}" class="btn btn-sm btn-admin-outline">Voir</a>
+                <a href="{% url 'admin_KaynBricool:user_detail' user.id %}" class="btn btn-sm btn-admin-outline">Voir</a>
             </td>
         </tr>
         {% endwith %}

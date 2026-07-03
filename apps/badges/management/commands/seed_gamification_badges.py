@@ -139,7 +139,7 @@ BADGES = [
 
 
 class Command(BaseCommand):
-    help = 'Crée les 14 badges de gamification SideQuest.'
+    help = 'Crée les 14 badges de gamification KaynBricool.'
 
     def handle(self, *args, **options):
         created = 0

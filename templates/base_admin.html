@@ -266,27 +266,27 @@ main.container {
         <div class="sidebar-brand">
             <div class="sidebar-brand-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
             <div>
-                <div class="sidebar-brand-text">SideQuest</div>
+                <div class="sidebar-brand-text">KaynBricool</div>
                 <div class="sidebar-brand-sub">Admin</div>
             </div>
         </div>
         <nav>
-            <a href="{% url 'admin_sidequest:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+            <a href="{% url 'admin_KaynBricool:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
                 <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg></span> Tableau de bord
             </a>
-            <a href="{% url 'admin_sidequest:users' %}" class="{% if request.resolver_match.url_name == 'users' or request.resolver_match.url_name == 'user_detail' or request.resolver_match.url_name == 'ban_user' or request.resolver_match.url_name == 'delete_user' %}active{% endif %}">
+            <a href="{% url 'admin_KaynBricool:users' %}" class="{% if request.resolver_match.url_name == 'users' or request.resolver_match.url_name == 'user_detail' or request.resolver_match.url_name == 'ban_user' or request.resolver_match.url_name == 'delete_user' %}active{% endif %}">
                 <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> Utilisateurs
             </a>
-            <a href="{% url 'admin_sidequest:categories' %}" class="{% if 'categorie' in request.resolver_match.url_name|default:'' %}active{% endif %}">
+            <a href="{% url 'admin_KaynBricool:categories' %}" class="{% if 'categorie' in request.resolver_match.url_name|default:'' %}active{% endif %}">
                 <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg></span> Catégories
             </a>
-            <a href="{% url 'admin_sidequest:subcategories' %}" class="{% if 'subcategory' in request.resolver_match.url_name|default:'' %}active{% endif %}">
+            <a href="{% url 'admin_KaynBricool:subcategories' %}" class="{% if 'subcategory' in request.resolver_match.url_name|default:'' %}active{% endif %}">
                 <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/><path d="M2 10h20"/></svg></span> Sous-catégories
             </a>
-            <a href="{% url 'admin_sidequest:badges' %}" class="{% if request.resolver_match.url_name == 'badges' or request.resolver_match.url_name == 'create_badge' or request.resolver_match.url_name == 'edit_badge' %}active{% endif %}">
+            <a href="{% url 'admin_KaynBricool:badges' %}" class="{% if request.resolver_match.url_name == 'badges' or request.resolver_match.url_name == 'create_badge' or request.resolver_match.url_name == 'edit_badge' %}active{% endif %}">
                 <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg></span> Badges
             </a>
-            <a href="{% url 'admin_sidequest:verifications' %}" class="{% if request.resolver_match.url_name == 'verifications' or request.resolver_match.url_name == 'verify_face' %}active{% endif %}">
+            <a href="{% url 'admin_KaynBricool:verifications' %}" class="{% if request.resolver_match.url_name == 'verifications' or request.resolver_match.url_name == 'verify_face' %}active{% endif %}">
                 <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span> Face ID
             </a>
         </nav>

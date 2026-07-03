@@ -23,7 +23,7 @@ class Command(BaseCommand):
             admin = CustomUser.objects.create_superuser(
                 email=email,
                 password=password,
-                full_name='Admin SideQuest',
+                full_name='Admin KaynBricool',
                 role=CustomUser.Roles.ADMIN,
             )
             self.stdout.write(self.style.SUCCESS(f'Admin créé : {email}'))

@@ -4,9 +4,9 @@
 
 {% block dashboard_content %}
 <div class="page-header">
-    <a href="{% url 'admin_sidequest:dashboard' %}" class="btn-back" title="Retour">&#8592;</a>
+    <a href="{% url 'admin_KaynBricool:dashboard' %}" class="btn-back" title="Retour">&#8592;</a>
     <h1>Badges</h1>
-    <a href="{% url 'admin_sidequest:create_badge' %}" class="btn btn-admin">+ Ajouter</a>
+    <a href="{% url 'admin_KaynBricool:create_badge' %}" class="btn btn-admin">+ Ajouter</a>
 </div>
 
 <div class="badges-grid">
@@ -18,7 +18,7 @@
         <h3>{{ badge.name }}</h3>
         <p>{{ badge.description|truncatewords:10 }}</p>
         <p class="text-muted">{{ badge.get_condition_type_display }}</p>
-        <a href="{% url 'admin_sidequest:edit_badge' badge.id %}" class="btn btn-sm btn-admin-outline">Modifier</a>
+        <a href="{% url 'admin_KaynBricool:edit_badge' badge.id %}" class="btn btn-sm btn-admin-outline">Modifier</a>
     </div>
     {% empty %}
     <div class="empty-state">Aucun badge créé.</div>

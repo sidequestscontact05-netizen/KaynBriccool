@@ -8,7 +8,7 @@ from django.shortcuts import redirect
 def home_view(request):
     if request.user.is_authenticated:
         if request.user.is_admin():
-            return redirect('admin_sidequest:dashboard')
+            return redirect('admin_KaynBricool:dashboard')
         if request.user.acting_as_tasker():
             return redirect('tasks:tasker_dashboard')
         if request.user.acting_as_client():
@@ -16,7 +16,7 @@ def home_view(request):
         if request.user.role == 'both':
             return redirect('tasks:tasker_dashboard')
         if request.user.is_staff or request.user.role == 'admin':
-            return redirect('admin_sidequest:dashboard')
+            return redirect('admin_KaynBricool:dashboard')
         return redirect('tasks:tasker_dashboard')
     from django.views.generic import TemplateView
     return TemplateView.as_view(template_name='home.html')(request)

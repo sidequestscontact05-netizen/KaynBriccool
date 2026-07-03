@@ -5,7 +5,7 @@ django.setup()
 from django.contrib.auth import get_user_model
 User = get_user_model()
 if not User.objects.filter(email='sidequests.contact05@gmail.com').exists():
-    User.objects.create_superuser(email='sidequests.contact05@gmail.com', password='admin123', full_name='Admin SideQuest')
+    User.objects.create_superuser(email='sidequests.contact05@gmail.com', password='admin123', full_name='Admin KaynBricool')
     print('Admin created successfully')
 else:
     u = User.objects.get(email='sidequests.contact05@gmail.com')

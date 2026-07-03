@@ -5,7 +5,7 @@ from apps.accounts.utils import send_form_email
 
 
 class Command(BaseCommand):
-    help = 'Send the SideQuest form email to existing users.'
+    help = 'Send the KaynBricool form email to existing users.'
 
     def add_arguments(self, parser):
         parser.add_argument(

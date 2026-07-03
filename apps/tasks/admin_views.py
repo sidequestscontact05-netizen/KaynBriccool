@@ -22,7 +22,7 @@ def admin_required(view_func):
 @admin_required
 def admin_categories(request):
     categories = Category.objects.all().order_by('name')
-    return render(request, 'admin_sidequest/categories.html', {
+    return render(request, 'admin_KaynBricool/categories.html', {
         'categories': categories,
     })
 
@@ -38,7 +38,7 @@ def admin_create_category(request):
         if name and slug:
             if Category.objects.filter(slug=slug).exists():
                 messages.error(request, _('Ce slug existe déjà. Choisis-en un autre.'))
-                return render(request, 'admin_sidequest/category_form.html', {
+                return render(request, 'admin_KaynBricool/category_form.html', {
                     'form_action': 'create',
                     'name': name,
                     'slug': slug,
@@ -46,8 +46,8 @@ def admin_create_category(request):
                 })
             Category.objects.create(name=name, slug=slug, icon=icon)
             messages.success(request, _('Catégorie créée.'))
-            return redirect('admin_sidequest:categories')
-    return render(request, 'admin_sidequest/category_form.html', {'form_action': 'create'})
+            return redirect('admin_KaynBricool:categories')
+    return render(request, 'admin_KaynBricool/category_form.html', {'form_action': 'create'})
 
 
 @admin_required
@@ -60,8 +60,8 @@ def admin_edit_category(request, cat_id):
         cat.icon = request.POST.get('icon')
         cat.save()
         messages.success(request, _('Catégorie modifiée.'))
-        return redirect('admin_sidequest:categories')
-    return render(request, 'admin_sidequest/category_form.html', {'cat': cat, 'form_action': 'edit'})
+        return redirect('admin_KaynBricool:categories')
+    return render(request, 'admin_KaynBricool/category_form.html', {'cat': cat, 'form_action': 'edit'})
 
 
 @admin_required
@@ -70,10 +70,10 @@ def admin_delete_category(request, cat_id):
     if request.method == 'POST':
         cat.delete()
         messages.success(request, _('Catégorie supprimée.'))
-        return redirect('admin_sidequest:categories')
-    return render(request, 'admin_sidequest/confirm_delete.html', {
+        return redirect('admin_KaynBricool:categories')
+    return render(request, 'admin_KaynBricool/confirm_delete.html', {
         'item': cat,
-        'return_url': 'admin_sidequest:categories',
+        'return_url': 'admin_KaynBricool:categories',
     })
 
 
@@ -81,7 +81,7 @@ def admin_delete_category(request, cat_id):
 def admin_subcategories(request):
     subs = SubCategory.objects.select_related('category').all().order_by('category', 'name')
     categories = Category.objects.all()
-    return render(request, 'admin_sidequest/subcategories.html', {
+    return render(request, 'admin_KaynBricool/subcategories.html', {
         'subcategories': subs,
     })
 
@@ -99,8 +99,8 @@ def admin_create_subcategory(request):
             cat = get_object_or_404(Category, id=cat_id)
             SubCategory.objects.create(category=cat, name=name, slug=slug)
             messages.success(request, _('Sous-catégorie créée.'))
-            return redirect('admin_sidequest:subcategories')
-    return render(request, 'admin_sidequest/subcategory_form.html', {
+            return redirect('admin_KaynBricool:subcategories')
+    return render(request, 'admin_KaynBricool/subcategory_form.html', {
         'categories': categories,
         'form_action': 'create',
     })

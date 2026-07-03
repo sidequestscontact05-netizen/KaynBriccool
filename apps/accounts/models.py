@@ -269,7 +269,7 @@ class UserProfile(models.Model):
         3: 'Chasseur de quêtes',
         4: 'Vétéran',
         5: 'Maître des quêtes',
-        6: 'Légende SideQuest',
+        6: 'Légende KaynBricool',
     }
 
     LEVEL_XP_THRESHOLDS = [0, 200, 500, 1000, 2000, 5000]

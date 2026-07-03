@@ -18,7 +18,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'sidequests.contact05@gmail.com'
 EMAIL_HOST_PASSWORD = 'uperueyxtpyciztj'
-DEFAULT_FROM_EMAIL = 'SideQuest <sidequests.contact05@gmail.com>'
+DEFAULT_FROM_EMAIL = 'KaynBricool <sidequests.contact05@gmail.com>'
 
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 

@@ -4,7 +4,7 @@
 
 {% block dashboard_content %}
 <div class="page-header">
-    <a href="{% url 'admin_sidequest:verifications' %}" class="btn-back" title="Retour">&#8592;</a>
+    <a href="{% url 'admin_KaynBricool:verifications' %}" class="btn-back" title="Retour">&#8592;</a>
     <h1>Vérification de {{ verification.user.full_name }}</h1>
 </div>
 
@@ -15,7 +15,7 @@
             <div class="verification-photo">
                 <span class="verification-photo-label">Photo initiale</span>
                 <img src="{{ verification.face_photo_initial.url }}" alt="Photo initiale">
-                <a href="{% url 'admin_sidequest:delete_face_photo' verification.id 'face_photo_initial' %}"
+                <a href="{% url 'admin_KaynBricool:delete_face_photo' verification.id 'face_photo_initial' %}"
                    class="btn-delete-photo"
                    onclick="return confirm('Supprimer cette photo ?');">Supprimer</a>
             </div>
@@ -24,7 +24,7 @@
             <div class="verification-photo">
                 <span class="verification-photo-label">Visage gauche</span>
                 <img src="{{ verification.face_photo_left.url }}" alt="Photo gauche">
-                <a href="{% url 'admin_sidequest:delete_face_photo' verification.id 'face_photo_left' %}"
+                <a href="{% url 'admin_KaynBricool:delete_face_photo' verification.id 'face_photo_left' %}"
                    class="btn-delete-photo"
                    onclick="return confirm('Supprimer cette photo ?');">Supprimer</a>
             </div>
@@ -33,7 +33,7 @@
             <div class="verification-photo">
                 <span class="verification-photo-label">Visage droite</span>
                 <img src="{{ verification.face_photo_right.url }}" alt="Photo droite">
-                <a href="{% url 'admin_sidequest:delete_face_photo' verification.id 'face_photo_right' %}"
+                <a href="{% url 'admin_KaynBricool:delete_face_photo' verification.id 'face_photo_right' %}"
                    class="btn-delete-photo"
                    onclick="return confirm('Supprimer cette photo ?');">Supprimer</a>
             </div>
@@ -42,7 +42,7 @@
             <div class="verification-photo">
                 <span class="verification-photo-label">Clignement</span>
                 <img src="{{ verification.face_photo_blink.url }}" alt="Photo clignement">
-                <a href="{% url 'admin_sidequest:delete_face_photo' verification.id 'face_photo_blink' %}"
+                <a href="{% url 'admin_KaynBricool:delete_face_photo' verification.id 'face_photo_blink' %}"
                    class="btn-delete-photo"
                    onclick="return confirm('Supprimer cette photo ?');">Supprimer</a>
             </div>
