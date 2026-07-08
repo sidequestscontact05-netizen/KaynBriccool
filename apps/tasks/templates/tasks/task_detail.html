@@ -127,18 +127,7 @@
         </div>
 
         <!-- Bottom actions -->
-        {% if user.is_tasker and task.status == 'published' and can_apply and not user.profile.has_face_pending_or_approved %}
-        <div class="td-actions">
-            <div style="display:flex;align-items:center;gap:0.5rem;padding:0.7rem 0.85rem;background:#FFF7ED;border:1px solid #FDE68A;border-radius:10px;margin-bottom:10px;font-size:0.8rem;">
-                <span style="font-size:1rem;">🔍</span>
-                <div style="flex:1;min-width:0;">
-                    <span style="font-weight:500;color:#92400E;">Vérifie ton visage pour postuler</span>
-                    <span style="display:block;margin-top:0.15rem;color:#B45309;font-size:0.73rem;">Les clients font davantage confiance aux profils vérifiés.</span>
-                </div>
-                <a href="{% url 'accounts:verify_face' %}" class="td-btn td-btn-primary" style="font-size:0.78rem;padding:0.35rem 0.7rem;white-space:nowrap;">Vérifier</a>
-            </div>
-        </div>
-        {% elif user.is_tasker and task.status == 'published' and can_apply %}
+        {% if user.is_tasker and task.status == 'published' and can_apply %}
         <div class="td-actions">
             <form method="post" action="{% url 'tasks:task_apply' task.id %}">
                 {% csrf_token %}
