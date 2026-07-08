@@ -35,7 +35,7 @@ class TaskCreateForm(forms.ModelForm):
             'subcategory': forms.Select(attrs={'class': 'form-input'}),
             'title': forms.TextInput(attrs={'placeholder': _('Donne un titre à ta task...'), 'class': 'form-input'}),
             'description': forms.Textarea(attrs={'rows': 3, 'placeholder': _('Ajouter une petite description...'), 'class': 'form-input'}),
-            'reward': forms.NumberInput(attrs={'placeholder': '25.00', 'min': '1', 'step': '0.01', 'class': 'form-input'}),
+            'reward': forms.NumberInput(attrs={'placeholder': '25.00', 'step': '0.01', 'class': 'form-input'}),
             'has_route': forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
             'proof_required': forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
             'departure_address': forms.TextInput(attrs={'placeholder': _('Adresse de départ'), 'class': 'form-input'}),
@@ -49,6 +49,9 @@ class TaskCreateForm(forms.ModelForm):
         self.fields['title'].required = False
         self.fields['description'].required = False
         self.fields['arrival_address'].required = False
+        self.fields['reward'].required = False
+        self.fields['deadline'].required = False
+        self.fields['departure_address'].required = False
         if self.data and self.data.get('category'):
             category_id = self.data.get('category')
         elif self.instance and self.instance.pk and self.instance.category_id:

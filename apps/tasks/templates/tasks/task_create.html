@@ -162,6 +162,7 @@
 
 .errorlist { list-style: none; margin: 8px 0 0; padding: 0; font-size: 0.8rem; color: var(--sq-danger); }
 .form-card.error { border-color: var(--sq-danger); box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08); }
+.required-asterisk { color: var(--sq-danger); margin-left: 2px; }
 
 .form-actions { display: flex; gap: 12px; justify-content: flex-end; padding-top: 8px; }
 .form-actions .btn { padding: 12px 28px; font-size: 0.95rem; }
@@ -227,7 +228,7 @@
         <div class="form-card-header">
           <div class="form-card-icon green"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
           <div>
-            <p class="form-card-label">Catégorie</p>
+            <p class="form-card-label">Catégorie <span class="required-asterisk">*</span></p>
             <h3 class="form-card-title">Quel type de task ?</h3>
           </div>
         </div>
@@ -240,12 +241,12 @@
         <div class="form-card-header">
           <div class="form-card-icon blue"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg></div>
           <div>
-            <p class="form-card-label">Sous-catégorie</p>
+            <p class="form-card-label">Sous-catégorie <span class="required-asterisk">*</span></p>
             <h3 class="form-card-title">Précise le type de task</h3>
           </div>
         </div>
         <div class="form-card-body">
-          <select name="subcategory" id="id_subcategory" class="form-input" required disabled>
+          <select name="subcategory" id="id_subcategory" class="form-input" disabled>
             <option value="">— Choisir une catégorie d'abord —</option>
           </select>
           {{ form.subcategory.errors }}
@@ -261,7 +262,7 @@
         <div class="form-card-header">
           <div class="form-card-icon purple"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></div>
           <div>
-            <p class="form-card-label">Titre</p>
+            <p class="form-card-label">Titre <span class="required-asterisk">*</span></p>
             <h3 class="form-card-title">Donne un titre clair à ta task</h3>
           </div>
         </div>
@@ -274,7 +275,7 @@
         <div class="form-card-header">
           <div class="form-card-icon amber"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 2v4a2 2 0 0 0 2 2h4"/><rect x="2" y="2" width="18" height="18" rx="2"/><path d="M12 11v6"/><path d="M9 14h6"/></svg></div>
           <div>
-            <p class="form-card-label">Description</p>
+            <p class="form-card-label">Description <span class="required-asterisk">*</span></p>
             <h3 class="form-card-title">Explique la task en détail</h3>
           </div>
         </div>
@@ -293,7 +294,7 @@
         <div class="form-card-header">
           <div class="form-card-icon teal"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path d="M12 9v6"/><path d="M9 12h6"/></svg></div>
           <div>
-            <p class="form-card-label">Rémunération</p>
+            <p class="form-card-label">Rémunération <span class="required-asterisk">*</span></p>
             <h3 class="form-card-title">Combien proposez-vous ?</h3>
           </div>
         </div>
@@ -329,8 +330,8 @@
       <div class="form-card-header">
         <div class="form-card-icon indigo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>
         <div>
-          <p class="form-card-label">Adresse d'arrivée</p>
-          <h3 class="form-card-title">Où doit se rendre le tasker ?</h3>
+            <p class="form-card-label">Adresse d'arrivée <span class="required-asterisk">*</span></p>
+            <h3 class="form-card-title">Où doit se rendre le tasker ?</h3>
         </div>
       </div>
       <div class="form-card-body">
