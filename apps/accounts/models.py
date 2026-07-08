@@ -332,6 +332,15 @@ class UserProfile(models.Model):
             face_status=VerificationRecord.FaceStatusChoices.APPROVED,
         ).exists()
 
+    def has_face_pending_or_approved(self):
+        return self.user.verifications.filter(
+            type=VerificationRecord.TypeChoices.FACE_ID,
+            face_status__in=[
+                VerificationRecord.FaceStatusChoices.PENDING,
+                VerificationRecord.FaceStatusChoices.APPROVED,
+            ],
+        ).exists()
+
     def has_avatar(self):
         return bool(self.user.avatar)
 

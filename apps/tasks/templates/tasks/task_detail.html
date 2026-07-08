@@ -127,7 +127,7 @@
         </div>
 
         <!-- Bottom actions -->
-        {% if user.is_tasker and task.status == 'published' and can_apply and not user.profile.is_face_verified %}
+        {% if user.is_tasker and task.status == 'published' and can_apply and not user.profile.has_face_pending_or_approved %}
         <div class="td-actions">
             <div style="display:flex;align-items:center;gap:0.5rem;padding:0.7rem 0.85rem;background:#FFF7ED;border:1px solid #FDE68A;border-radius:10px;margin-bottom:10px;font-size:0.8rem;">
                 <span style="font-size:1rem;">🔍</span>
