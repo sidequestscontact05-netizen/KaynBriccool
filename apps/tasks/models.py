@@ -159,12 +159,13 @@ class Task(models.Model):
         with transaction.atomic():
             task = Task.objects.select_for_update().get(pk=self.pk)
             if task.status != self.StatusChoices.PUBLISHED:
-                raise ValidationError("La mission n'est pas disponible ou déjà acceptée")
+                return False
             task.status = self.StatusChoices.ACCEPTED
             task.assigned_tasker = tasker
             task.save()
             for app in task.applications.exclude(tasker=tasker):
                 app.reject()
+            return True
 
     def notify_client_new_application(self, application):
         subject = f"Nouvelle candidature pour {self.title}"

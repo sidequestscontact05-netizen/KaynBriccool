@@ -6,7 +6,6 @@ from django.contrib import messages
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.db import IntegrityError
-from django.core.exceptions import ValidationError
 from django.db.models import Q, Avg, Count, Prefetch, Sum
 from django.http import HttpResponseForbidden, JsonResponse
 from django.urls import reverse
@@ -694,9 +693,7 @@ def task_choose_tasker(request, task_id, application_id):
     task = get_object_or_404(Task, id=task_id, client=request.user)
     application = get_object_or_404(TaskApplication, id=application_id, task=task)
 
-    try:
-        task.accept_tasker(application.tasker)
-    except ValidationError:
+    if not task.accept_tasker(application.tasker):
         messages.error(request, _('Cette tâche n\'est plus en attente de candidatures.'))
         return redirect('tasks:client_dashboard')
 
