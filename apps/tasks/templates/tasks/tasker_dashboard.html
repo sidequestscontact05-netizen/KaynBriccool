@@ -579,6 +579,12 @@
 
 {% block extra_js %}
 <script>
+document.querySelectorAll('.avail-card').forEach(function(card) {
+  card.addEventListener('click', function(e) {
+    if (e.target.closest('.btn-accept, .avail-action-btn')) return;
+    window.location.href = this.dataset.href;
+  });
+});
 function filterCat(slug) {
   document.querySelectorAll('#cat-filters > div').forEach(function(el) {
     var bg = el.querySelector('div');
