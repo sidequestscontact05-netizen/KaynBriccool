@@ -699,7 +699,7 @@ def task_choose_tasker(request, task_id, application_id):
 
     application.accept()
 
-    conversation, _ = Conversation.objects.get_or_create(
+    conversation, _created = Conversation.objects.get_or_create(
         client=task.client,
         tasker=application.tasker,
     )
